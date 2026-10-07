@@ -33,4 +33,18 @@ for fn in ('ACC_1u.step', 'ACC_0.5u.step', 'ACC_1.25u.step'):
         p(f'{fn} z={z}:')
         for l in loops(s, z):
             p('   ', l)
+step_dir = sys.argv[4] if len(sys.argv) > 4 else ''
+if step_dir and os.path.isdir(step_dir):
+    for fn in sorted(os.listdir(step_dir)):
+        if fn.lower().endswith('.step'):
+            try:
+                s = cq.importers.importStep(os.path.join(step_dir, fn)).val()
+                b = s.BoundingBox()
+                p(f'part {fn}: x {b.xmin:.2f}..{b.xmax:.2f} y {b.ymin:.2f}..{b.ymax:.2f} z {b.zmin:.2f}..{b.zmax:.2f}')
+                if 'SW-SMD_4P' in fn:
+                    for z in [b.zmin + 0.25 * i for i in range(int((b.zmax - b.zmin) / 0.25) + 1)]:
+                        L = loops(s, z)
+                        p(f'   SKRA z={z:.2f}:', [(l[4], l[5]) for l in L][:6])
+            except Exception as e:
+                p('part', fn, 'error', e)
 f.close()
