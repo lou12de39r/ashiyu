@@ -60,6 +60,17 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
   - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 42.0 mm.
   - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
 
+## Parts check (2026-10-07, LCSC / JLCPCB pages)
+
+| Part | Result |
+|---|---|
+| IQS550BLQNR (C5271144) | **Out of stock at LCSC.** The trackpad board cannot be assembled at JLC as planned |
+| USB-C TYPE-C 16PIN 2MD(073) (C2765186) | In stock (837k). It is right-angle SMD, **not mid-mount**, so a mid-mount part is still to be found |
+| FPC 0.5 mm 6-pin HC-FPC-05-10-6RLTAG (C5213729) | In stock (5k), bottom contact, flip lock |
+| Green LED 19-217/GHC (C72043) | Vf 3.3 V: **too high for a 3.0 V VDD**. Needs a yellow-green (≈2.0 V) part instead |
+| Red LED KT-0603R (C2286) | Vf 1.8–2.4 V, usable |
+| Bicolour LED | No good 0603 part found. Using red + green as two separate LEDs is simpler |
+
 ## Verify before ordering (in priority order)
 1. **Trackpad size:** GR-Trackpad65 is 65 mm tall, so the 42 mm pad needs about a third fewer electrode rows. Check how far the electrode pattern has to be redrawn and whether it needs re-tuning (uncertain).
 2. **Stock at JLC/LCSC (unchecked):** IQS550, the mid-mount USB-C, the 0603 green / orange / bicolour LEDs, and the 0.5 mm FPC connector.
