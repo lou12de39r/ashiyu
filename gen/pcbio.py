@@ -5,6 +5,7 @@ import uuid
 
 from fplib import FP
 import design as D
+from design import rot
 
 NS = uuid.UUID('6c0e8f3a-2b1f-4c55-9a47-3d1c0f8e7a22')
 PROJECT = 'tomtho_mk2'
@@ -82,7 +83,7 @@ def fp_body(fpname, part=None, netcode=None, ind='\t'):
         o.append(f'(at {f(part["x"])} {f(part["y"])}{" " + f(a) if a else ""})')
     o.append(f'(descr {q(fp["descr"])})')
     rs = fp.get('ref_size', 0.8)
-    rlayer = 'F.Fab' if (not lib and re.fullmatch(r'(SW|D)\d+', ref) and int(re.sub(r'\D', '', ref)) <= 54) else 'F.SilkS'
+    rlayer = 'F.Fab' if (not lib and re.fullmatch(r'(SW|D)\d+', ref) and int(re.sub(r'\D', '', ref)) <= D.NKEYS) else 'F.SilkS'
     ra = fp['ref_at'] if lib else part.get('ref_at', fp['ref_at'])
     o.append(f'(property "Reference" {q(ref)} (at {f(ra[0])} {f(ra[1])} {f(a)}) (layer {q(rlayer)}) '
              f'(uuid {q(U("ref", key))}) {_font(rs)})')
@@ -94,10 +95,12 @@ def fp_body(fpname, part=None, netcode=None, ind='\t'):
              f'(uuid {q(U("ds", key))}) {_font(1.0)})')
     o.append(f'(property "Description" {q(fp["descr"] if lib else part["desc"])} (at 0 0 {f(a)}) (unlocked yes) '
              f'(layer "F.Fab") (hide yes) (uuid {q(U("de", key))}) {_font(1.0)})')
-    if not lib and part.get('lcsc'):
+    if not lib:
         o.append(f'(property "LCSC" {q(part["lcsc"])} (at 0 0 {f(a)}) (unlocked yes) (layer "F.Fab") (hide yes) '
                  f'(uuid {q(U("lcsc", key))}) {_font(1.0)})')
     if not lib:
+        o.append(f'(property "MPN" {q(part.get("mpn", ""))} (at 0 0 {f(a)}) (unlocked yes) (layer "F.Fab") (hide yes) '
+                 f'(uuid {q(U("mpn", key))}) {_font(1.0)})')
         o.append(f'(path "/{U("sym", part["ref"])}")')
         o.append('(sheetname "Root")')
         o.append(f'(sheetfile "{PROJECT}.kicad_sch")')
@@ -186,8 +189,8 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
         netcode[n] = len(nets) + 1 + i
     o = ['(kicad_pcb\n\t(version 20240108)\n\t(generator "pcbnew")\n\t(generator_version "8.0")\n',
          '\t(general\n\t\t(thickness 1.2)\n\t\t(legacy_teardrops no)\n\t)\n\t(paper "A3")\n',
-         '\t(title_block\n\t\t(title "tomtho-slim")\n\t\t(date "2026-10-06")\n\t\t(rev "0.1")\n'
-         '\t\t(comment 1 "54 keys / ALPS SKRA / 18.5x18mm / MDBT50Q-1MV2 (nRF52840) / ZMK")\n\t)\n',
+         '\t(title_block\n\t\t(title "tomtho-slim mk2")\n\t\t(date "2026-10-07")\n\t\t(rev "mk2-0.1")\n'
+         '\t\t(comment 1 "65 keys / ALPS SKRA / 18.5x18mm / MDBT50Q-1MV2 (nRF52840) / IQS550 trackpad via FPC / ZMK")\n\t)\n',
          PCB_LAYERS,
          '\t(setup\n\t\t(pad_to_mask_clearance 0)\n\t\t(allow_soldermask_bridges_in_footprints no)\n'
          '\t\t(aux_axis_origin 18.5 113.5)\n\t\t(grid_origin 20 40)\n\t)\n',
@@ -196,21 +199,19 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
     o += [f'\t(net {netcode[n]} {q(n)})\n' for n in sorted(set(NC_NETS.values()))]
     for ref in sorted(D.PARTS, key=lambda r: (re.sub(r'\d', '', r), int(re.sub(r'\D', '', r) or 0))):
         o.append(fp_body(D.PARTS[ref]['fp'], D.PARTS[ref], netcode))
-    o.append(board_outline())
-    # battery area & labels
-    bx1, by1, bx2, by2 = D.BATTERY_AREA
-    for i, (a, b) in enumerate([((bx1, by1), (bx2, by1)), ((bx2, by1), (bx2, by2)), ((bx2, by2), (bx1, by2)),
-                                ((bx1, by2), (bx1, by1))]):
-        o.append(f'\t(gr_line (start {f(a[0])} {f(a[1])}) (end {f(b[0])} {f(b[1])}) (stroke (width 0.12) (type default)) '
-                 f'(layer "F.SilkS") (uuid {q(U("bat", i))}))\n')
-    texts = [('F.SilkS', (bx1 + bx2) / 2, (by1 + by2) / 2, 'LiPo 1S (<=3.0t x 16 x 65)  + to J2 pin1', 1.0),
-             ('F.SilkS', 50.0, 25.0, 'tomtho-slim v0.1', 1.5),
-             ('F.SilkS', 50.0, 28.0, 'nRF52840 MDBT50Q / ZMK / 18.5x18', 1.0),
-             ('F.SilkS', 50.0, 34.0, 'JLCJLCJLCJLC', 0.8),
-             ('F.SilkS', 120.0 + 1.27 * 3, 20.9, 'DIO CLK GND VDD', 0.8),
-             ('F.SilkS', 172.0, 26.6, 'ON  OFF', 0.8)]
-    for i, (layer, x, y, t, sz) in enumerate(texts):
-        o.append(f'\t(gr_text {q(t)} (at {f(x)} {f(y)}) (layer {q(layer)}) (uuid {q(U("txt", i))}) {_font(sz)})\n')
+    o.append(board_outline(D.CORNER_R))
+    for i, (layer, x1, y1, x2, y2) in enumerate(D.SILK_RECTS):
+        for j, (p, q2) in enumerate([((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)), ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]):
+            o.append(f'\t(gr_line (start {f(p[0])} {f(p[1])}) (end {f(q2[0])} {f(q2[1])}) (stroke (width 0.12) (type default)) '
+                     f'(layer {q(layer)}) (uuid {q(U("srect", i, j))}))\n')
+    for i, (layer, x, y, t, sz) in enumerate(D.SILK_TEXTS):
+        mirror = ' (justify mirror)' if layer.startswith('B.') else ''
+        o.append(f'\t(gr_text {q(t)} (at {f(x)} {f(y)}) (layer {q(layer)}) (uuid {q(U("txt", i))}) '
+                 f'{_font(sz)[:-1]}{mirror}))\n')
+    for i, (x1, y1, x2, y2) in enumerate(D.SLOTS):
+        r = min(x2 - x1, y2 - y1) / 2
+        o.append(f'\t(gr_rect (start {f(x1)} {f(y1)}) (end {f(x2)} {f(y2)}) (stroke (width 0.1) (type default)) '
+                 f'(fill no) (layer "Edge.Cuts") (uuid {q(U("slot", i))}))\n')
     for i, (layer, x1, y1, x2, y2, w, net) in enumerate(tracks):
         o.append(f'\t(segment (start {f(x1)} {f(y1)}) (end {f(x2)} {f(y2)}) (width {f(w)}) (layer {q(layer)}) '
                  f'(net {netcode[net]}) (uuid {q(U("seg", i, x1, y1, x2, y2))}))\n')
@@ -277,6 +278,14 @@ def write_dsn(path, tracks, vias, only=None, clr=150, wsig=200, extra=None, obst
             elif shape == 'circle':
                 ps = f'Round_{um(W)}'
                 padstacks[ps] = f'(shape (circle F.Cu {um(W)}))'
+            elif p['rot'] % 90:
+                ang = p['rot']
+                ps = f'Poly_{um(W)}x{um(H)}_r{ang:g}'.replace('-', 'm').replace('.', 'p')
+                pts = []
+                for cx_, cy_ in ((-W / 2, -H / 2), (W / 2, -H / 2), (W / 2, H / 2), (-W / 2, H / 2), (-W / 2, -H / 2)):
+                    rx_, ry_ = rot(cx_, cy_, ang)
+                    pts += [um(rx_), um(-ry_)]
+                padstacks[ps] = f'(shape (polygon F.Cu 0 {" ".join(pts)}))'
             else:
                 ps = f'Rect_{um(W)}x{um(H)}'
                 padstacks[ps] = f'(shape (rect F.Cu {um(-W / 2)} {um(-H / 2)} {um(W / 2)} {um(H / 2)}))'

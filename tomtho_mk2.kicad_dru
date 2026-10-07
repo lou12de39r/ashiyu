@@ -1,0 +1,6 @@
+(version 1)
+# GND pads in the dense USB/module area are tied to the pour by their own stub + via;
+# one thermal spoke from the zone is therefore sufficient.
+(rule "gnd single spoke ok"
+	(condition "A.NetName == 'GND'")
+	(constraint min_resolved_spokes 1))

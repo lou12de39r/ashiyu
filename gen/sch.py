@@ -106,7 +106,7 @@ box('USB_C', [('A4', 'VBUS'), ('A9', 'VBUS'), ('B4', 'VBUS'), ('B9', 'VBUS'), ('
     [('A1', 'GND'), ('A12', 'GND'), ('B1', 'GND'), ('B12', 'GND'), ('S1', 'SHIELD')], 12.7, 'J',
     'USB 2.0 Type-C receptacle')
 box('Conn_02', [('1', 'BAT+'), ('2', 'BAT-')], [], 7.62, 'J', 'JST SH 2-pin')
-box('LED_Dual_CA', [('3', 'A'), ('4', 'A')], [('1', 'K_RED'), ('2', 'K_GRN')], 10.16, 'LED',
+box('LED_Dual_CA', [('2', 'R+'), ('4', 'YG+')], [('1', 'R-'), ('3', 'YG-')], 10.16, 'LED',
     'Bicolour LED, common anode (XL-2012SURSYGC)')
 box('Conn_FPC6', [('1', 'VDD'), ('2', 'GND'), ('3', 'SDA'), ('4', 'SCL'), ('5', 'RDY'), ('6', 'RST')],
     [('MP', 'MP')], 10.16, 'J', 'FPC 6P 0.5 mm')

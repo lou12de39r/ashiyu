@@ -165,32 +165,50 @@ FP['MountingHole_2.2mm_M2'] = dict(descr='M2 mounting hole, NPTH 2.2mm', attr='e
     ref_at=(0, -3.0), val_at=(0, 3.0), ref_size=0.8)
 
 
-# ------------------------------------------------------------------ mk2 additions (DRAFT: verify against datasheets before PCB)
-# SHOU HAN TYPE-C 16P CB1.6 073 (LCSC C2906290), mid-mount.  Pad pattern follows the common 16P USB2.0
-# Type-C layout (A1/B12, A4/B9, B8, A5, B7, A6, A7, B6, A8, B5, B4/A9, B1/A12 at 0.5 mm pitch);
-# board cutout / exact offsets to be taken from the C2906290 drawing.
-_uc = [('A1', -3.2), ('A4', -2.4), ('B8', -1.75), ('A5', -1.25), ('B7', -0.75), ('A6', -0.25), ('A7', 0.25),
-       ('B6', 0.75), ('A8', 1.25), ('B5', 1.75), ('B4', 2.4), ('B1', 3.2)]
-_ucp = [(n, 'smd', 'rect', x, -1.6, 0.3 if n[1:] not in ('1', '4') else 0.6, 1.1, None) for n, x in _uc]
-_ucp += [('A12', 'smd', 'rect', -3.2, -1.6, 0.6, 1.1, None), ('B12', 'smd', 'rect', 3.2, -1.6, 0.6, 1.1, None),
-         ('A9', 'smd', 'rect', 2.4, -1.6, 0.6, 1.1, None), ('B9', 'smd', 'rect', -2.4, -1.6, 0.6, 1.1, None)]
-_ucp += [('S1', 'thru', 'oval', -4.32, 0.5, 1.0, 1.8, 0.6), ('S1', 'thru', 'oval', 4.32, 0.5, 1.0, 1.8, 0.6),
-         ('S1', 'thru', 'oval', -4.32, 3.6, 1.0, 1.6, 0.6), ('S1', 'thru', 'oval', 4.32, 3.6, 1.0, 1.6, 0.6)]
-FP['USB_C_SHOUHAN_16P_CB1.6'] = dict(
-    descr='SHOU HAN TYPE-C 16P CB1.6 073 mid-mount USB-C (C2906290) -- DRAFT pad geometry, verify', attr='smd',
-    pads=_ucp, lines=_box(-4.5, -2.4, 4.5, 4.4, 'F.CrtYd', 0.05) + _box(-4.47, -1.0, 4.47, 4.3, 'F.Fab', 0.1),
-    circles=[], ref_at=(0, -3.2), val_at=(0, 5.2), ref_size=0.8)
+# ------------------------------------------------------------------ mk2 additions: footprints converted from the
+# LCSC/EasyEDA data fetched by CI (.github/workflows/lcsc.yml -> gen/lcsc/*.kicad_mod).  Edge.Cuts lines are dropped
+# here (the USB-C notch is drawn into the board outline by pcbio).
+import os as _os
+import re as _re
 
-# XINGLIGHT XL-2012SURSYGC bicolour LED 2.0x1.2 mm, 4 pads.  Pad numbering per symbol LED_Dual_CA:
-# 1 = K red, 2 = K yellow-green, 3/4 = common anode -- DRAFT, confirm against the datasheet drawing.
-FP['LED_XL-2012_Bicolor'] = dict(descr='XL-2012SURSYGC bicolour LED 2.0x1.2 (DRAFT pin map)', attr='smd',
-    pads=[('1', 'smd', 'rect', -0.75, -0.55, 0.6, 0.5, None), ('2', 'smd', 'rect', -0.75, 0.55, 0.6, 0.5, None),
-          ('3', 'smd', 'rect', 0.75, 0.55, 0.6, 0.5, None), ('4', 'smd', 'rect', 0.75, -0.55, 0.6, 0.5, None)],
-    lines=_box(-1.35, -1.1, 1.35, 1.1, 'F.CrtYd', 0.05) + [('F.SilkS', -1.3, -1.05, -1.3, 1.05, 0.12)],
-    circles=[], ref_at=(0, -1.8), val_at=(0, 1.8), ref_size=0.8)
+_LCSC = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'lcsc')
 
-# HCTL HC-FPC-05-10-6RLTAG, 0.5 mm 6-pin FPC, bottom contact, flip lock (C5213729) -- DRAFT, verify
-FP['FPC_0.5mm_6P_HC'] = dict(descr='0.5mm 6P FPC connector, bottom contact (C5213729) -- DRAFT', attr='smd',
-    pads=[(str(i + 1), 'smd', 'rect', -1.25 + 0.5 * i, -1.3, 0.3, 1.2, None) for i in range(6)]
-         + [('MP', 'smd', 'rect', -3.05, 1.0, 1.4, 1.8, None), ('MP', 'smd', 'rect', 3.05, 1.0, 1.4, 1.8, None)],
-    lines=_box(-4.0, -2.2, 4.0, 2.4, 'F.CrtYd', 0.05), circles=[], ref_at=(0, -3.0), val_at=(0, 3.2), ref_size=0.8)
+
+def _from_kicad_mod(fname, descr, rename=None, keep=('F.SilkS', 'F.CrtYd', 'F.Fab')):
+    t = open(_os.path.join(_LCSC, fname)).read()
+    pads, lines, edge = [], [], []
+    for m in _re.finditer(r'\(pad (\S+) (smd|thru_hole) (\w+) \(at ([-\d.]+) ([-\d.]+)[^)]*\) \(size ([\d.]+) ([\d.]+)\)'
+                          r'[^\n]*', t):
+        num, kind, shape, x, y, w, h = m.groups()
+        num = (rename or {}).get(num, num)
+        drill = None
+        d = _re.search(r'\(drill oval ([\d.]+) ([\d.]+)\)', m.group(0))
+        if d:
+            drill = (round(float(d.group(1)), 3), round(float(d.group(2)), 3))
+        else:
+            d = _re.search(r'\(drill ([\d.]+)\)', m.group(0))
+            drill = float(d.group(1)) if d else None
+        pads.append((num, 'smd' if kind == 'smd' else 'thru', shape, float(x), float(y), float(w), float(h), drill))
+    for m in _re.finditer(r'\(fp_line \(start ([-\d.]+) ([-\d.]+)\) \(end ([-\d.]+) ([-\d.]+)\) \(layer ([\w.]+)\) \(width ([\d.]+)\)', t):
+        x1, y1, x2, y2, layer, w = m.groups()
+        seg = (layer, float(x1), float(y1), float(x2), float(y2), max(0.05, float(w)))
+        if layer == 'Edge.Cuts':
+            edge.append(seg)
+        elif layer in keep:
+            lines.append(seg if layer != 'F.SilkS' else seg[:5] + (0.12,))
+    return dict(descr=descr, attr='smd', pads=pads, lines=lines, circles=[], ref_at=(0, -3.0), val_at=(0, 3.0),
+                ref_size=0.8, edge=edge)
+
+
+FP['USB_C_SHOUHAN_16P_CB1.6'] = _from_kicad_mod(
+    'USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.kicad_mod',
+    'SHOU HAN TYPE-C 16P CB1.6 073 mid-mount USB-C (LCSC C2906290, EasyEDA footprint); needs board notch',
+    rename={'25': 'S1', '26': 'S1', '27': 'S1', '28': 'S1'})
+FP['LED_XL-2012_Bicolor'] = _from_kicad_mod(
+    'LED-SMD_4P-L2.0-W1.3-RD-TL.kicad_mod',
+    'XINGLIGHT XL-2012SURSYGC bicolour LED (C965847): 1=R- 2=R+ 3=YG- 4=YG+')
+FP['LED_XL-2012_Bicolor']['ref_at'] = (0, -1.6)
+FP['FPC_0.5mm_6P_HC'] = _from_kicad_mod(
+    'FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.kicad_mod',
+    'HCTL HC-FPC-05-10-6RLTAG 0.5mm 6P FPC, bottom contact (C5213729); 7/8 = mounting',
+    rename={'7': 'MP', '8': 'MP'})

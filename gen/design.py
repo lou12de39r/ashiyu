@@ -66,15 +66,19 @@ for r in range(NROWS):
         add(f'SW{n}', 'SW_ALPS_SKRA_6.2mm', 'SKRAAWE010', k['cx'], k['cy'], a,
             {'1': f'COL{c}', '2': f'K{r}_{c}'}, 'SW_Push', 'C202383',
             f'key "{name}" - ALPS SKRA 6.2mm tact', 'SKRAAWE010')
-        dx, dy = rot(0, 5.0, a)
-        add(f'D{n}', 'D_SOD-123', '1N4148W', k['cx'] + dx, k['cy'] + dy, a + 180,
+        if name in ('↑', '↓'):                  # stacked 0.5u keys: diode beside the switch, not below it
+            dx, dy, da = 6.6, 0.0, 90
+        else:
+            dx, dy = rot(0, 5.0, a)
+            da = a + 180
+        add(f'D{n}', 'D_SOD-123', '1N4148W', k['cx'] + dx, k['cy'] + dy, da,
             {'1': f'ROW{r}', '2': f'K{r}_{c}'}, 'D', 'C81598', 'Switching diode', '1N4148W')
 assert n == len(L['keys']) == 65, n
 NKEYS = n
 
 # --- MCU module in the free area between "5" and "6", antenna at the rear edge
-U1X = TP['x'] + 24.2
-U1Y = 0.6 + 7.75 + 0.3
+U1X = TP['x'] + 24.2            # 138.2: module centred in the free area between "5" and "6"
+U1Y = 0.6 + 8.05                # antenna edge on the board's rear edge
 MCU_PINS = {
     # outer pads: matrix
     '3': 'ROW0', '4': 'ROW1', '6': 'ROW2', '8': 'ROW3', '10': 'ROW4', '12': 'ROW5',
@@ -102,70 +106,74 @@ PIN_NAMES = {'1': 'GND', '2': 'GND', '3': 'P1.10', '4': 'P1.11', '5': 'P1.12', '
 add('U1', 'Raytac_MDBT50Q', 'MDBT50Q-1MV2', U1X, U1Y, 0, dict(MCU_PINS), 'MDBT50Q', 'C5118826',
     'nRF52840 BLE module, chip antenna, TELEC certified', 'MDBT50Q-1MV2')
 
-FX, FY = TP['x'], 16.5          # free-area origin for the support parts (below the module's lower edge)
-add('C2', 'C_0603', '10uF', U1X + 7.5, 6.0, 90, {'1': 'VDDH', '2': 'GND'}, 'C', 'C19702', '10V X5R', 'CL10A106KP8NNNC')
-add('C3', 'C_0603', '100nF', U1X + 9.3, 6.0, 90, {'1': 'VDDH', '2': 'GND'}, 'C', 'C14663', '50V X7R', 'CC0603KRX7R9BB104')
-add('C4', 'C_0603', '4.7uF', U1X + 7.5, 10.0, 90, {'1': 'VDD', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
-add('C5', 'C_0603', '100nF', U1X + 9.3, 10.0, 90, {'1': 'VDD', '2': 'GND'}, 'C', 'C14663', '50V X7R', 'CC0603KRX7R9BB104')
-add('C1', 'C_0603', '4.7uF', U1X + 7.5, 14.0, 90, {'1': 'VBUS', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
+FX = TP['x']                    # 114.0  free area: x 113.5..163.5, y 0.6..28.2 (trackpad starts at 28.7)
+# module decoupling, right of the module
+add('C2', 'C_0603', '10uF', U1X + 7.4, 5.0, 90, {'1': 'VDDH', '2': 'GND'}, 'C', 'C19702', '10V X5R', 'CL10A106KP8NNNC')
+add('C3', 'C_0603', '100nF', U1X + 9.2, 5.0, 90, {'1': 'VDDH', '2': 'GND'}, 'C', 'C14663', '50V X7R', 'CC0603KRX7R9BB104')
+add('C4', 'C_0603', '4.7uF', U1X + 7.4, 9.0, 90, {'1': 'VDD', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
+add('C5', 'C_0603', '100nF', U1X + 9.2, 9.0, 90, {'1': 'VDD', '2': 'GND'}, 'C', 'C14663', '50V X7R', 'CC0603KRX7R9BB104')
+add('C1', 'C_0603', '4.7uF', U1X + 7.4, 13.0, 90, {'1': 'VBUS', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
 
-# reset + SWD pads
-add('SW66', 'SW_TS-1928-B', 'RESET', U1X - 9.0, 20.0, 0, {'1': 'RESET', '2': 'GND'}, 'SW_Push', 'C1121891',
+# reset + SWD pads, below the module
+add('SW66', 'SW_TS-1928-B', 'RESET', U1X, 19.6, 0, {'1': 'RESET', '2': 'GND'}, 'SW_Push', 'C1121891',
     'Reset (double-tap = UF2 bootloader)', 'TS-1928-B')
 for i, net in enumerate(['SWDIO', 'SWCLK', 'GND', 'VDD']):
-    add(f'TP{i + 1}', 'TestPoint_Pad_D1.0mm', net, FX + 30.0 + i * 2.54, 24.5, 0, {'1': net}, 'TestPoint', bom=False,
+    add(f'TP{i + 1}', 'TestPoint_Pad_D1.0mm', net, U1X - 3.81 + i * 2.54, 24.0, 0, {'1': net}, 'TestPoint', bom=False,
         desc='SWD pad for first bootloader flash')
 
-# USB-C (mid-mount, rear edge) + ESD
-add('J1', 'USB_C_SHOUHAN_16P_CB1.6', 'USB-C', TP['x'] + 8.5, 2.4, 180,
+# USB-C (top mount, rear edge) + ESD
+add('J1', 'USB_C_HRO_TYPE-C-31-M-12', 'USB-C', FX + 6.0, 0.6 + 3.65, 180,
     {'A1': 'GND', 'B1': 'GND', 'A12': 'GND', 'B12': 'GND', 'A4': 'VBUS', 'B4': 'VBUS', 'A9': 'VBUS', 'B9': 'VBUS',
      'A5': 'CC1', 'B5': 'CC2', 'A6': 'USB_DP', 'B6': 'USB_DP', 'A7': 'USB_DN', 'B7': 'USB_DN', 'S1': 'GND'},
-    'USB_C', 'C2906290', 'USB2.0 Type-C receptacle, mid-mount (sinks 1.6 mm)', 'TYPE-C 16P CB1.6 073')
-add('R1', 'R_0603', '5.1k', FX + 4.0, 9.5, 90, {'1': 'CC1', '2': 'GND'}, 'R', 'C23186', 'CC pull-down', '0603WAF5101T5E')
-add('R2', 'R_0603', '5.1k', FX + 13.0, 9.5, 90, {'1': 'CC2', '2': 'GND'}, 'R', 'C23186', 'CC pull-down', '0603WAF5101T5E')
-add('U2', 'SOT-23-6', 'USBLC6-2SC6', FX + 8.5, 11.0, 0,
+    'USB_C', 'C165948', 'USB2.0 Type-C receptacle, top mount (sits in the free area under the case top)', 'TYPE-C-31-M-12')
+add('R1', 'R_0603', '5.1k', FX + 2.0, 12.0, 90, {'1': 'CC1', '2': 'GND'}, 'R', 'C23186', 'CC pull-down', '0603WAF5101T5E')
+add('R2', 'R_0603', '5.1k', FX + 10.0, 12.0, 90, {'1': 'CC2', '2': 'GND'}, 'R', 'C23186', 'CC pull-down', '0603WAF5101T5E')
+add('U2', 'SOT-23-6', 'USBLC6-2SC6', FX + 6.0, 12.0, 0,
     {'1': 'USB_DP', '6': 'USB_DP', '3': 'USB_DN', '4': 'USB_DN', '5': 'VBUS', '2': 'GND'},
     'USBLC6', 'C7519', 'USB ESD protection', 'USBLC6-2SC6')
 
-# charger (MCP73831, 100 mA) + charge LED (VBUS powered, only lit while charging)
-add('U3', 'SOT-23-5', 'MCP73831', FX + 6.0, FY + 2.0, 0,
+# charger (MCP73831, 100 mA)
+add('U3', 'SOT-23-5', 'MCP73831', FX + 6.0, 17.0, 0,
     {'1': 'CHG_STAT', '2': 'GND', '3': 'VBAT', '4': 'VBUS', '5': 'PROG'}, 'MCP73831', 'C424093',
     'Li-Po charger 4.2V', 'MCP73831T-2ACI/OT')
-add('C6', 'C_0603', '4.7uF', FX + 2.5, FY + 2.0, 90, {'1': 'VBUS', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
-add('C7', 'C_0603', '4.7uF', FX + 9.5, FY + 2.0, 90, {'1': 'VBAT', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
-add('R3', 'R_0603', '10k', FX + 6.0, FY + 5.5, 0, {'1': 'PROG', '2': 'GND'}, 'R', 'C25804', 'Ichg = 1000V/10k = 100mA',
+add('C6', 'C_0603', '4.7uF', FX + 2.0, 17.0, 90, {'1': 'VBUS', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
+add('C7', 'C_0603', '4.7uF', FX + 10.0, 17.0, 90, {'1': 'VBAT', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
+add('R3', 'R_0603', '10k', FX + 6.0, 20.2, 0, {'1': 'PROG', '2': 'GND'}, 'R', 'C25804', 'Ichg = 1000V/10k = 100mA',
     '0603WAF1002T5E')
-add('R4', 'R_0603', '1k', W - 14.0, 3.5, 90, {'1': 'VBUS', '2': 'LED_CHG_A'}, 'R', 'C21190', 'LED resistor',
+
+# load-sharing power path (Microchip AN1149 style)
+add('D66', 'D_SOD-123', 'B5819W', FX + 15.5, 12.0, 90, {'1': 'VSYS', '2': 'VBUS'}, 'D_Schottky', 'C8598',
+    'VBUS -> VSYS', 'B5819W SL')
+add('Q1', 'SOT-23', 'AO3401A', FX + 15.0, 18.0, 0, {'1': 'VBUS', '2': 'VSYS', '3': 'VBAT'}, 'PMOS', 'C15127',
+    'Battery -> VSYS when no USB', 'AO3401A')
+add('R5', 'R_0603', '100k', FX + 15.0, 21.5, 0, {'1': 'VBUS', '2': 'GND'}, 'R', 'C25803', 'Q1 gate pull-down',
+    '0603WAF1003T5E')
+# power switch (rear edge, right of the module) + battery connector (LiPo sits under the PCB)
+add('SW67', 'SW_SPDT_PCM12', 'POWER', FX + 41.0, 0.6 + 2.6, 180, {'1': 'VDDH', '2': 'VSYS'},
+    'SW_SPDT', 'C221841', 'Power slide switch (pin3 = OFF, open)', 'PCM12SMTR')
+add('J2', 'JST_SH_SM02B-SRSS-TB', 'BATTERY', FX + 5.0, 24.6, 90, {'1': 'VBAT', '2': 'GND'}, 'Conn_02', 'C160402',
+    'LiPo 1S (protected cell), check polarity!', 'SM02B-SRSS-TB(LF)(SN)')
+
+# charge LED (red, VBUS powered, on while charging) - top right, next to the power LED
+add('R4', 'R_0603', '1k', W - 14.0, 10.0, 90, {'1': 'VBUS', '2': 'LED_CHG_A'}, 'R', 'C21190', 'LED resistor',
     '0603WAF1001T5E')
 add('LED1', 'LED_0603', 'RED', W - 14.0, 6.5, 90, {'1': 'CHG_STAT', '2': 'LED_CHG_A'}, 'LED', 'C2286',
     'Charge indicator (on while charging)', 'KT-0603R')
 
-# load-sharing power path (Microchip AN1149 style) + power switch + battery
-add('D66', 'D_SOD-123', 'B5819W', FX + 14.0, FY + 1.5, 0, {'1': 'VSYS', '2': 'VBUS'}, 'D_Schottky', 'C8598',
-    'VBUS -> VSYS', 'B5819W SL')
-add('Q1', 'SOT-23', 'AO3401A', FX + 14.0, FY + 5.5, 0, {'1': 'VBUS', '2': 'VSYS', '3': 'VBAT'}, 'PMOS', 'C15127',
-    'Battery -> VSYS when no USB', 'AO3401A')
-add('R5', 'R_0603', '100k', FX + 17.5, FY + 5.5, 90, {'1': 'VBUS', '2': 'GND'}, 'R', 'C25803', 'Q1 gate pull-down',
-    '0603WAF1003T5E')
-add('SW67', 'SW_SPDT_PCM12', 'POWER', TP['x'] + 40.0, 2.0, 180, {'1': 'VDDH', '2': 'VSYS'},
-    'SW_SPDT', 'C221841', 'Power slide switch (pin3 = OFF, open)', 'PCM12SMTR')
-add('J2', 'JST_SH_SM02B-SRSS-TB', 'BATTERY', FX + 22.0, FY + 7.0, 90, {'1': 'VBAT', '2': 'GND'}, 'Conn_02', 'C160402',
-    'LiPo 1S (protected cell), check polarity!', 'SM02B-SRSS-TB(LF)(SN)')
-
-# indicator LEDs: bicolour, common anode on VDD, cathodes sunk by GPIO through 1k (active low)
+# indicator LEDs: bicolour XL-2012SURSYGC (1=R- 2=R+ 3=YG- 4=YG+), both anodes on VDD, cathodes sunk by GPIO via 1k
 LEDS = L['leds']
 _led = {e['name']: e for e in LEDS}
 LED_RES = 'C21190'
 for i in range(3):
     e = _led[f'BT{i + 1}']
     add(f'LED{2 + i}', 'LED_XL-2012_Bicolor', 'XL-2012SURSYGC', e['cx'], e['cy'], 0,
-        {'3': 'VDD', '4': 'VDD', '2': f'LED_BT{i + 1}_K'}, 'LED_Dual_CA', 'C965847',
+        {'2': 'VDD', '4': 'VDD', '3': f'LED_BT{i + 1}_K'}, 'LED_Dual_CA', 'C965847',
         f'BT{i + 1} profile LED (yellow-green die used, red unused)', 'XL-2012SURSYGC')
     add(f'R{6 + i}', 'R_0603', '1k', e['cx'], e['cy'] + 2.6, 0, {'1': f'LED_BT{i + 1}_K', '2': f'LED_BT{i + 1}'},
         'R', LED_RES, 'LED current ~1 mA', '0603WAF1001T5E')
 e = _led['PWR']
 add('LED5', 'LED_XL-2012_Bicolor', 'XL-2012SURSYGC', e['cx'], e['cy'], 0,
-    {'3': 'VDD', '4': 'VDD', '1': 'LED_PWR_RK', '2': 'LED_PWR_GK'}, 'LED_Dual_CA', 'C965847',
+    {'2': 'VDD', '4': 'VDD', '1': 'LED_PWR_RK', '3': 'LED_PWR_GK'}, 'LED_Dual_CA', 'C965847',
     'Power / battery LED (green = OK, red = <20 %)', 'XL-2012SURSYGC')
 add('R9', 'R_0603', '1k', e['cx'] - 1.2, e['cy'] + 2.6, 90, {'1': 'LED_PWR_GK', '2': 'LED_PWR_G'}, 'R', LED_RES,
     'LED current ~1 mA', '0603WAF1001T5E')
@@ -187,6 +195,25 @@ for i, (x, y) in enumerate([(39.0, 58.0), (W - 39.0, 58.0), (TP['x'] - 2.0, 4.0)
     add(f'H{i + 1}', 'MountingHole_2.2mm_M2', 'M2', x, y, 0, {}, 'MountingHole', bom=False)
 
 POWER_NETS = {'VBUS', 'VSYS', 'VBAT', 'VDDH', 'VDD'}
+
+# ------------------------------------------------------------------ board-level geometry for the PCB writer / router
+VIA = (0.6, 0.3)
+CORNER_R = 4.4
+ANT_KEEPOUT = (U1X - 6.2, BOARD[1], U1X + 6.2, U1Y - 3.95)           # no copper on either layer
+MODULE_FCU_KEEPOUT = (U1X - 3.0, U1Y - 3.5, U1X + 2.5, U1Y + 5.6)     # no F.Cu tracks under the module body
+BATTERY_AREA = (22.0, 34.0, 92.0, 74.0)                                # LiPo under the PCB (B side), 70 x 40 max
+SLOTS = [(112.4, 21.6, 113.6, 27.6)]                                    # battery lead pass-through
+SILK_RECTS = [('B.SilkS',) + BATTERY_AREA]
+SILK_TEXTS = [
+    ('B.SilkS', 57.0, 54.0, 'LiPo 1S  (<= 3.0 t x 40 x 70)', 1.5),
+    ('B.SilkS', 57.0, 57.5, 'lead -> slot -> J2 (pin1 = +)', 1.0),
+    ('B.SilkS', 200.0, 54.0, 'tomtho-slim mk2', 2.5),
+    ('B.SilkS', 200.0, 58.0, 'nRF52840 MDBT50Q / IQS550 / ZMK / 18.5x18', 1.2),
+    ('B.SilkS', 200.0, 61.0, 'JLCJLCJLCJLC', 1.0),
+    ('F.SilkS', U1X - 3.81 + 3.81, 25.9, 'DIO CLK GND VDD', 0.8),
+    ('F.SilkS', FX + 41.0, 7.4, 'ON   OFF', 0.8),
+    ('F.SilkS', FX + 2.4, 27.6, '+', 1.0),
+]
 TRACKS, VIAS = [], []
 
 
