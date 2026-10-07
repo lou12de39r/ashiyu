@@ -67,8 +67,8 @@ for r in range(NROWS):
         add(f'SW{n}', 'SW_ALPS_SKRA_6.2mm', 'SKRAAWE010', k['cx'], k['cy'], a,
             {'1': f'COL{c}', '2': f'K{r}_{c}'}, 'SW_Push', 'C202383',
             f'key "{name}" - ALPS SKRA 6.2mm tact', 'SKRAAWE010')
-        if name in ('↑', '↓'):                  # stacked 0.5u keys: diode beside the switch, not below it
-            dx, dy, da = 6.6, 0.0, 90
+        if name in ('↑', '↓'):                  # stacked 0.5u keys: diode in the gap to the left (towards ←),
+            dx, dy, da = -9.25, 0.0, 0          # clear of the ACC keycap legs (corner zones r 2 at +-7.55 / +-2.8)
         else:
             dx, dy = rot(0, 5.0, a)
             da = a + 180
@@ -189,18 +189,21 @@ add('R10', 'R_0603', '1k', e['cx'] + 1.2, e['cy'] + 2.6, 90, {'1': 'LED_PWR_RK',
 # B = opposite sides) is chosen once the position and contact side of the module's ZIF are measured: pin 1 must
 # reach pin 1 (a mirrored cable swaps GND and VDD).
 TP_CUT = (TP['x'] - 0.5, TP['y'] - 0.5, TP['x'] + TP['w'] + 0.5, TP['y'] + TP['h'] + 0.5)
-TPJ = (TP_CUT[0], TP['y'] + TP['h'] / 2 - 2.0)
+# J3 sits level with the centre of the G key: the ACC keycap legs of T / G / B (corner zones, r 2) leave a free band there
+TPJ = (TP_CUT[0], next(k['cy'] for k in L['keys'] if k['label'] == 'G'))
 add('J3', 'FPC_0.5mm_6P_HC', 'TRACKPAD', TP_CUT[0] - 2.3, TPJ[1], 90,
     {'1': 'TP_RDY', '2': 'TP_RST', '3': 'GND', '4': 'VDD', '5': 'TP_SCL', '6': 'TP_SDA', 'MP': 'GND'},
     'Conn_FPC6', 'C5213729', 'To Azoteq TPS43 trackpad module (FFC 6P 0.5 mm)', 'HC-FPC-05-10-6RLTAG')
-add('R11', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] - 4.6, 90, {'1': 'VDD', '2': 'TP_SDA'}, 'R', 'C23162',
+add('R11', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] - 3.9, 90, {'1': 'VDD', '2': 'TP_SDA'}, 'R', 'C23162',
     'I2C pull-up', '0603WAF4701T5E')
-add('R12', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] + 4.6, 90, {'1': 'VDD', '2': 'TP_SCL'}, 'R', 'C23162',
+add('R12', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] + 3.9, 90, {'1': 'VDD', '2': 'TP_SCL'}, 'R', 'C23162',
     'I2C pull-up', '0603WAF4701T5E')
 
-# mounting holes (between key columns; checked against key positions at PCB stage)
-for i, (x, y) in enumerate([(39.0, 58.0), (W - 39.0, 58.0), (FX0 - 2.0, 4.0), (FX0 + 49.0 + 2.0, 4.0),
-                            (W / 2, H - 8.0)]):
+# case screws (M2, from below, into bosses of the top frame): rear strip and front edge, where the ACC keycap holes
+# leave >= 2.9 mm free.  None inside the key field: the plate webs between keycaps are only 2 mm wide.
+SCREWS = [(40.0, 4.5), (80.0, 4.5), (112.0, 4.0), (165.0, 4.0), (200.0, 4.5), (240.0, 4.5),
+          (60.0, 102.5), (100.0, 104.0), (138.5, 100.5), (180.0, 104.0), (215.0, 102.5)]
+for i, (x, y) in enumerate(SCREWS):
     add(f'H{i + 1}', 'MountingHole_2.2mm_M2', 'M2', x, y, 0, {}, 'MountingHole', bom=False)
 
 POWER_NETS = {'VBUS', 'VSYS', 'VBAT', 'VDDH', 'VDD'}
@@ -239,6 +242,13 @@ def escapes():
         vx = X + (0.75 if X < U1X else -0.75)
         t.append(('F.Cu', X, Y, vx, Y, 0.2, net))
         v.append((vx, Y, net))
+    # USB-C: join A7 and B7 (D-) with a short F.Cu bridge on the edge side of the pad row, over A6 (D+).
+    # The autorouter does not always find this one on its own.
+    pw = {h[0]: (h[3], h[4]) for h in pad_world(PARTS['J1'])}
+    (ax, ay), (bx, by) = pw['A7'], pw['B7']
+    yb = ay - 0.977
+    t += [('F.Cu', ax, ay, ax, yb, 0.2, 'USB_DN'), ('F.Cu', bx, by, bx, yb, 0.2, 'USB_DN'),
+          ('F.Cu', ax, yb, bx, yb, 0.2, 'USB_DN')]
     return t, v
 
 

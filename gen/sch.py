@@ -307,9 +307,9 @@ def build():
     place('J3', 480.06, 109.22)
     place('R11', 508.0, 104.14)
     place('R12', 518.16, 104.14)
-    text('Mounting holes (M2)', 450, 140)
-    for i in range(5):
-        place(f'H{i + 1}', 457.2 + i * 7.62, 152.4)
+    text('Case screws (M2, from below into the top frame)', 450, 140)
+    for i in range(len(D.SCREWS)):
+        place(f'H{i + 1}', 457.2 + (i % 6) * 7.62, 152.4 + (i // 6) * 7.62)
     # ---- GPIO table
     gp = {v: D.PIN_NAMES[k] for k, v in D.MCU_PINS.items()}
     text('GPIO map (ZMK, diode-direction = col2row)\\n'
