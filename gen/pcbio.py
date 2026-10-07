@@ -83,7 +83,7 @@ def fp_body(fpname, part=None, netcode=None, ind='\t'):
         o.append(f'(at {f(part["x"])} {f(part["y"])}{" " + f(a) if a else ""})')
     o.append(f'(descr {q(fp["descr"])})')
     rs = fp.get('ref_size', 0.8)
-    rlayer = 'F.Fab' if (not lib and re.fullmatch(r'(SW|D)\d+', ref) and int(re.sub(r'\D', '', ref)) <= D.NKEYS) else 'F.SilkS'
+    rlayer = 'F.Fab' if (not lib and re.fullmatch(r'(SW|D)\d+', ref) and int(re.sub(r'\D', '', ref)) <= D.NKEYS) or (not lib and part.get('ref_fab')) else 'F.SilkS'
     ra = fp['ref_at'] if lib else part.get('ref_at', fp['ref_at'])
     o.append(f'(property "Reference" {q(ref)} (at {f(ra[0])} {f(ra[1])} {f(a)}) (layer {q(rlayer)}) '
              f'(uuid {q(U("ref", key))}) {_font(rs)})')
@@ -224,7 +224,7 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
             o.append(f'\t(zone (net {netcode["GND"]}) (net_name "GND") (layer {q(layer)}) (uuid {q(U("zone", layer))}) '
                      f'(name "GND_{layer[0]}") (hatch edge 0.5) (priority 0) (connect_pads (clearance 0.25)) '
                      f'(min_thickness 0.2) (filled_areas_thickness no) '
-                     f'(fill (thermal_gap 0.3) (thermal_bridge_width 0.4)) {_poly(x1 + 0.3, y1 + 0.3, x2 - 0.3, y2 - 0.3)})\n')
+                     f'(fill (thermal_gap 0.3) (thermal_bridge_width 0.4) (island_removal_mode 0)) {_poly(x1 + 0.3, y1 + 0.3, x2 - 0.3, y2 - 0.3)})\n')
         ax1, ay1, ax2, ay2 = D.ANT_KEEPOUT
         o.append(f'\t(zone (net 0) (net_name "") (layers "F.Cu" "B.Cu") (uuid {q(U("ant"))}) (name "ANTENNA_KEEPOUT") '
                  f'(hatch edge 0.5) (connect_pads (clearance 0)) (min_thickness 0.25) (filled_areas_thickness no) '
@@ -252,6 +252,15 @@ def write_dsn(path, tracks, vias, only=None, clr=150, wsig=200, extra=None, obst
     o.append(f'    (keepout "ant" (rect signal {um(ax1)} {um(-ay2)} {um(ax2)} {um(-y1)}))\n')
     mx1, my1, mx2, my2 = D.MODULE_FCU_KEEPOUT
     o.append(f'    (keepout "modF" (rect F.Cu {um(mx1)} {um(-my2)} {um(mx2)} {um(-my1)}))\n')
+    # obstacle nets (GND stubs / stitching vias): plain keepouts so the router never tries to connect them
+    for (layer, xa, ya, xb, yb, w, net) in tracks:
+        if net in obstacle_nets:
+            o.append(f'    (keepout "" (path {layer} {um(w + 0.3)} {um(xa)} {um(-ya)} {um(xb)} {um(-yb)}))\n')
+    for (x, y, net) in vias:
+        if net in obstacle_nets:
+            o.append(f'    (keepout "" (circle signal {um(D.VIA[0] + 0.3)} {um(x)} {um(-y)}))\n')
+    for (sx1, sy1, sx2, sy2) in getattr(D, 'SLOTS', []):
+        o.append(f'    (keepout "slot" (rect signal {um(sx1 - 0.4)} {um(-sy2 - 0.4)} {um(sx2 + 0.4)} {um(-sy1 + 0.4)}))\n')
     o.append('    (via "Via600" )\n')
     o.append(f'    (rule (width {wsig}) (clearance {clr}) (clearance {clr} (type default_smd)) (clearance 100 (type smd_smd)))\n  )\n')
     # placement + library: one image per part, pins pre-rotated, placed at rot 0
@@ -311,12 +320,10 @@ def write_dsn(path, tracks, vias, only=None, clr=150, wsig=200, extra=None, obst
             seen[pid] = k + 1
             if net and net in pins:
                 pins[net].append(f'{ref}-{pid if k == 0 else f"{pid}@{k}"}')
-    for n in obstacle_nets:
-        pins[n] = []
     for n, plist in (extra or {}).items():
         pins[n] = [f'{r}-{q}' for r, q in plist]
     o.append('  (network\n')
-    for n in list(nets) + list(obstacle_nets) + list(extra or {}):
+    for n in list(nets) + list(extra or {}):
         o.append(f'    (net "{n}" (pins {" ".join(pins[n])}))\n')
     pw = [n for n in nets if n in D.POWER_NETS]
     sig = [n for n in nets if n not in D.POWER_NETS] + list(extra or {})

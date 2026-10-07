@@ -42,6 +42,7 @@ def fill_and_drc(tag='drc'):
 
 
 if __name__ == '__main__':
-    t, v = (pickle.load(open('routed.pkl', 'rb')) if os.path.exists('routed.pkl') and 'raw' not in sys.argv else ([], []))
+    src = 'routed_final.pkl' if os.path.exists('routed_final.pkl') else 'routed.pkl'
+    t, v = (pickle.load(open(src, 'rb')) if os.path.exists(src) and 'raw' not in sys.argv else ([], []))
     write(t, v)
     fill_and_drc()

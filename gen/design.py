@@ -200,7 +200,7 @@ POWER_NETS = {'VBUS', 'VSYS', 'VBAT', 'VDDH', 'VDD'}
 VIA = (0.6, 0.3)
 CORNER_R = 4.4
 ANT_KEEPOUT = (U1X - 6.2, BOARD[1], U1X + 6.2, U1Y - 3.95)           # no copper on either layer
-MODULE_FCU_KEEPOUT = (U1X - 3.0, U1Y - 3.5, U1X + 2.5, U1Y + 5.6)     # no F.Cu tracks under the module body
+MODULE_FCU_KEEPOUT = (U1X - 2.5, U1Y - 3.5, U1X + 2.5, U1Y + 5.6)     # no F.Cu tracks under the module centre
 BATTERY_AREA = (22.0, 34.0, 92.0, 74.0)                                # LiPo under the PCB (B side), 70 x 40 max
 SLOTS = [(112.4, 21.6, 113.6, 27.6)]                                    # battery lead pass-through
 SILK_RECTS = [('B.SilkS',) + BATTERY_AREA]
@@ -215,6 +215,22 @@ SILK_TEXTS = [
     ('F.SilkS', FX + 2.4, 27.6, '+', 1.0),
 ]
 TRACKS, VIAS = [], []
+for _r in ('C2', 'C3', 'C4', 'C5', 'R9', 'R10', 'U2', 'H3', 'H4'):
+    PARTS[_r]['ref_fab'] = True                     # crowded spots: reference on F.Fab instead of silk
+
+# inner-row module pads cannot escape between the outer pads (0.4 mm gaps): short F.Cu stub inward to a via
+ESC_PADS = ['5', '7', '9', '11', '13', '36', '38', '40', '42', '43']
+
+
+def escapes():
+    t, v = [], []
+    for num in ESC_PADS:
+        net = MCU_PINS[num]
+        X, Y = next((h[3], h[4]) for h in pad_world(PARTS['U1']) if h[0] == num)
+        vx = X + (0.75 if X < U1X else -0.75)
+        t.append(('F.Cu', X, Y, vx, Y, 0.2, net))
+        v.append((vx, Y, net))
+    return t, v
 
 
 def pad_world(part):

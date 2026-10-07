@@ -15,9 +15,17 @@ def _ok_via(x, y, obs):
     bx1, by1, bx2, by2 = D.BOARD
     if min(x - bx1, y - by1, bx2 - x, by2 - y) < VIA_R + 0.5:
         return False
+    R = getattr(D, 'CORNER_R', 1.0)
+    for cx, cy in ((bx1 + R, by1 + R), (bx2 - R, by1 + R), (bx1 + R, by2 - R), (bx2 - R, by2 - R)):
+        if abs(x - cx) <= R and abs(y - cy) <= R and (x - cx) * (cx - (bx1 + bx2) / 2) > 0 \
+                and (y - cy) * (cy - (by1 + by2) / 2) > 0 and math.hypot(x - cx, y - cy) > R - VIA_R - 0.5:
+            return False
     ax1, ay1, ax2, ay2 = D.ANT_KEEPOUT
     if C.pt_rect((x, y), (ax1, ay1 - 1, ax2, ay2)) < VIA_R + 0.3:
         return False
+    for (sx1, sy1, sx2, sy2) in D.SLOTS:
+        if C.pt_rect((x, y), (sx1, sy1, sx2, sy2)) < VIA_R + 0.4:
+            return False
     v = C.Obj()
     v.kind, v.a, v.b, v.rad, v.layers = 'cap', (x, y), (x, y), VIA_R, ('F.Cu', 'B.Cu')
     for o in obs:
@@ -64,6 +72,8 @@ def stitch(tracks, vias, pads, w=0.3, rmax=4.0):
                     if d > rmax or d < 0.5 or (best and d >= best[0]):
                         continue
                     if not _ok_via(x, y, obs):
+                        continue
+                    if any(math.hypot(x - a, y - b) < D.VIA[0] + 0.3 for (a, b, n) in vias):
                         continue
                     if not _ok_stub((X, Y), (x, y), w, obs, ref):
                         continue
