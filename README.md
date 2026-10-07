@@ -24,7 +24,7 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
 - **Trackpad:** 49 × 42.0 mm.
 - **LEDs:**
   - BT1–3, green: light for 3 s on a press; blink while waiting to pair.
-  - Power, green/red bicolour (firmware): green for 3 s on power-up and on a profile switch; below 20 % a short red blink every 5 s.
+  - Power, yellow-green/red bicolour XL-2012SURSYGC (firmware): green for 3 s on power-up and on a profile switch; below 20 % a short red blink every 5 s.
   - Charge, orange: driven directly by the charger STAT pin; lights only while USB is connected.
 
 ### Matrix and GPIO (draft)
@@ -58,6 +58,10 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
   - The MCU module, USB-C and charger sit in the free area between 5 and 6, above the trackpad, with the antenna at the rear edge.
 - **Trackpad board:**
   - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 42.0 mm.
+  - Gestures:
+    - Two-finger scroll uses the IQS550's built-in gesture engine.
+    - Three-finger scroll is not built in, so the firmware driver will do it from the up-to-5 touch coordinates the chip reports.
+  - The IQS550 is not at LCSC. Buy it from Mouser / DigiKey and send it to JLC as a consigned part, or use JLC Global Sourcing.
   - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
 
 ## Parts check (2026-10-07, LCSC / JLCPCB pages)
@@ -69,7 +73,8 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 | FPC 0.5 mm 6-pin HC-FPC-05-10-6RLTAG (C5213729) | In stock (5k), bottom contact, flip lock |
 | Green LED 19-217/GHC (C72043) | Vf 3.3 V: **too high for a 3.0 V VDD**. Needs a yellow-green (≈2.0 V) part instead |
 | Red LED KT-0603R (C2286) | Vf 1.8–2.4 V, usable |
-| Bicolour LED | No good 0603 part found. Using red + green as two separate LEDs is simpler |
+| Bicolour LED XINGLIGHT XL-2012SURSYGC (C965847) | **Use this.** 2.0 × 1.2 mm, common anode, red + yellow-green (Vf ≈ 2.4 V at 20 mA; lower at 1–2 mA, so it works from 3.0 V). In stock (20k) |
+| IQS550-BL-QNR elsewhere | Octopart lists it only at non-authorised resellers (about 1.1k and 32k pcs, $1.7–3.0). Stock at Mouser / DigiKey could not be read (unconfirmed) |
 
 ## Verify before ordering (in priority order)
 1. **Trackpad size:** GR-Trackpad65 is 65 mm tall, so the 42 mm pad needs about a third fewer electrode rows. Check how far the electrode pattern has to be redrawn and whether it needs re-tuning (uncertain).
