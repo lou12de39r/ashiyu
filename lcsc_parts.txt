@@ -4,3 +4,22 @@ C965847   XINGLIGHT XL-2012SURSYGC bicolour LED
 C5213729  HCTL HC-FPC-05-10-6RLTAG FPC 6P 0.5mm
 C202383   ALPS SKRAAWE010
 C5271144  Azoteq IQS550 (trackpad board)
+C19666    4.7uF (C_0603)  - BOM part, fetched for the JLC rotation check
+C19702    10uF (C_0603)  - BOM part, fetched for the JLC rotation check
+C14663    100nF (C_0603)  - BOM part, fetched for the JLC rotation check
+C81598    1N4148W (D_SOD-123)  - BOM part, fetched for the JLC rotation check
+C8598     B5819W (D_SOD-123)  - BOM part, fetched for the JLC rotation check
+C165948   USB-C (USB_C_HRO_TYPE-C-31-M-12)  - BOM part, fetched for the JLC rotation check
+C160402   BATTERY (JST_SH_SM02B-SRSS-TB)  - BOM part, fetched for the JLC rotation check
+C2286     RED (LED_0603)  - BOM part, fetched for the JLC rotation check
+C15127    AO3401A (SOT-23)  - BOM part, fetched for the JLC rotation check
+C23186    5.1k (R_0603)  - BOM part, fetched for the JLC rotation check
+C25804    10k (R_0603)  - BOM part, fetched for the JLC rotation check
+C21190    1k (R_0603)  - BOM part, fetched for the JLC rotation check
+C25803    100k (R_0603)  - BOM part, fetched for the JLC rotation check
+C23162    4.7k (R_0603)  - BOM part, fetched for the JLC rotation check
+C1121891  RESET (SW_TS-1928-B)  - BOM part, fetched for the JLC rotation check
+C221841   POWER (SW_SPDT_PCM12)  - BOM part, fetched for the JLC rotation check
+C5118826  MDBT50Q-1MV2 (Raytac_MDBT50Q)  - BOM part, fetched for the JLC rotation check
+C7519     USBLC6-2SC6 (SOT-23-6)  - BOM part, fetched for the JLC rotation check
+C424093   MCP73831 (SOT-23-5)  - BOM part, fetched for the JLC rotation check
