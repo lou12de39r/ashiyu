@@ -80,7 +80,8 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 | Part | Result |
 |---|---|
 | IQS550BLQNR (C5271144) | **Out of stock at LCSC.** The trackpad board cannot be assembled at JLC as planned |
-| USB-C TYPE-C 16PIN 2MD(073) (C2765186) | In stock (837k). It is right-angle SMD, **not mid-mount**, so a mid-mount part is still to be found |
+| USB-C TYPE-C 16PIN 2MD(073) (C2765186) | In stock, but right-angle SMD, not mid-mount. Not used |
+| **USB-C SHOU HAN TYPE-C 16P CB1.6 073 (C2906290)** | **Use this.** Mid-mount (sinks 1.6 mm), 16-pin, 6.5 mm long, plentiful stock (LCSC). JLC rates assembly difficulty "High". It is made for a 1.6 mm board, so on our 1.2 mm board it sticks out about 0.4 mm below → add a pocket in the case bottom |
 | FPC 0.5 mm 6-pin HC-FPC-05-10-6RLTAG (C5213729) | In stock (5k), bottom contact, flip lock |
 | Green LED 19-217/GHC (C72043) | Vf 3.3 V: **too high for a 3.0 V VDD**. Needs a yellow-green (≈2.0 V) part instead |
 | Red LED KT-0603R (C2286) | Vf 1.8–2.4 V, usable |
