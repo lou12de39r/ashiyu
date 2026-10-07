@@ -21,7 +21,7 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
 - **Pitch:** 18.5 × 18.0 mm.
 - **Column stagger:** half of roBa's offsets. Relative to the pinky column: ring 3.3, middle 5.5, index 4.4, inner 3.2 mm towards the rear. The trackpad top lines up with the tops of T / Y; the MCU module, USB-C and charger sit in the free area above it (nothing is stacked under the trackpad).
 - **Outline:** 277.0 × 107.5 mm.
-- **Trackpad:** 49 × 42.0 mm.
+- **Trackpad:** Azoteq **TPS43-201A-S** module, 43 × 40 mm (window centred in the 51 mm centre gap, top aligned with T / Y). The keys did not move when the pad shrank from 49 × 42.
 - **LEDs:**
   - BT1–3, green: light for 3 s on a press; blink while waiting to pair.
   - Power, yellow-green/red bicolour XL-2012SURSYGC (firmware): green for 3 s on power-up and on a profile switch; below 20 % a short red blink every 5 s.
@@ -51,39 +51,21 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
 
 The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 
-### Board split (decided: separate trackpad board)
-- **Main board:**
-  - 2 layers, 1.2 mm thick (same as v0.1).
-  - Holds keys, MCU module, charging, LEDs and USB-C (mid-mount, opening in the rear edge).
-  - The MCU module, USB-C and charger sit in the free area between 5 and 6, above the trackpad, with the antenna at the rear edge.
-- **Trackpad board:**
-  - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 42.0 mm.
-  - Gestures:
-    - Two-finger scroll uses the IQS550's built-in gesture engine.
-    - Three-finger swipe = **app switch**, done in the firmware driver from the touch coordinates:
-      - Three fingers land: hold Alt.
-      - Each 8–10 mm of sideways travel: Tab (rightwards) or Shift+Tab (leftwards).
-      - Fingers lift: release Alt.
-  - **IQS550 is hand-soldered (decided).**
-    - JLC assembles everything else, with U1 marked DNP.
-    - Buy the IQS550 from an authorised distributor (Mouser / DigiKey) and get a few spares.
-    - Board-side help for hand soldering:
-      - IC on the bottom side; electrodes on the top layer.
-      - QFN pads lengthened outwards by 0.3–0.4 mm.
-      - A plated hole of about 1.0 mm in the exposed pad, so it can be soldered from the other side.
-      - A JLC stencil for the trackpad board.
-    - Tools needed: hot air or a hotplate, solder paste, flux, magnifier.
-  - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
+### Trackpad (decided: Azoteq TPS43-201A-S module)
+- **Module:** IQS572, 43 × 40 mm, PCB 1.0 mm, ships with 3M 468 adhesive (0.13 mm) for sticking to the underside of an overlay. 1.65–3.6 V, I²C. Ordering code: hardware rev 2 = **ZIF connector** (J1) on the module.
+- **J1 pinout (datasheet table 2.1):** 1 RDY, 2 NRST, 3 GND, 4 VDDHI, 5 SCL, 6 SDA. The main board's J3 uses the same numbering.
+- **Mounting:** stuck under the case-top window; its underside parts hang into a 44 × 41 mm cut-out in the main board, so the pad sits flush with the case top.
+- **Cable:** 6-pin FFC from the module's ZIF to J3 (HC-FPC-05-10-6RLTAG, 0.5 mm). **Unchecked:** the module ZIF's pitch, position and contact side. Choose cable type A or B so that pin 1 reaches pin 1 (a mirrored cable swaps GND and VDD).
+- **Gestures:** XY for up to 5 fingers; the IQS572 does 1- and 2-finger gestures itself (two-finger scroll). Three-finger swipe = app switch, done in the firmware driver from the touch coordinates (hold Alt, Tab / Shift+Tab per 8–10 mm, release Alt on lift).
+- **Supply (2026-10-08):** Mouser 0 in stock, 170 due 10/28/2026, $4.57 each.
+- **Alternative:** the GR-Trackpad65-derived IQS550 board in `trackpad/` (49 × 43, hand-soldered IC) is kept, but it no longer fits the 44 × 41 cut-out.
 
 ## Schematic (mk2-0.1)
 
 - **Files:** `tomtho_mk2.kicad_sch` (KiCad 9). `gen/build_sch.py` regenerates it from `gen/design.py`, which in turn reads `layout_v20.json`. CI ERC: **0 errors, 0 warnings**. The netlist re-extracted from the schematic matches `design.py`.
 - **Matrix:** drawn as a wired grid, COL → SW → D → ROW.
 - **Charge LED:** red KT-0603R, driven straight from the charger STAT pin.
-- **DRAFT footprints, to verify against the drawings before the PCB is final:**
-  - USB-C C2906290.
-  - Bicolour LED XL-2012SURSYGC. Pad map 1 = red K, 2 = green K, 3/4 = anode is **assumed**.
-  - FPC C5213729.
+- **Footprints:** USB-C, bicolour LED and FPC come from the LCSC/EasyEDA data (`gen/lcsc/`). Bicolour LED pins: 1 = R−, 2 = R+, 3 = YG−, 4 = YG+.
 
 ## PCB (mk2-0.1)
 
@@ -95,6 +77,7 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 - **Check:** DRC with schematic parity gives **0 violations, 0 unconnected, 0 parity** in both local KiCad 10 and CI KiCad 9.
 - **Fab files:** JLC BOM/CPL are in `jlc/`. CI exports the Gerbers and drill files to `ci-results:mk2/gerber`.
 - **USB-C:** top-mount HRO TYPE-C-31-M-12 (C165948). It sits in the free area, so the mid-mount part is not needed.
+- **Trackpad cut-out:** 44 × 41 mm for the TPS43, J3 and the I²C pull-ups to its left.
 - **Before ordering, check:**
   - In JLC's assembly preview: the rotation of the tilted thumb keys, the USB-C and the LEDs.
   - The battery-lead slot near J2.
@@ -114,8 +97,8 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 | IQS550-BL-QNR elsewhere | Octopart lists it only at non-authorised resellers (about 1.1k and 32k pcs, $1.7–3.0). Stock at Mouser / DigiKey could not be read (unconfirmed) |
 
 ## Verify before ordering (in priority order)
-1. **Trackpad size:** GR-Trackpad65 is 65 mm tall, so the 42 mm pad needs about a third fewer electrode rows. Check how far the electrode pattern has to be redrawn and whether it needs re-tuning (uncertain).
-2. **Stock at JLC/LCSC (unchecked):** IQS550, the mid-mount USB-C, the 0603 green / orange / bicolour LEDs, and the 0.5 mm FPC connector.
-3. **Height:** check that the parts in the free area (module about 2.2 mm, USB-C) fit under the case top. Nothing is stacked under the trackpad any more.
+1. **TPS43 connector:** get the drawing (or measure a module): the ZIF's pitch, position and contact side, and the FFC length and type. Pin 1 must reach pin 1.
+2. **ZMK driver for the IQS572 / TPS43:** QMK has an Azoteq IQS5xx driver. For ZMK only community drivers exist (unchecked).
+3. **Height:** check that the parts in the free area (module about 2.2 mm, USB-C) fit under the case top, and that the TPS43's underside parts clear the cut-out and the case floor.
 4. **Keycaps:** fit of the Acid Caps on the tilted thumb keys, checked by laying out the 3D data.
 5. **0.5u × 0.5u caps (BT, M):** these are not sold, so they must be made. Print a test piece first.

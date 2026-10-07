@@ -1,4 +1,4 @@
-"""tomtho-slim mk2 : 65 keys, roBa-style half stagger, centre IQS550 trackpad (separate board, FPC),
+"""tomtho-slim mk2 : 65 keys, roBa-style half stagger, centre Azoteq TPS43 trackpad module (FPC),
 ALPS SKRA 6.2mm, 18.5x18 pitch, nRF52840 (Raytac MDBT50Q-1MV2) on board, LiPo + USB-C, ZMK.
 
 Single source of truth for parts and nets.  Key positions come from ../layout_v20.json.
@@ -14,6 +14,7 @@ L = json.load(open(os.path.join(HERE, '..', 'layout_v20.json')))
 W, H = L['outline']
 BOARD = (0.6, 0.6, W - 0.6, H - 0.6)          # PCB = case outline minus 0.6 mm wall clearance
 TP = L['trackpad']
+FX0 = TP['free_area_x']                         # 114.0: left edge of the centre free area (fixed by the keys)
 
 # ------------------------------------------------------------------ matrix (6 rows x 12 cols, COL2ROW)
 MATRIX = {
@@ -77,7 +78,7 @@ assert n == len(L['keys']) == 65, n
 NKEYS = n
 
 # --- MCU module in the free area between "5" and "6", antenna at the rear edge
-U1X = TP['x'] + 24.2            # 138.2: module centred in the free area between "5" and "6"
+U1X = FX0 + 24.2            # 138.2: module centred in the free area between "5" and "6"
 U1Y = 0.6 + 8.05                # antenna edge on the board's rear edge
 MCU_PINS = {
     # outer pads: matrix
@@ -106,7 +107,7 @@ PIN_NAMES = {'1': 'GND', '2': 'GND', '3': 'P1.10', '4': 'P1.11', '5': 'P1.12', '
 add('U1', 'Raytac_MDBT50Q', 'MDBT50Q-1MV2', U1X, U1Y, 0, dict(MCU_PINS), 'MDBT50Q', 'C5118826',
     'nRF52840 BLE module, chip antenna, TELEC certified', 'MDBT50Q-1MV2')
 
-FX = TP['x']                    # 114.0  free area: x 113.5..163.5, y 0.6..28.2 (trackpad starts at 28.7)
+FX = FX0                        # 114.0  free area: x 113.5..163.5, y 0.6..28.2 (trackpad starts at 28.7)
 # module decoupling, right of the module
 add('C2', 'C_0603', '10uF', U1X + 7.4, 5.0, 90, {'1': 'VDDH', '2': 'GND'}, 'C', 'C19702', '10V X5R', 'CL10A106KP8NNNC')
 add('C3', 'C_0603', '100nF', U1X + 9.2, 5.0, 90, {'1': 'VDDH', '2': 'GND'}, 'C', 'C14663', '50V X7R', 'CC0603KRX7R9BB104')
@@ -180,24 +181,25 @@ add('R9', 'R_0603', '1k', e['cx'] - 1.2, e['cy'] + 2.6, 90, {'1': 'LED_PWR_GK', 
 add('R10', 'R_0603', '1k', e['cx'] + 1.2, e['cy'] + 2.6, 90, {'1': 'LED_PWR_RK', '2': 'LED_PWR_R'}, 'R', LED_RES,
     'LED current ~1 mA', '0603WAF1001T5E')
 
-# trackpad board connector (FPC 6P 0.5 mm) + I2C pull-ups
-# The trackpad board (49.1 x 43.1, 1.6 t, IQS550 + FFC on its underside) sits in a cut-out of this board, resting on
-# the case floor, so that its 2 mm overlay ends flush with the case top.  J3 is just left of the cut-out, facing the
-# trackpad's FFC connector (trackpad J1 at +9.43 / +18.09 from the trackpad's top-left, opening towards -x).
-# Straight 6P 0.5 mm FFC, contacts on OPPOSITE sides (type B): each J3 pad carries the signal of the trackpad pad at the
-# same height -> top pin (local 1) = RDY ... bottom pin (local 6) = SDA.
-TPJ = (TP['x'] + 9.43, TP['y'] + 18.09)
-TP_CUT = (TP['x'] - 0.3, TP['y'] - 0.3, TP['x'] + 49.1 + 0.3, TP['y'] + 43.1 + 0.3)
+# trackpad module connector (FPC 6P 0.5 mm) + I2C pull-ups
+# Azoteq TPS43-201A-S (43 x 40, 1.0 t PCB, IQS572, ZIF J1 on its underside) is stuck with its own 3M 468 adhesive to
+# the underside of the case-top window.  Its underside parts hang into a cut-out of this board, so the pad surface can
+# sit flush with the case top.  J3 is just left of the cut-out.  TPS43 J1 pinout (datasheet table 2.1):
+# 1 RDY, 2 NRST, 3 GND, 4 VDDHI, 5 SCL, 6 SDA  -> J3 uses the same numbering.  The FFC type (A = same side /
+# B = opposite sides) is chosen once the position and contact side of the module's ZIF are measured: pin 1 must
+# reach pin 1 (a mirrored cable swaps GND and VDD).
+TP_CUT = (TP['x'] - 0.5, TP['y'] - 0.5, TP['x'] + TP['w'] + 0.5, TP['y'] + TP['h'] + 0.5)
+TPJ = (TP_CUT[0], TP['y'] + TP['h'] / 2 - 2.0)
 add('J3', 'FPC_0.5mm_6P_HC', 'TRACKPAD', TP_CUT[0] - 2.3, TPJ[1], 90,
     {'1': 'TP_RDY', '2': 'TP_RST', '3': 'GND', '4': 'VDD', '5': 'TP_SCL', '6': 'TP_SDA', 'MP': 'GND'},
-    'Conn_FPC6', 'C5213729', 'To IQS550 trackpad board (FFC 6P 0.5 mm, type B)', 'HC-FPC-05-10-6RLTAG')
+    'Conn_FPC6', 'C5213729', 'To Azoteq TPS43 trackpad module (FFC 6P 0.5 mm)', 'HC-FPC-05-10-6RLTAG')
 add('R11', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] - 4.6, 90, {'1': 'VDD', '2': 'TP_SDA'}, 'R', 'C23162',
     'I2C pull-up', '0603WAF4701T5E')
 add('R12', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] + 4.6, 90, {'1': 'VDD', '2': 'TP_SCL'}, 'R', 'C23162',
     'I2C pull-up', '0603WAF4701T5E')
 
 # mounting holes (between key columns; checked against key positions at PCB stage)
-for i, (x, y) in enumerate([(39.0, 58.0), (W - 39.0, 58.0), (TP['x'] - 2.0, 4.0), (TP['x'] + TP['w'] + 2.0, 4.0),
+for i, (x, y) in enumerate([(39.0, 58.0), (W - 39.0, 58.0), (FX0 - 2.0, 4.0), (FX0 + 49.0 + 2.0, 4.0),
                             (W / 2, H - 8.0)]):
     add(f'H{i + 1}', 'MountingHole_2.2mm_M2', 'M2', x, y, 0, {}, 'MountingHole', bom=False)
 
@@ -215,7 +217,7 @@ SILK_TEXTS = [
     ('B.SilkS', 57.0, 54.0, 'LiPo 1S  (<= 3.0 t x 40 x 70)', 1.5),
     ('B.SilkS', 57.0, 57.5, 'lead -> slot -> J2 (pin1 = +)', 1.0),
     ('B.SilkS', 200.0, 54.0, 'tomtho-slim mk2', 2.5),
-    ('B.SilkS', 200.0, 58.0, 'nRF52840 MDBT50Q / IQS550 / ZMK / 18.5x18', 1.2),
+    ('B.SilkS', 200.0, 58.0, 'nRF52840 MDBT50Q / TPS43 / ZMK / 18.5x18', 1.2),
     ('B.SilkS', 200.0, 61.0, 'JLCJLCJLCJLC', 1.0),
     ('F.SilkS', U1X - 3.81 + 3.81, 25.9, 'DIO CLK GND VDD', 0.8),
     ('F.SilkS', FX + 41.0, 7.4, 'ON   OFF', 0.8),

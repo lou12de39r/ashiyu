@@ -15,7 +15,7 @@ ax.set_xlim(-OX, PW - OX); ax.set_ylim(PH - OY, -OY); ax.axis('off')
 ax.add_patch(FancyBboxPatch((0, 0), W, H, boxstyle='round,pad=0,rounding_size=5', fc='none', ec='k', lw=0.6))
 tp = L['trackpad']
 ax.add_patch(FancyBboxPatch((tp['x'], tp['y']), tp['w'], tp['h'], boxstyle='round,pad=0,rounding_size=4', fc='#eeeeee', ec='k', lw=0.5))
-ax.text(tp['x'] + tp['w'] / 2, tp['y'] + tp['h'] / 2, f"trackpad\n{tp['w']:.0f} × {tp['h']:.1f}", ha='center', va='center', fontsize=7)
+ax.text(tp['x'] + tp['w'] / 2, tp['y'] + tp['h'] / 2, f"trackpad\n{tp['w']:.0f} × {tp['h']:.0f}  (TPS43)", ha='center', va='center', fontsize=7)
 CAP = 1.44                               # ACC cap is ~1.44 mm smaller than the pitch cell
 for kd in L['keys']:
     w = kd['w_u'] * PX - CAP; h = kd['h_u'] * PY - CAP

@@ -254,7 +254,7 @@ def pwr_flag(x, y, net, n):
 
 def build():
     ITEMS.clear()
-    text('tomtho-slim mk2  -  65 keys, roBa-style half stagger, centre trackpad (IQS550 on a separate board)\\n'
+    text('tomtho-slim mk2  -  65 keys, roBa-style half stagger, centre trackpad (Azoteq TPS43 module)\\n'
          'ALPS SKRA 6.2mm / 18.5 x 18 mm pitch / nRF52840 (Raytac MDBT50Q-1MV2, TELEC) / 1S LiPo + USB-C / ZMK',
          20, 12, 2.0)
     # ---- MCU
@@ -303,7 +303,7 @@ def build():
     place('R9', 416.56, 101.6)
     place('R10', 426.72, 101.6)
     # ---- trackpad connector
-    text('Trackpad board (IQS550)\\nFPC 6P 0.5 mm, I2C pull-ups here', 450, 88)
+    text('Trackpad module (Azoteq TPS43)\\nFPC 6P 0.5 mm, I2C pull-ups here', 450, 88)
     place('J3', 480.06, 109.22)
     place('R11', 508.0, 104.14)
     place('R12', 518.16, 104.14)
@@ -362,7 +362,7 @@ def write(path):
     o = ['(kicad_sch\n\t(version 20250114)\n\t(generator "eeschema")\n\t(generator_version "9.0")\n',
          f'\t(uuid {q(ROOT_UUID)})\n\t(paper "A2")\n',
          '\t(title_block\n\t\t(title "tomtho-slim mk2")\n\t\t(date "2026-10-07")\n\t\t(rev "mk2-0.1")\n'
-         '\t\t(comment 1 "65 keys / ALPS SKRA / MDBT50Q-1MV2 / IQS550 trackpad (FPC) / ZMK")\n\t)\n',
+         '\t\t(comment 1 "65 keys / ALPS SKRA / MDBT50Q-1MV2 / TPS43 trackpad (FPC) / ZMK")\n\t)\n',
          lib_symbols(), body,
          '\t(sheet_instances\n\t\t(path "/" (page "1"))\n\t)\n\t(embedded_fonts no)\n)\n']
     with open(path, 'w') as fh:

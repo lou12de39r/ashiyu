@@ -4,9 +4,9 @@ plt.rcParams['font.family'] = 'Noto Sans CJK JP'
 from matplotlib.patches import FancyBboxPatch, Rectangle
 PX, PY, M, WEDGE = 18.5, 18.0, 2.0, 11.0   # rear strip holds the 0.5u BT keys
 DROP = 0.25
-TPW = 49.0
-TPH = 0.0  # set below
-G = (TPW + 2.0) / PX                  # gap just wide enough for the trackpad (2.76u)
+TPW = 43.0                            # Azoteq TPS43-201A-S (43 x 40 mm)
+TPH = 40.0
+G = (49.0 + 2.0) / PX                 # centre gap kept from v20 (2.76u); keys do not move
 R1 = 6 + G                            # right block start
 keys = []
 # column stagger = roBa offsets x0.5, measured from the pinky column (negative = towards the rear)
@@ -71,14 +71,14 @@ for idx, (xu, yu, t, kind, w, h) in enumerate(keys):
     ax.text(x + w * PX / 2, y + h * PY / 2, t, ha='center', va='center', fontsize=(8.5 if len(t) < 5 else 6.5) if w > 0.6 else 5.5, family='Noto Sans CJK JP', rotation=-ROT.get(idx, 0), rotation_mode='anchor')
 tx = M + 6 * PX + (G * PX - TPW) / 2
 ty = WEDGE + (1 + SL[5]) * PY + 0.5          # trackpad top = top of T / Y
-TPH = WEDGE + BY * PY - 2.5 - ty    # keep a 2.5 mm rim above L/R
+gx = M + 6 * PX + 1.0                          # left edge of the free area (fixed, independent of the pad size)
 ax.add_patch(FancyBboxPatch((tx, ty), TPW, TPH, boxstyle='round,pad=0,rounding_size=4', fc='#d9dde3', ec='#556', lw=1.2))
-ax.text(tx + TPW / 2, ty + TPH - 8, f'trackpad 49 × {TPH:.1f}', ha='center', va='center', fontsize=8.5)
+ax.text(tx + TPW / 2, ty + TPH - 8, f'TPS43 trackpad {TPW:.0f} × {TPH:.0f}', ha='center', va='center', fontsize=8.5)
 # electronics hidden under the trackpad (top side of main PCB)
-ax.add_patch(Rectangle((tx + 19, 0.3), 10.5, 15.5, fc='#4a7c59', ec='k', alpha=0.85)); ax.text(tx + 24.2, 8, 'nRF\n52840', ha='center', va='center', fontsize=6, color='w')
-ax.add_patch(Rectangle((tx + 19, -0.2), 10.5, 3.8, fc='none', ec='#c33', ls='--')); ax.text(tx + 24.2, -2.5, 'antenna at rear edge', ha='center', fontsize=6.5, color='#c33')
-ax.add_patch(Rectangle((tx + 1, 17), 47, ty - 19, fc='none', ec='#556', ls=':')); ax.text(tx + 12, 17 + (ty - 19) / 2, 'charger / ESD\n/ power', ha='center', va='center', fontsize=6.5)
-ax.add_patch(Rectangle((tx + 4, -1.0), 9, 7.3, fc='#999', ec='k')); 
+ax.add_patch(Rectangle((gx + 19, 0.3), 10.5, 15.5, fc='#4a7c59', ec='k', alpha=0.85)); ax.text(gx + 24.2, 8, 'nRF\n52840', ha='center', va='center', fontsize=6, color='w')
+ax.add_patch(Rectangle((gx + 19, -0.2), 10.5, 3.8, fc='none', ec='#c33', ls='--')); ax.text(gx + 24.2, -2.5, 'antenna at rear edge', ha='center', fontsize=6.5, color='#c33')
+ax.add_patch(Rectangle((gx + 1, 17), 47, ty - 19, fc='none', ec='#556', ls=':')); ax.text(gx + 12, 17 + (ty - 19) / 2, 'charger / ESD\n/ power', ha='center', va='center', fontsize=6.5)
+ax.add_patch(Rectangle((gx + 4, -1.0), 9, 7.3, fc='#999', ec='k')); 
 ax.add_patch(Rectangle((M + 1*PX, WEDGE + 1.2*PY), 4*PX, 2.2*PY, fc='none', ec='#b07d00', ls='--', lw=1.2))
 ax.text(M + 3*PX, WEDGE + 2.3*PY + 14, 'LiPo under the PCB\n(e.g. 3 × 40 × 70 mm)', ha='center', fontsize=8, color='#8a6d1d')
 n = len(keys)
@@ -88,7 +88,7 @@ for i, c in enumerate(('#22c55e', '#22c55e', '#22c55e')):
     lx = M + 0.5 * PX + 4 + 4.5 * i
     ax.add_patch(Circle((lx, LY), 1.1, fc=c, ec='k', lw=0.5)); ax.text(lx, LY + 3.2, str(i + 1), ha='center', fontsize=6)
 
-ax.text(tx + 8.5, 3, 'USB-C', ha='center', va='center', fontsize=5.5, color='w')
+ax.text(gx + 8.5, 3, 'USB-C', ha='center', va='center', fontsize=5.5, color='w')
 from matplotlib.patches import Wedge
 px_ = W - 8
 ax.add_patch(Wedge((px_, LY), 1.2, 90, 270, fc='#22c55e', ec='k', lw=0.5)); ax.add_patch(Wedge((px_, LY), 1.2, 270, 90, fc='#ef4444', ec='k', lw=0.5))
@@ -97,7 +97,7 @@ ax.add_patch(Circle((px_ - 6, LY), 1.1, fc='#f59e0b', ec='k', lw=0.5)); ax.text(
 for (xu, yu, t, kind, w, h) in keys:
     pass
 ax.set_xlim(-5, W + 5); ax.set_ylim(H + 5, -5); ax.set_aspect('equal'); ax.axis('off')
-ax.set_title('\n' + f'roBa-style v20 (trackpad top = T / Y top)  –  {n} keys  ≈ {W:.0f} × {H:.0f} mm   trackpad 49×{TPH:.1f}', fontsize=11)
+ax.set_title('\n' + f'roBa-style v20 (trackpad top = T / Y top)  –  {n} keys  ≈ {W:.0f} × {H:.0f} mm   trackpad TPS43 {TPW:.0f}×{TPH:.0f}', fontsize=11)
 ax2 = fig.add_axes([0.04, 0.03, 0.92, 0.2])
 Hk = H
 ax2.fill([0, Hk, Hk, 0], [3, 3, 4.2, 4.2], color='#3a7d44')

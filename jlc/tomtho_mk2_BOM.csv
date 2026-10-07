@@ -6,7 +6,7 @@ Comment,Designator,Footprint,LCSC Part #,Qty,MPN,Note
 B5819W,D66,D_SOD-123,C8598,1,B5819W SL,VBUS -> VSYS
 USB-C,J1,USB_C_HRO_TYPE-C-31-M-12,C165948,1,TYPE-C-31-M-12,"USB2.0 Type-C receptacle, top mount (sits in the free area under the case top)"
 BATTERY,J2,JST_SH_SM02B-SRSS-TB,C160402,1,SM02B-SRSS-TB(LF)(SN),"LiPo 1S (protected cell), check polarity!"
-TRACKPAD,J3,FPC_0.5mm_6P_HC,C5213729,1,HC-FPC-05-10-6RLTAG,To IQS550 trackpad board (FPC 6P 0.5 mm)
+TRACKPAD,J3,FPC_0.5mm_6P_HC,C5213729,1,HC-FPC-05-10-6RLTAG,To Azoteq TPS43 trackpad module (FFC 6P 0.5 mm)
 RED,LED1,LED_0603,C2286,1,KT-0603R,Charge indicator (on while charging)
 XL-2012SURSYGC,"LED2,LED3,LED4,LED5",LED_XL-2012_Bicolor,C965847,4,XL-2012SURSYGC,"BT1 profile LED (yellow-green die used, red unused)"
 AO3401A,Q1,SOT-23,C15127,1,AO3401A,Battery -> VSYS when no USB
