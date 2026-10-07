@@ -105,7 +105,7 @@ for k in I['keys']:
 # plate thinned around the 0.5u x 0.5u keys (flange caps, see below)
 for k in I['keys']:
     if (k['w_u'], k['h_u']) == (0.5, 0.5):
-        add_cut(box(k['cx'], k['cy'], 8.8, 8.6, PLATE_B - 0.2, Z_PT + 4.2))
+        add_cut(box(k['cx'], k['cy'], 8.8, 8.6, PLATE_B - 0.2, Z_PT + 4.3))
 
 # LED windows (1.8 square, as the Tenkey case) with light shrouds added below
 for e in I['leds']:
@@ -147,7 +147,7 @@ for x, y in I['screws']:
 j1, sw = I['J1'], I['SW67']
 wy0, wy1 = case_out[1] - 1.0, inner[1] + 0.5
 top = top.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, PLATE_T + 1.0))
-top = top.cut(box(sw['x'], (wy0 + wy1) / 2, 5.5, wy1 - wy0, Z_PT - 0.1, Z_PT + 2.0))
+top = top.cut(box(sw['x'], (wy0 + wy1) / 2, 9.6, wy1 - wy0, Z_PT - 0.1, Z_PT + 2.2))
 
 # ================================================================== bottom plate
 bot = slab(*case_out, case_r, 0, Z_PB)

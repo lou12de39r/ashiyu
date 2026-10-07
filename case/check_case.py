@@ -101,6 +101,7 @@ p('interferences:', bad)
 
 # --- section pictures
 def sec(shape, axis, value):
+    """Section faces, triangulated -> list of triangles in (h, z)."""
     if axis == 'y':
         pl = cq.Face.makePlane(1000, 1000, basePnt=(0, value, 0), dir=(0, 1, 0))
     else:
@@ -111,12 +112,9 @@ def sec(shape, axis, value):
         return []
     out = []
     for f in s.Faces():
-        pts = []
-        for e in f.outerWire().Edges():
-            for t in range(0, 11):
-                v = e.positionAt(t / 10)
-                pts.append((v.x, v.z) if axis == 'y' else (-v.y, v.z))
-        out.append(pts)
+        vs, tris = f.tessellate(0.02)
+        P = [(v.x, v.z) if axis == 'y' else (-v.y, v.z) for v in vs]
+        out += [[P[i] for i in t] for t in tris]
     return out
 
 
@@ -132,7 +130,7 @@ def view(axis, value, lo, hi, name, title):
         if axis == 'x' and not (bb.xmin <= value <= bb.xmax):
             continue
         for poly in sec(shape, axis, value):
-            ax.add_patch(Polygon(poly, closed=True, fc=col, ec='k', lw=0.3, alpha=0.85))
+            ax.add_patch(Polygon(poly, closed=True, fc=col, ec=col, lw=0.2))
     ax.set_xlim(lo, hi)
     ax.set_ylim(-1, 13)
     ax.set_aspect('equal')

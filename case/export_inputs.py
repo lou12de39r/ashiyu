@@ -20,10 +20,12 @@ HEIGHT = {
     'USB_C_HRO_TYPE-C-31-M-12': 3.31,    # LCSC STEP
     'JST_SH_SM02B-SRSS-TB': 2.95,        # JST SH side entry (datasheet)
     'Raytac_MDBT50Q': 2.2,               # Raytac MDBT50Q-1MV2 datasheet (10 x 15.5 x 2.2)
-    'SW_SPDT_PCM12': 1.6,
     'SW_TS-1928-B': 1.5,
     'FPC_0.5mm_6P_HC': 1.2,
     'SW_ALPS_SKRA_6.2mm': 3.4,
+    'SW_SPDT_PCM12': 1.9,                # LCSC STEP
+    'LED_0603': 0.7, 'R_0603': 0.5, 'C_0603': 0.9, 'LED_XL-2012_Bicolor': 0.8,   # LCSC STEP
+    'D_SOD-123': 1.1, 'SOT-23': 1.1, 'SOT-23-5': 1.2, 'SOT-23-6': 1.6,           # LCSC STEP
 }
 DEFAULT_H = 1.2
 
