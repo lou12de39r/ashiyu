@@ -1,0 +1,20 @@
+keepouts 336
+Traceback (most recent call last):
+  File "/home/claude/tomtho-slim/mk2/trackpad/gen/route_tp.py", line 43, in <module>
+    r = subprocess.run(['java', '-jar', '/opt/kicad/freerouting.jar', '-de', W + '/tp_ko.dsn', '-do', W + '/tp.ses', '-mp', '20',
+                        '-mt', '1'], capture_output=True, text=True, timeout=500)
+  File "/usr/lib/python3.13/subprocess.py", line 557, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 1223, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 2156, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 1270, in _check_timeout
+    raise TimeoutExpired(
+    ...<2 lines>...
+            stderr=b''.join(stderr_seq) if stderr_seq else None)
+subprocess.TimeoutExpired: Command '['java', '-jar', '/opt/kicad/freerouting.jar', '-de', '/home/claude/tomtho-slim/mk2/trackpad/work/tp_ko.dsn', '-do', '/home/claude/tomtho-slim/mk2/trackpad/work/tp.ses', '-mp', '20', '-mt', '1']' timed out after 500 seconds
+done

@@ -181,12 +181,19 @@ add('R10', 'R_0603', '1k', e['cx'] + 1.2, e['cy'] + 2.6, 90, {'1': 'LED_PWR_RK',
     'LED current ~1 mA', '0603WAF1001T5E')
 
 # trackpad board connector (FPC 6P 0.5 mm) + I2C pull-ups
-add('J3', 'FPC_0.5mm_6P_HC', 'TRACKPAD', TP['x'] + TP['w'] / 2, TP['y'] + 6.0, 0,
-    {'1': 'VDD', '2': 'GND', '3': 'TP_SDA', '4': 'TP_SCL', '5': 'TP_RDY', '6': 'TP_RST', 'MP': 'GND'},
-    'Conn_FPC6', 'C5213729', 'To IQS550 trackpad board (FPC 6P 0.5 mm)', 'HC-FPC-05-10-6RLTAG')
-add('R11', 'R_0603', '4.7k', TP['x'] + 15.0, TP['y'] + 6.0, 90, {'1': 'VDD', '2': 'TP_SDA'}, 'R', 'C23162',
+# The trackpad board (49.1 x 43.1, 1.6 t, IQS550 + FFC on its underside) sits in a cut-out of this board, resting on
+# the case floor, so that its 2 mm overlay ends flush with the case top.  J3 is just left of the cut-out, facing the
+# trackpad's FFC connector (trackpad J1 at +9.43 / +18.09 from the trackpad's top-left, opening towards -x).
+# Straight 6P 0.5 mm FFC, contacts on OPPOSITE sides (type B): each J3 pad carries the signal of the trackpad pad at the
+# same height -> top pin (local 1) = RDY ... bottom pin (local 6) = SDA.
+TPJ = (TP['x'] + 9.43, TP['y'] + 18.09)
+TP_CUT = (TP['x'] - 0.3, TP['y'] - 0.3, TP['x'] + 49.1 + 0.3, TP['y'] + 43.1 + 0.3)
+add('J3', 'FPC_0.5mm_6P_HC', 'TRACKPAD', TP_CUT[0] - 2.3, TPJ[1], 90,
+    {'1': 'TP_RDY', '2': 'TP_RST', '3': 'GND', '4': 'VDD', '5': 'TP_SCL', '6': 'TP_SDA', 'MP': 'GND'},
+    'Conn_FPC6', 'C5213729', 'To IQS550 trackpad board (FFC 6P 0.5 mm, type B)', 'HC-FPC-05-10-6RLTAG')
+add('R11', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] - 4.6, 90, {'1': 'VDD', '2': 'TP_SDA'}, 'R', 'C23162',
     'I2C pull-up', '0603WAF4701T5E')
-add('R12', 'R_0603', '4.7k', TP['x'] + 34.0, TP['y'] + 6.0, 90, {'1': 'VDD', '2': 'TP_SCL'}, 'R', 'C23162',
+add('R12', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] + 4.6, 90, {'1': 'VDD', '2': 'TP_SCL'}, 'R', 'C23162',
     'I2C pull-up', '0603WAF4701T5E')
 
 # mounting holes (between key columns; checked against key positions at PCB stage)
@@ -202,7 +209,7 @@ CORNER_R = 4.4
 ANT_KEEPOUT = (U1X - 6.2, BOARD[1], U1X + 6.2, U1Y - 3.95)           # no copper on either layer
 MODULE_FCU_KEEPOUT = (U1X - 2.5, U1Y - 3.5, U1X + 2.5, U1Y + 5.6)     # no F.Cu tracks under the module centre
 BATTERY_AREA = (22.0, 34.0, 92.0, 74.0)                                # LiPo under the PCB (B side), 70 x 40 max
-SLOTS = [(112.4, 21.6, 113.6, 27.6)]                                    # battery lead pass-through
+SLOTS = [(112.4, 21.6, 113.6, 27.6), TP_CUT]                            # battery lead pass-through, trackpad cut-out
 SILK_RECTS = [('B.SilkS',) + BATTERY_AREA]
 SILK_TEXTS = [
     ('B.SilkS', 57.0, 54.0, 'LiPo 1S  (<= 3.0 t x 40 x 70)', 1.5),
