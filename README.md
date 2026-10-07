@@ -1,13 +1,13 @@
-# tomtho-slim mk2 — layout v19 and board plan
+# tomtho-slim mk2 — layout v20 and board plan
 
 This folder holds the frozen layout and the board plan for the second keyboard: roBa-style column stagger, centre trackpad, thin case.
 
 | File | Contents |
 |---|---|
-| `layout_v19.py` | Script that draws the layout (`roba_ortho_v19.png`) |
-| `layout_v19.json` | Fixed coordinates of every key, the trackpad and the LEDs (mm; origin is the rear-left corner of the outline, +y towards the user) |
-| `freeze.py` | Regenerates the JSON above from `layout_v19.py` |
-| `layout_v19_print_A4.pdf` / `print11.py` | 1:1 print sheet (A4 landscape). Print at **actual size / 100%** and check the 100 mm bar with a ruler |
+| `layout_v20.py` | Script that draws the layout (`roba_ortho_v20.png`) |
+| `layout_v20.json` | Fixed coordinates of every key, the trackpad and the LEDs (mm; origin is the rear-left corner of the outline, +y towards the user) |
+| `freeze.py` | Regenerates the JSON above from `layout_v20.py` |
+| `layout_v20_print_A4.pdf` / `print11.py` | 1:1 print sheet (A4 landscape). Print at **actual size / 100%** and check the 100 mm bar with a ruler |
 
 ## Settled specification
 
@@ -19,9 +19,9 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
   - Centre: mouse L / R (1u × 0.5u) and M (0.5u × 0.5u).
   - Rear strip, top-left: BT key (0.5u × 0.5u; tap = next profile, 1 s hold = clear and re-pair).
 - **Pitch:** 18.5 × 18.0 mm.
-- **Column stagger:** half of roBa's offsets. Relative to the pinky column: ring 3.3, middle 5.5, index 4.4, inner 3.2 mm towards the rear. The tops of 3 / 8 line up with the trackpad top.
+- **Column stagger:** half of roBa's offsets. Relative to the pinky column: ring 3.3, middle 5.5, index 4.4, inner 3.2 mm towards the rear. The trackpad top lines up with the tops of T / Y; the MCU module, USB-C and charger sit in the free area above it (nothing is stacked under the trackpad).
 - **Outline:** 277.0 × 107.5 mm.
-- **Trackpad:** 49 × 62.4 mm.
+- **Trackpad:** 49 × 42.0 mm.
 - **LEDs:**
   - BT1–3, green: light for 3 s on a press; blink while waiting to pair.
   - Power, green/red bicolour (firmware): green for 3 s on power-up and on a profile switch; below 20 % a short red blink every 5 s.
@@ -57,7 +57,7 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
   - Holds keys, MCU module, charging, LEDs and USB-C (mid-mount, opening in the rear edge).
   - The MCU module sits under the trackpad with its antenna at the rear edge.
 - **Trackpad board:**
-  - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 62.4 mm.
+  - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 42.0 mm.
   - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
 
 ## Verify before ordering (in priority order)

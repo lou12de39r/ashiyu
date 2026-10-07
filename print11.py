@@ -1,11 +1,11 @@
-"""1:1 print sheet (A4 landscape) from layout_v19.json. Print at 100% / actual size."""
+"""1:1 print sheet (A4 landscape) from layout_v20.json. Print at 100% / actual size."""
 import json, matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mt
 from matplotlib.patches import FancyBboxPatch, Circle, Rectangle
 plt.rcParams['font.family'] = 'Noto Sans CJK JP'
-L = json.load(open('layout_v19.json'))
+L = json.load(open('layout_v20.json'))
 PX, PY = L['pitch']; W, H = L['outline']
 PW, PH = 297.0, 210.0
 OX, OY = (PW - W) / 2, 38.0            # outline placement on the sheet (mm)
@@ -33,10 +33,10 @@ sy = H + 14
 ax.plot([0, 100], [sy, sy], 'k-', lw=0.8); [ax.plot([x, x], [sy - 1.5, sy + 1.5], 'k-', lw=0.6) for x in range(0, 101, 10)]
 ax.text(50, sy + 4, '100 mm（定規で確認）', ha='center', va='top', fontsize=7)
 ax.plot([W + 3, W + 3], [0, 50], 'k-', lw=0.8); ax.text(W + 4, 25, '50 mm', va='center', fontsize=6, rotation=-90)
-ax.text(0, -26, 'tomtho-slim mk2 レイアウト v19　実寸印刷用', fontsize=10, va='top')
+ax.text(0, -26, 'tomtho-slim mk2 レイアウト v20　実寸印刷用', fontsize=10, va='top')
 ax.text(0, -20, f'外形 {W:.1f} × {H:.1f} mm ／ ピッチ 18.5 × 18.0 ／ キー枠 = Acid Caps キーキャップ外形（目安） ／ ＋ = スイッチ中心',
         fontsize=6.5, va='top')
 ax.text(0, -15, '印刷は「実際のサイズ／100%」で。下の100 mm の線を定規で測り、ずれていないか確認してから手を置いてください。', fontsize=6.5, va='top', color='#a00')
-fig.savefig('layout_v19_print_A4.pdf')
-fig.savefig('layout_v19_print_A4.png', dpi=110)
+fig.savefig('layout_v20_print_A4.pdf')
+fig.savefig('layout_v20_print_A4.png', dpi=110)
 print('ok')
