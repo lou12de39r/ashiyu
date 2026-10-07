@@ -60,8 +60,19 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
   - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 42.0 mm.
   - Gestures:
     - Two-finger scroll uses the IQS550's built-in gesture engine.
-    - Three-finger scroll is not built in, so the firmware driver will do it from the up-to-5 touch coordinates the chip reports.
-  - The IQS550 is not at LCSC. Buy it from Mouser / DigiKey and send it to JLC as a consigned part, or use JLC Global Sourcing.
+    - Three-finger swipe = **app switch**, done in the firmware driver from the touch coordinates:
+      - Three fingers land: hold Alt.
+      - Each 8–10 mm of sideways travel: Tab (rightwards) or Shift+Tab (leftwards).
+      - Fingers lift: release Alt.
+  - **IQS550 is hand-soldered (decided).**
+    - JLC assembles everything else, with U1 marked DNP.
+    - Buy the IQS550 from an authorised distributor (Mouser / DigiKey) and get a few spares.
+    - Board-side help for hand soldering:
+      - IC on the bottom side; electrodes on the top layer.
+      - QFN pads lengthened outwards by 0.3–0.4 mm.
+      - A plated hole of about 1.0 mm in the exposed pad, so it can be soldered from the other side.
+      - A JLC stencil for the trackpad board.
+    - Tools needed: hot air or a hotplate, solder paste, flux, magnifier.
   - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
 
 ## Parts check (2026-10-07, LCSC / JLCPCB pages)
