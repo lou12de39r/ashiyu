@@ -55,14 +55,14 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 - **Main board:**
   - 2 layers, 1.2 mm thick (same as v0.1).
   - Holds keys, MCU module, charging, LEDs and USB-C (mid-mount, opening in the rear edge).
-  - The MCU module sits under the trackpad with its antenna at the rear edge.
+  - The MCU module, USB-C and charger sit in the free area between 5 and 6, above the trackpad, with the antenna at the rear edge.
 - **Trackpad board:**
   - 4 layers, IQS550, based on GR-Trackpad65 (MIT), reworked to 49 × 42.0 mm.
   - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
 
 ## Verify before ordering (in priority order)
-1. **Trackpad size:** GR-Trackpad65 is 65 mm tall, so it is 2.6 mm too long as-is. Check whether dropping one electrode row fits it, and whether that needs re-tuning (uncertain).
+1. **Trackpad size:** GR-Trackpad65 is 65 mm tall, so the 42 mm pad needs about a third fewer electrode rows. Check how far the electrode pattern has to be redrawn and whether it needs re-tuning (uncertain).
 2. **Stock at JLC/LCSC (unchecked):** IQS550, the mid-mount USB-C, the 0603 green / orange / bicolour LEDs, and the 0.5 mm FPC connector.
-3. **Clearance:** check the space between the parts on the main board and the trackpad board above them (estimated about 2.5 mm).
+3. **Height:** check that the parts in the free area (module about 2.2 mm, USB-C) fit under the case top. Nothing is stacked under the trackpad any more.
 4. **Keycaps:** fit of the Acid Caps on the tilted thumb keys, checked by laying out the 3D data.
 5. **0.5u × 0.5u caps (BT, M):** these are not sold, so they must be made. Print a test piece first.
