@@ -184,8 +184,9 @@ def wire(a, b):
 
 
 def text(t, x, y, size=1.5):
-    ITEMS.append(f'\t(text {q(t)} (exclude_from_sim no) (at {f(x)} {f(y)} 0) {fnt("left top", size=size)} '
-                 f'(uuid {q(U("text", t[:40], x, y))}))\n')
+    t = t.replace('\\n', '\n')
+    ITEMS.append(f'\t(text {q(t).replace(chr(10), "\\n")} (exclude_from_sim no) (at {f(x)} {f(y)} 0) '
+                 f'{fnt("left top", size=size)} (uuid {q(U("text", t[:40], x, y))}))\n')
 
 
 def place(ref, X, Y, nets_override=None, labels=True, wired=()):
@@ -274,7 +275,7 @@ def build():
     place('R1', 170.18, 78.74)
     place('R2', 182.88, 78.74)
     # ---- charger
-    text('Charger MCP73831: Ichg = 1000V / R3 = 100 mA\\nLED1 lights while charging (VBUS powered)', 205, 30)
+    text('Charger MCP73831\\nIchg = 1000V / R3 = 100 mA\\nLED1 = charging (VBUS powered)', 205, 30)
     place('U3', 233.68, 55.88)
     place('C6', 213.36, 76.2)
     place('C7', 254.0, 76.2)
@@ -282,19 +283,19 @@ def build():
     place('R4', 213.36, 96.52)
     place('LED1', 223.52, 96.52)
     # ---- power path
-    text('Load sharing (AN1149): USB -> D66, else battery -> Q1\\nPower switch SW67: VSYS -> VDDH', 275, 30)
+    text('Load sharing (AN1149)\\nUSB -> D66, battery -> Q1\\nSW67: VSYS -> VDDH', 275, 30)
     place('D66', 285.75, 55.88)
     place('Q1', 300.99, 66.04)
     place('R5', 285.75, 78.74)
     place('SW67', 297.18, 96.52)
-    text('Battery (1S LiPo, protected cell)', 330, 30)
+    text('Battery\\n1S LiPo (protected)', 330, 30)
     place('J2', 345.44, 50.8)
     pwr_flag(335.28, 76.2, 'GND', 1)
     pwr_flag(345.44, 76.2, 'VSYS', 2)
     pwr_flag(355.6, 76.2, 'VBAT', 3)
     # ---- LEDs
-    text('Indicator LEDs (bicolour, common anode = VDD, GPIO sinks, active low)\\n'
-         'LED2-4 = BT1-3 (green die), LED5 = power (green OK / red < 20 %)', 375, 30)
+    text('Indicator LEDs: bicolour, anode = VDD, GPIO sinks (active low)\\n'
+         'LED2-4 = BT1-3 (green die)  /  LED5 = power (green OK, red < 20 %)', 375, 22)
     for i in range(3):
         place(f'LED{2 + i}', 393.7 + i * 38.1, 55.88)
         place(f'R{6 + i}', 411.48 + i * 38.1, 71.12)
@@ -302,7 +303,7 @@ def build():
     place('R9', 416.56, 101.6)
     place('R10', 426.72, 101.6)
     # ---- trackpad connector
-    text('Trackpad board (IQS550) via FPC 6P 0.5 mm, I2C pull-ups on this board', 450, 85)
+    text('Trackpad board (IQS550)\\nFPC 6P 0.5 mm, I2C pull-ups here', 450, 88)
     place('J3', 480.06, 109.22)
     place('R11', 508.0, 104.14)
     place('R12', 518.16, 104.14)
@@ -312,11 +313,12 @@ def build():
     # ---- GPIO table
     gp = {v: D.PIN_NAMES[k] for k, v in D.MCU_PINS.items()}
     text('GPIO map (ZMK, diode-direction = col2row)\\n'
-         'rows: ' + ', '.join(f'ROW{r}={gp[f"ROW{r}"]}' for r in range(D.NROWS)) + '\\n'
-         'cols: ' + ', '.join(f'COL{c}={gp[f"COL{c}"]}' for c in range(D.NCOLS)) + '\\n'
+         'rows:  ' + ', '.join(f'ROW{r}={gp[f"ROW{r}"]}' for r in range(D.NROWS)) + '\\n'
+         'cols:  ' + ', '.join(f'COL{c}={gp[f"COL{c}"]}' for c in range(6)) + '\\n'
+         '       ' + ', '.join(f'COL{c}={gp[f"COL{c}"]}' for c in range(6, D.NCOLS)) + '\\n'
          'LED (active low): ' + ', '.join(f'{k}={gp[k]}' for k in ('LED_BT1', 'LED_BT2', 'LED_BT3', 'LED_PWR_G', 'LED_PWR_R'))
          + '\\ntrackpad: ' + ', '.join(f'{k}={gp[k]}' for k in ('TP_SDA', 'TP_SCL', 'TP_RDY', 'TP_RST')),
-         150, 140, 1.27)
+         150, 128, 1.27)
     # ---- matrix: column wires (vertical), row wires (horizontal), SW + diode per cell, all wired
     X0, Y0, CW, RH = 45.72, 220.98, 43.18, 30.48
     text(f'Key matrix {D.NROWS} x {D.NCOLS}  ({D.NKEYS} keys, ALPS SKRA + 1N4148W, COL -> SW -> D -> ROW)', 20, 200)
@@ -351,7 +353,7 @@ def build():
         wire((X + 7.62, Y + 10.16), (X + 7.62, Y + 12.7))
         ITEMS.append(f'\t(label {q(f"K{r}_{c}")} (at {f(X + 7.62)} {f(Y)} 0) {fnt("left bottom", size=1.0)} '
                      f'(uuid {q(U("klbl", r, c))}))\n')
-        text(name.replace(' ', '\\n') if len(name) > 3 else name, X - 4.0, Y + 4.0, 1.4)
+        text(name, X - 6.0, Y - 7.5, 1.6)
     return ''.join(ITEMS)
 
 
