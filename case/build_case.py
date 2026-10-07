@@ -102,6 +102,11 @@ for k in I['keys']:
     add_cut(box(k['cx'], k['cy'], w, h, PLATE_B - 0.2, PLATE_T + 0.2, k['rot_deg'], HOLE_R))
     add_cut(tapered_hole(k['cx'], k['cy'], w, h, k['rot_deg'], PLATE_T - HOLE_CHAMFER, HOLE_CHAMFER + 0.01, HOLE_CHAMFER))
 
+# plate thinned around the 0.5u x 0.5u keys (flange caps, see below)
+for k in I['keys']:
+    if (k['w_u'], k['h_u']) == (0.5, 0.5):
+        add_cut(box(k['cx'], k['cy'], 8.8, 8.6, PLATE_B - 0.2, Z_PT + 4.2))
+
 # LED windows (1.8 square, as the Tenkey case) with light shrouds added below
 for e in I['leds']:
     add_cut(box(e['cx'], e['cy'], 1.8, 1.8, PLATE_B - 0.2, PLATE_T + 0.2))
@@ -180,15 +185,14 @@ for x, y in I['screws']:
 bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 0.1))
 
 # ================================================================== custom 0.5u x 0.5u keycap (BT, M)
-# Flange type: dropped into the plate from below before the PCB goes in (no hooks: the switch body fills the hole).
-# Local z: 0 = plate-bottom level + 1.5 (same reference as the ACC caps), top at +1.5, nub bottom at -1.0.
+# No ACC part exists, and hooks do not fit (the SKRA body, 6.2 square up to 2.8 mm, fills the 7 mm hole).
+# Flange type instead: the plate is thinned to 0.8 mm around these two keys (pocket from below up to PCB+4.2);
+# the cap is dropped in from below before the PCB, its flange (PCB+3.8..4.2) stops under the pocket ceiling.
+# Flange to switch body: 1.0 mm = the switch's full travel.  Local z = 0 at PCB+4.5 (same as the ACC caps).
 CW, CH = 7.25 - 0.28, 7.0 - 0.28
-SW_CLR = 6.2 + 0.5                      # SKRA body 6.2 x 6.2: the part of the cap below the plate must clear it
-cap = cq.Workplane('XY').workplane(offset=-1.5).rect(CW, CH).extrude(3.0).edges('>Z').chamfer(0.5)
-cap = cap.union(cq.Workplane('XY').workplane(offset=-2.1).rect(CW + 1.4, CH + 1.4).extrude(0.6))   # flange
-cap = cap.cut(cq.Workplane('XY').workplane(offset=-2.2).rect(SW_CLR, SW_CLR).extrude(0.7))          # below plate
-cap = cap.cut(cq.Workplane('XY').workplane(offset=-1.6).rect(CW - 1.6, CH - 1.6).extrude(1.9))      # top 1.2 thick
-cap = cap.union(cq.Workplane('XY').workplane(offset=-1.0).circle(1.3).extrude(1.31))                # nub on switch
+cap = cq.Workplane('XY').workplane(offset=-0.3).rect(CW, CH).extrude(1.8).edges('>Z').chamfer(0.5)
+cap = cap.union(cq.Workplane('XY').workplane(offset=-0.7).rect(8.6, 8.4).extrude(0.4))      # flange
+cap = cap.union(cq.Workplane('XY').workplane(offset=-1.0).circle(1.25).extrude(0.31))       # nub on the switch
 
 # ================================================================== export
 def export(shape, name):
