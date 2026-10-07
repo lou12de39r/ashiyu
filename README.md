@@ -85,6 +85,21 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
   - Bicolour LED XL-2012SURSYGC. Pad map 1 = red K, 2 = green K, 3/4 = anode is **assumed**.
   - FPC C5213729.
 
+## PCB (mk2-0.1)
+
+- **Board:** `tomtho_mk2.kicad_pcb`, 2 layers, 276 × 107 mm.
+- **Build pipeline:**
+  1. `gen/route.py` writes a Specctra DSN and runs Freerouting. GND is routed as a normal net (a tree), then poured on both layers.
+  2. `gen/post.py` adds about 600 GND stitching vias.
+  3. `gen/build_pcb.py` writes the board, fills the zones and runs KiCad DRC.
+- **Check:** DRC with schematic parity gives **0 violations, 0 unconnected, 0 parity** in both local KiCad 10 and CI KiCad 9.
+- **Fab files:** JLC BOM/CPL are in `jlc/`. CI exports the Gerbers and drill files to `ci-results:mk2/gerber`.
+- **USB-C:** top-mount HRO TYPE-C-31-M-12 (C165948). It sits in the free area, so the mid-mount part is not needed.
+- **Before ordering, check:**
+  - In JLC's assembly preview: the rotation of the tilted thumb keys, the USB-C and the LEDs.
+  - The battery-lead slot near J2.
+  - The routing is automatic and rough in places; it could be tidied by hand.
+
 ## Parts check (2026-10-07, LCSC / JLCPCB pages)
 
 | Part | Result |
