@@ -1,0 +1,6 @@
+# LCSC parts whose KiCad footprints are fetched by .github/workflows/lcsc.yml (easyeda2kicad)
+C2906290  USB-C SHOU HAN TYPE-C 16P CB1.6 073 (mid-mount)
+C965847   XINGLIGHT XL-2012SURSYGC bicolour LED
+C5213729  HCTL HC-FPC-05-10-6RLTAG FPC 6P 0.5mm
+C202383   ALPS SKRAAWE010
+C5271144  Azoteq IQS550 (trackpad board)
