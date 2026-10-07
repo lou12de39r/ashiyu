@@ -75,6 +75,16 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
     - Tools needed: hot air or a hotplate, solder paste, flux, magnifier.
   - Connects to the main board with a 6-pin 0.5 mm FPC: VDD, GND, SDA, SCL, RDY, RST.
 
+## Schematic (mk2-0.1)
+
+- **Files:** `tomtho_mk2.kicad_sch` (KiCad 9). `gen/build_sch.py` regenerates it from `gen/design.py`, which in turn reads `layout_v20.json`. CI ERC: **0 errors, 0 warnings**. The netlist re-extracted from the schematic matches `design.py`.
+- **Matrix:** drawn as a wired grid, COL → SW → D → ROW.
+- **Charge LED:** red KT-0603R, driven straight from the charger STAT pin.
+- **DRAFT footprints, to verify against the drawings before the PCB is final:**
+  - USB-C C2906290.
+  - Bicolour LED XL-2012SURSYGC. Pad map 1 = red K, 2 = green K, 3/4 = anode is **assumed**.
+  - FPC C5213729.
+
 ## Parts check (2026-10-07, LCSC / JLCPCB pages)
 
 | Part | Result |
