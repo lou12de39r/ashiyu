@@ -98,35 +98,11 @@ def render(ax, cam, title):
     ax.set_title(title, fontsize=12)
 
 
-fig = plt.figure(figsize=(16, 15), facecolor='white')
-ax = fig.add_axes([0.02, 0.50, 0.96, 0.46]); render(ax, Cam(-18, 38), 'tomtho-slim mk2  外形イメージ（手前左上から）')
-ax = fig.add_axes([0.02, 0.24, 0.55, 0.26]); render(ax, Cam(180 + 15, 32), '奥から（USB-C・電源スイッチ）')
-# mark rear features on the rear view by projecting them
-cam = Cam(180 + 15, 32)
-for x0, w, lab in ((L['usb_c']['x'], 9.0, 'USB-C'), (150.6, 8.8, '電源')):
-    pts = [cam.p(x0 + dx, 0.0, z) for dx, z in ((0, 1.5), (w, 1.5), (w, 4.7), (0, 4.7))]
-    ax.add_patch(Polygon([(q[0], q[1]) for q in pts], fc='#222', ec='none'))
-    c = cam.p(x0 + w / 2, 0.0, -6)
-    ax.text(c[0], c[1], lab, ha='center', va='top', fontsize=9)
-ax.autoscale_view()
-ax = fig.add_axes([0.6, 0.30, 0.38, 0.16])
-ax.add_patch(plt.Rectangle((0, 0), H, CASE_T, fc=COL['case'], ec='#777'))
-for y0, y1 in ((12.3, 28.0), (30.3, 46.0), (48.3, 64.0), (66.3, 82.0), (84.3, 100.0)):
-    ax.add_patch(plt.Rectangle((y0, CAP_B), y1 - y0, CAP_T - CAP_B, fc=COL['key'], ec='#888'))
-ax.add_patch(plt.Rectangle((0.6, 1.5), 1.2, 3.2, fc='#222'))
-ax.annotate('', (H + 5, 0), (H + 5, CAP_T), arrowprops=dict(arrowstyle='<->', color='#c0392b'))
-ax.text(H + 7, CAP_T / 2, f'約{CAP_T:.1f} mm', va='center', fontsize=9, color='#c0392b')
-ax.annotate('', (0, -2.5), (H, -2.5), arrowprops=dict(arrowstyle='<->', color='#c0392b'))
-ax.text(H / 2, -5.5, f'奥行 {H:.1f} mm', ha='center', fontsize=9, color='#c0392b')
-ax.text(1.0, 12.5, 'USB-C', fontsize=8)
-ax.set_xlim(-3, H + 25); ax.set_ylim(-8, 15); ax.set_aspect('equal'); ax.axis('off')
-ax.set_title('横から（奥 ← → 手前、断面の目安）', fontsize=11)
-
-# top view (flat)
-ax = fig.add_axes([0.02, 0.0, 0.62, 0.24]); render(ax, Cam(0, 90), '真上から')
-fig.text(0.66, 0.2, f'外形 {W:.0f} × {H:.1f} mm\n厚さ 約{CAP_T:.1f} mm（キートップまで）／ ケース上面まで 約{CASE_T:.1f} mm\n'
-         'トラックパッド 49 × 42 mm（ケース上面とほぼ面一）\nケース：3Dプリント樹脂 ／ キーキャップ：Acid Caps\n'
-         '色はすべて仮。ケースの形（角の丸み・前側の傾斜など）はこれから決めます', fontsize=10.5, va='top', linespacing=1.6)
-out = os.path.join(HERE, '..', 'docs', 'exterior_v20.png')
-fig.savefig(out, dpi=105, facecolor='white')
-print(out)
+for name, cam, size in (('exterior_top.png', Cam(0, 90), (16, 6.6)), ('exterior_oblique.png', Cam(-18, 38), (16, 8.5))):
+    fig = plt.figure(figsize=size, facecolor='white')
+    ax = fig.add_axes([0.02, 0.02, 0.96, 0.96])
+    render(ax, cam, '')
+    out = os.path.join(HERE, '..', 'docs', name)
+    fig.savefig(out, dpi=130, facecolor='white')
+    plt.close(fig)
+    print(out)
