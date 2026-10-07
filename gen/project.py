@@ -1,5 +1,7 @@
 """Write .kicad_pro (design rules + net classes), lib tables, JLCPCB BOM/CPL."""
 import csv
+import math
+import os
 import json
 import re
 from collections import OrderedDict
@@ -68,6 +70,10 @@ def natkey(r):
     return (m.group(1), int(m.group(2))) if m else (r, 0)
 
 
+# JLC places the LCSC/EasyEDA footprint: rotation offset and origin shift per footprint, from gen/jlcrot.py
+OFFS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'jlc_offsets.json')))
+
+
 def write_jlc():
     groups = OrderedDict()
     for ref in sorted(D.PARTS, key=natkey):
@@ -82,7 +88,7 @@ def write_jlc():
         for (val, fp, lcsc), refs in groups.items():
             p = D.PARTS[refs[0]]
             w.writerow([val, ','.join(refs), fp, lcsc, len(refs), p['mpn'], p['desc']])
-    ox, oy = D.BOARD[0], D.BOARD[3]
+    # Same coordinates as the Gerbers (KiCad absolute origin, +Y up), i.e. what `kicad-cli pcb export pos` gives
     with open(f'{ROOT}/jlc/{PROJECT}_CPL.csv', 'w', newline='') as fh:
         w = csv.writer(fh)
         w.writerow(['Designator', 'Mid X', 'Mid Y', 'Layer', 'Rotation'])
@@ -90,7 +96,12 @@ def write_jlc():
             p = D.PARTS[ref]
             if not p['bom']:
                 continue
-            w.writerow([ref, f'{p["x"] - ox:.4f}mm', f'{oy - p["y"]:.4f}mm', 'Top', f'{p["rot"] % 360:.0f}'])
+            o = OFFS.get(f"{p['fp']}|{p['lcsc']}", {'rot': 0, 'shift': [0.0, 0.0]})
+            a = math.radians(p['rot'])     # KiCad rotation (y down): local (x, y) -> (x cos + y sin, -x sin + y cos)
+            sx, sy = o['shift']
+            x = p['x'] + sx * math.cos(a) + sy * math.sin(a)
+            y = p['y'] - sx * math.sin(a) + sy * math.cos(a)
+            w.writerow([ref, f'{x:.4f}mm', f'{-y:.4f}mm', 'Top', f'{(p["rot"] + o["rot"]) % 360:g}'])
     return groups
 
 

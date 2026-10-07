@@ -1,0 +1,215 @@
+{
+ "C_0603|C14663": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 2
+ },
+ "C_0603|C19666": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 4
+ },
+ "C_0603|C19702": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 1
+ },
+ "D_SOD-123|C81598": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.08,
+  "pads_matched": 2,
+  "refs": 65
+ },
+ "D_SOD-123|C8598": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.05,
+  "pads_matched": 2,
+  "refs": 1
+ },
+ "FPC_0.5mm_6P_HC|C5213729": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.0,
+  "pads_matched": 6,
+  "refs": 1
+ },
+ "JST_SH_SM02B-SRSS-TB|C160402": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   -0.06
+  ],
+  "err": 0.0,
+  "pads_matched": 2,
+  "refs": 1
+ },
+ "LED_0603|C2286": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.037,
+  "pads_matched": 2,
+  "refs": 1,
+  "note": "checked by hand (pin functions), see jlcrot.py"
+ },
+ "LED_XL-2012_Bicolor|C965847": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.0,
+  "pads_matched": 4,
+  "refs": 4
+ },
+ "R_0603|C21190": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 6
+ },
+ "R_0603|C23162": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 3
+ },
+ "R_0603|C23186": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 2
+ },
+ "R_0603|C25803": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.075,
+  "pads_matched": 2,
+  "refs": 1
+ },
+ "Raytac_MDBT50Q|C5118826": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   1.7
+  ],
+  "err": 0.0,
+  "pads_matched": 61,
+  "refs": 1
+ },
+ "SOT-23|C15127": {
+  "rot": 180,
+  "shift": [
+   0.05,
+   0.0
+  ],
+  "err": 0.2,
+  "pads_matched": 3,
+  "refs": 1
+ },
+ "SOT-23-5|C424093": {
+  "rot": 270,
+  "shift": [
+   0.002,
+   0.0
+  ],
+  "err": 0.015,
+  "pads_matched": 5,
+  "refs": 1
+ },
+ "SOT-23-6|C7519": {
+  "rot": 270,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 0.013,
+  "pads_matched": 6,
+  "refs": 1
+ },
+ "SW_ALPS_SKRA_6.2mm|C202383": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 3.044,
+  "pads_matched": 2,
+  "refs": 65,
+  "note": "checked by hand (pin functions), see jlcrot.py"
+ },
+ "SW_SPDT_PCM12|C221841": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   -0.03
+  ],
+  "err": 0.0,
+  "pads_matched": 3,
+  "refs": 1
+ },
+ "SW_TS-1928-B|C1121891": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   0.0
+  ],
+  "err": 1.744,
+  "pads_matched": 2,
+  "refs": 1,
+  "note": "checked by hand (pin functions), see jlcrot.py"
+ },
+ "USB_C_HRO_TYPE-C-31-M-12|C165948": {
+  "rot": 0,
+  "shift": [
+   0.0,
+   -1.575
+  ],
+  "err": 0.0,
+  "pads_matched": 8,
+  "refs": 1
+ }
+}

@@ -45,9 +45,10 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
 | Matrix (6 rows + 12 columns) | 18 |
 | BT LEDs | 3 |
 | Power LED | 2 |
-| Charger STAT sense (lets firmware see charging) | 1 |
 | Trackpad (SDA, SCL, RDY, RST) | 4 |
-| **Total** | **28** |
+| **Total** | **27** |
+
+Charger STAT is **not** wired to the MCU: the MCP73831 drives STAT up to VBUS (5 V) when charging is done, which would overdrive an nRF GPIO. Firmware can see USB power from the nRF's own VBUS detection instead.
 
 The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 
@@ -78,10 +79,22 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 - **Fab files:** JLC BOM/CPL are in `jlc/`. CI exports the Gerbers and drill files to `ci-results:mk2/gerber`.
 - **USB-C:** top-mount HRO TYPE-C-31-M-12 (C165948). It sits in the free area, so the mid-mount part is not needed.
 - **Trackpad cut-out:** 44 × 41 mm for the TPS43, J3 and the I²C pull-ups to its left.
+- **JLC placement (CPL):**
+  - `gen/jlcrot.py` lays each LCSC/EasyEDA footprint (the one JLC places at 0°) over ours and works out the rotation offset and origin shift. `jlc/*_CPL.csv` already includes them, in the Gerber coordinates (+Y up, as `kicad-cli pcb export pos`).
+  - Verified: with the CPL as written, every LCSC pad lands on our pad (≤ 0.2 mm) for every part, including the tilted thumb keys.
+  - Offsets applied: SOT-23 +180°; SOT-23-5 / SOT-23-6 +270°; USB-C origin 1.57 mm; MDBT50Q origin 1.70 mm.
+  - Checked by pin function rather than pad number: the KT-0603R LED (LCSC pad 2 = K) and the SKRA / TS-1928-B switches (joined pairs 1-2 / 3-4).
+  - Still look at JLC's preview once before paying.
+- **Charge current:** R3 = 4.7 kΩ → about 210 mA (0.2–0.5 C for an 800–1000 mAh cell; use ≥ 420 mAh).
 - **Before ordering, check:**
-  - In JLC's assembly preview: the rotation of the tilted thumb keys, the USB-C and the LEDs.
-  - The battery-lead slot near J2.
+  - **MDBT50Q-1MV2 (C5118826) stock: LCSC showed 0 (2026-10-08).** If JLC has none either, use pre-order / global sourcing, or send the modules in yourself.
+  - **Battery polarity:** J2 pin 1 = + (VBAT). LiPo leads with JST SH plugs come both ways round; check with a meter before plugging in (reversed = charger and MCU destroyed).
+  - Board thickness **1.2 mm** must be chosen in the order form.
   - The routing is automatic and rough in places; it could be tidied by hand.
+- **Firmware must:**
+  - Set UICR REGOUT0 to 3.0 V. The module runs from VDDH, and the erased default is 1.8 V, at which the LEDs (Vf ≈ 1.9–2.0 V) stay dark.
+  - Enable pin reset on P0.18.
+  - Drive the LEDs active-low (cathode to GPIO).
 
 ## Parts check (2026-10-07, LCSC / JLCPCB pages)
 

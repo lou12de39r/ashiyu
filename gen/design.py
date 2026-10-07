@@ -139,8 +139,8 @@ add('U3', 'SOT-23-5', 'MCP73831', FX + 6.0, 17.0, 0,
     'Li-Po charger 4.2V', 'MCP73831T-2ACI/OT')
 add('C6', 'C_0603', '4.7uF', FX + 2.0, 17.0, 90, {'1': 'VBUS', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
 add('C7', 'C_0603', '4.7uF', FX + 10.0, 17.0, 90, {'1': 'VBAT', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
-add('R3', 'R_0603', '10k', FX + 6.0, 20.2, 0, {'1': 'PROG', '2': 'GND'}, 'R', 'C25804', 'Ichg = 1000V/10k = 100mA',
-    '0603WAF1002T5E')
+add('R3', 'R_0603', '4.7k', FX + 6.0, 20.2, 0, {'1': 'PROG', '2': 'GND'}, 'R', 'C23162', 'Ichg = 1000V/4.7k = 213mA (0.2-0.5C for an 800-1000 mAh cell)',
+    '0603WAF4701T5E')
 
 # load-sharing power path (Microchip AN1149 style)
 add('D66', 'D_SOD-123', 'B5819W', FX + 15.5, 12.0, 90, {'1': 'VSYS', '2': 'VBUS'}, 'D_Schottky', 'C8598',
