@@ -1,7 +1,8 @@
 """Keycap files for tomtho-slim mk2, based on Salicylic-acid3's ACC (Acid Caps ClickProfile) keycaps.  Runs in CI.
 
 ACC keycaps (https://github.com/Salicylic-acid3/ACC_Keycaps) are CC BY-NC 4.0 (c) Salicylic_acid3.
-Changes made here: re-centred, converted to STL, combined on print sprues; the 0.5u x 0.5u cap is our own design.
+Changes made here: re-centred, converted to STL, combined on print sprues, thumb caps domed (dish filled);
+the 0.5u x 0.5u cap is our own design.
 The outputs are therefore under CC BY-NC 4.0 as well (non-commercial use only).
 
 usage: python keycaps.py <ACC_Keycaps dir> <out dir> <dir with tomtho_mk2_keycap_0.5u_x_0.5u.step>
@@ -27,6 +28,36 @@ for key, (fn, (cx, cy)) in TYPES.items():
     caps[key] = s
 caps['0.5u_x_0.5u'] = cq.importers.importStep(os.path.join(CASE, 'tomtho_mk2_keycap_0.5u_x_0.5u.step')).val()
 
+# Thumb caps: the ACC cap with its dish (~0.45 mm deep) filled and the top made a gentle dome.  Everything below the
+# top (walls, hooks, nub, edge rounding) stays ACC.  The dome peaks at the old rim height (no extra thickness) and is
+# SAG lower at the middle of each top edge (ellipsoid: same sag in x and y), so corners end about 2*SAG lower.
+SAG = 0.4
+TOPZ = 1.49
+
+
+def domed(acc):
+    sec = cq.Workplane('XY').add(acc).section(TOPZ).faces().vals()
+    outer = max((f.outerWire() for f in sec), key=lambda w: cq.Face.makeFromWires(w).Area())
+    fill = cq.Solid.extrudeLinear(cq.Face.makeFromWires(outer), cq.Vector(0, 0, -0.7))
+    body = acc.fuse(fill).clean()
+    bb = outer.BoundingBox()
+    a, b = max(-bb.xmin, bb.xmax), max(-bb.ymin, bb.ymax)       # half sizes of the flat top
+    R = (b * b + SAG * SAG) / (2 * SAG)
+    ell = cq.Solid.makeSphere(R, angleDegrees1=-90, angleDegrees2=90).transformGeometry(
+        cq.Matrix([[a / b, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])).translate(cq.Vector(0, 0, TOPZ - R))
+    out = body.intersect(ell).clean()
+    try:                                                      # soften the crease where the dome meets the edge rounding
+        top = max((f for f in out.Faces() if f.Center().z > 0.8), key=lambda f: f.Area())
+        out = out.fillet(0.3, top.Edges())
+    except Exception as e:
+        print('thumb fillet skipped:', e)
+    print(f'domed: top {2*a:.2f} x {2*b:.2f}, R {R:.1f}, sag {SAG}')
+    return out
+
+
+caps['1u_thumb'] = domed(caps['1u'])
+caps['1.25u_thumb'] = domed(caps['1.25u'])
+
 
 def export(shape, name):
     cq.exporters.export(shape, os.path.join(OUT, name + '.step'))
@@ -39,9 +70,11 @@ for key, s in caps.items():
     export(s, f'keycap_{key}')
 
 # how many of each the mk2 layout needs (F / J get the homing cap)
-need = {'1u': 0, '1u_home': 2, '1.25u': 0, '1u_x_0.5u': 0, '0.5u_x_0.5u': 0}
+need = {'1u': 0, '1u_home': 2, '1.25u': 0, '1u_x_0.5u': 0, '0.5u_x_0.5u': 0, '1u_thumb': 0, '1.25u_thumb': 0}
 for k in I['keys']:
     t = {(1.0, 1.0): '1u', (1.25, 1.0): '1.25u', (1.0, 0.5): '1u_x_0.5u', (0.5, 0.5): '0.5u_x_0.5u'}[(k['w_u'], k['h_u'])]
+    if k['kind'] in ('thumb', 'addth'):
+        t += '_thumb'
     need[t] += 1
 need['1u'] -= 2
 print('needed:', need)
@@ -72,13 +105,18 @@ def sprue(items, cols, px, py, name):
 SP = 1.1   # ~10 % spares: the ClickBoard author saw about 1 in 10 printed caps fail on burrs
 n1 = int(need['1u'] * SP + 0.999)
 sprue(['1u'] * n1, 8, 19.0, 18.5, f'print_sprue_1u_x{n1}')
-sprue(['1.25u'] * (need['1.25u'] + 1), 4, 23.5, 18.5, f"print_sprue_1.25u_x{need['1.25u'] + 1}")
+if need['1.25u']:
+    sprue(['1.25u'] * (need['1.25u'] + 1), 4, 23.5, 18.5, f"print_sprue_1.25u_x{need['1.25u'] + 1}")
+# thumb caps are always printed (no ACC part): 1.25u + 1 spare, 1u + 2 spares
+th = ['1.25u_thumb'] * (need['1.25u_thumb'] + 1) + ['1u_thumb'] * (need['1u_thumb'] + 2)
+sprue(th, 3, 23.5, 18.5, f"print_sprue_thumb_1.25u_x{need['1.25u_thumb'] + 1}_1u_x{need['1u_thumb'] + 2}")
 sprue(['1u_x_0.5u'] * (need['1u_x_0.5u'] + 1), 3, 19.0, 10.0, f"print_sprue_1u_x_0.5u_x{need['1u_x_0.5u'] + 1}")
 sprue(['1u_home'] * (need['1u_home'] + 1), 3, 19.0, 18.5, f"print_sprue_1u_home_x{need['1u_home'] + 1}")
 mixed = None
-json.dump({'needed': need, 'sprue_1u': n1, 'spares': '1u +10 %, others +1; 0.5u x 0.5u: see the case sprue (x6)'}, open(os.path.join(OUT, 'keycaps.json'), 'w'), indent=1)
+json.dump({'needed': need, 'sprue_1u': n1, 'spares': '1u +10 %, others +1, thumb 1u +2; 0.5u x 0.5u: see the case sprue (x6)'}, open(os.path.join(OUT, 'keycaps.json'), 'w'), indent=1)
 open(os.path.join(OUT, 'LICENSE.txt'), 'w').write(
     'Keycap models derived from ACC Keycaps by Salicylic_acid3 (https://github.com/Salicylic-acid3/ACC_Keycaps),\n'
     'licensed CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/).\n'
-    'Changes: re-centred, converted to STL, combined on print sprues for tomtho-slim mk2; 0.5u x 0.5u flange cap is new.\n'
+    'Changes: re-centred, converted to STL, combined on print sprues for tomtho-slim mk2; thumb caps have the dish filled\n'
+    'and a domed top; 0.5u x 0.5u flange cap is new.\n'
     'Non-commercial use only.\n')
