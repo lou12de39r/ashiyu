@@ -30,9 +30,9 @@ Outline: 280.0 × 110.5 mm.
 ## Keycaps
 
 - **ACC (Acid Caps ClickProfile, Salicylic-acid3):**
-  - 1u × 53.
-  - 1.25u × 6 (thumb keys).
+  - 1u × 51, plus 1u Home × 2 (F, J).
   - 0.5u, i.e. 1u × 0.5u, × 4 (L, R, ↑, ↓).
+  - Thumb keys (1u × 4, 1.25u × 2) use printed domed caps instead (see below).
 - **Plate holes:** keycap body + 0.14 mm per side, as in the ClickBoard Tenkey case.
   - 1u: 16.5 × 16.0.
   - 1.25u: 21.0 × 16.0.
