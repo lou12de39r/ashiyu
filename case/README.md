@@ -58,3 +58,19 @@ Outline: 280.0 × 110.5 mm.
 ## Reference data
 
 Measured only, not copied: the ACC keycaps (`Salicylic-acid3/ACC_Keycaps`) and the ClickBoard Tenkey case (`Salicylic-acid3/Case_Data`) are both CC BY-NC 4.0. CI clones them at build time; this repo stores only numbers derived from them.
+
+## Keycap files (`keycaps.py`, CI → `case-results:keycaps/`)
+- **One file per size** (STEP + STL): 1u, 1u home (F / J), 1.25u, 1u × 0.5u, and 0.5u × 0.5u (our flange cap).
+  - The first four are Salicylic-acid3's ACC models, re-centred and converted, under **CC BY-NC 4.0** (see `LICENSE.txt` there).
+  - **Non-commercial use only.**
+- **Print sprues**: the caps mk2 needs, joined by 1 mm bars at the middle of each side, clear of the corner hooks.
+
+| Sprue | Contents |
+|---|---|
+| `print_sprue_1u_x57` | 51 needed + 10 % spares |
+| `print_sprue_1.25u_x7` | 6 + 1 spare |
+| `print_sprue_1u_x_0.5u_x5` | 4 + 1 spare |
+| `print_sprue_1u_home_x3` | 2 + 1 spare |
+| 0.5u × 0.5u | 6 on the case sprue |
+
+- **Printing caution:** the ClickBoard author found that about 1 in 10 caps from a JLC 3D-print trial failed on small burrs. The released ACC caps are injection-moulded PBT. Printed hooks in brittle resin may also snap.
