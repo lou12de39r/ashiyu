@@ -34,7 +34,7 @@ TP_SKIN = 1.0                           # plate over the trackpad (TPS43 is opti
 HOLE_R = 0.8                            # keycap hole corner radius
 KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
-BOSS_D, PILOT_D = 4.6, 1.6              # M2 self-tapping into the top frame
+BOSS_D, PILOT_D = 5.2, 1.7              # M2 self-tapping into resin (brittle: thicker boss, slightly larger pilot)
 SCREW_CLR_D, HEAD_D, HEAD_DEPTH = 2.4, 4.4, 1.6
 TOP_CHAMFER = 1.0
 

@@ -51,7 +51,7 @@ Outline: 280.0 × 110.5 mm.
 - **Rear wall:**
   - USB-C notch (open at the top: a 6 mm plug overmold leaves no wall above it).
   - Power-switch slot.
-- **Screws:** 11 × M2 from below, through the PCB, into Ø 4.6 bosses with a 1.6 mm pilot.
+- **Screws:** 11 × M2 from below, through the PCB, into Ø 5.2 bosses with a 1.7 mm pilot (sized for resin).
   - Plate posts (1.4 square) in the webs between keys keep the plate height.
 - **Bottom plate:** 7 × 7 support islands under every switch (none over the LiPo), solid blocks under USB-C, the power switch and reset, and counterbores for the screw heads.
 
