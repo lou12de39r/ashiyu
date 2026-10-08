@@ -7,6 +7,8 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
 | `layout_v20.py` | Script that draws the layout (`roba_ortho_v20.png`) |
 | `layout_v20.json` | Fixed coordinates of every key, the trackpad and the LEDs (mm; origin is the rear-left corner of the outline, +y towards the user) |
 | `freeze.py` | Regenerates the JSON above from `layout_v20.py` |
+| `ORDER.md` | 発注手順: JLCPCB の基板と実装, JLC3DP のケース |
+| `case/` | ケース: 上フレームと底板 (CadQuery)。出力は `case-results` ブランチ |
 | `layout_v20_print_A4.pdf` / `print11.py` | 1:1 print sheet (A4 landscape). Print at **actual size / 100%** and check the 100 mm bar with a ruler |
 
 ## Settled specification
@@ -79,6 +81,8 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 - **Fab files:** JLC BOM/CPL are in `jlc/`. CI exports the Gerbers and drill files to `ci-results:mk2/gerber`.
 - **USB-C:** top-mount HRO TYPE-C-31-M-12 (C165948). It sits in the free area, so the mid-mount part is not needed.
 - **Trackpad cut-out:** 44 × 41 mm for the TPS43, J3 and the I²C pull-ups to its left.
+- **ACC keycaps:** their four corner legs come down to 1.5 mm above the PCB (0.5 mm when pressed). The ↑ / ↓ diodes and J3 were moved clear of these leg zones (r 2 mm at the corners minus 1.7 mm).
+- **Case screws:** 11 × M2 holes (H1–H11). Six are in the rear strip and five on the front edge, where the keycap holes leave room for a Ø 4.6 boss; none are in the key field, where the plate webs are only 2 mm wide.
 - **JLC placement (CPL):**
   - `gen/jlcrot.py` lays each LCSC/EasyEDA footprint (the one JLC places at 0°) over ours and works out the rotation offset and origin shift. `jlc/*_CPL.csv` already includes them, in the Gerber coordinates (+Y up, as `kicad-cli pcb export pos`).
   - Verified: with the CPL as written, every LCSC pad lands on our pad (≤ 0.2 mm) for every part, including the tilted thumb keys.

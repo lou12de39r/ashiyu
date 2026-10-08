@@ -195,7 +195,7 @@ bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 
 # the cap is dropped in from below before the PCB, its flange (PCB+3.8..4.2) stops under the pocket ceiling.
 # Flange to switch body: 1.0 mm = the switch's full travel.  Local z = 0 at PCB+4.5 (same as the ACC caps).
 CW, CH = 7.25 - 0.28, 7.0 - 0.28
-cap = cq.Workplane('XY').workplane(offset=-0.3).rect(CW, CH).extrude(1.8).edges('>Z').chamfer(0.5)
+cap = cq.Workplane('XY').workplane(offset=-0.3).rect(CW, CH).extrude(1.8).edges('|Z').fillet(1.0).edges('>Z').chamfer(0.5)
 cap = cap.union(cq.Workplane('XY').workplane(offset=-0.7).rect(8.6, 8.4).extrude(0.4))      # flange
 cap = cap.union(cq.Workplane('XY').workplane(offset=-1.0).circle(1.25).extrude(0.31))       # nub on the switch
 
