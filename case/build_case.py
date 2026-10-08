@@ -32,6 +32,7 @@ PLATE_B = Z_PT + 3.0
 PLATE_T = Z_PT + 5.0
 TP_SKIN = 1.0                           # plate over the trackpad (TPS43 is optimised for a 1 mm overlay)
 HOLE_R = 0.8                            # keycap hole corner radius
+KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
 BOSS_D, PILOT_D = 4.6, 1.6              # M2 self-tapping into the top frame
 SCREW_CLR_D, HEAD_D, HEAD_DEPTH = 2.4, 4.4, 1.6
@@ -98,7 +99,7 @@ def add_cut(s):
 
 # keycap holes + lead-in
 for k in I['keys']:
-    w, h = k['hole']
+    w, h = k['hole'][0] + 2 * KEY_CLR, k['hole'][1] + 2 * KEY_CLR
     add_cut(box(k['cx'], k['cy'], w, h, PLATE_B - 0.2, PLATE_T + 0.2, k['rot_deg'], HOLE_R))
     add_cut(tapered_hole(k['cx'], k['cy'], w, h, k['rot_deg'], PLATE_T - HOLE_CHAMFER, HOLE_CHAMFER + 0.01, HOLE_CHAMFER))
 
@@ -115,6 +116,10 @@ for e in I['leds']:
 tp = I['trackpad']
 tpc = (tp['x'] + tp['w'] / 2, tp['y'] + tp['h'] / 2)
 add_cut(box(tpc[0], tpc[1], tp['w'] + 0.6, tp['h'] + 0.6, PLATE_B - 0.2, PLATE_T - TP_SKIN, r=1.0))
+
+# shallow groove round the touch area so a finger can feel its edge (skin stays 1.0 mm over the pad itself)
+add_cut(box(tpc[0], tpc[1], tp['w'] + 1.6, tp['h'] + 1.6, PLATE_T - 0.4, PLATE_T + 0.2, r=2.0)
+        .cut(box(tpc[0], tpc[1], tp['w'], tp['h'], PLATE_T - 0.5, PLATE_T + 0.3, r=1.6)))
 
 # reset pin hole over SW66
 add_cut(cyl(I['SW66']['x'], I['SW66']['y'], 1.6, PLATE_B - 0.2, PLATE_T + 0.2))
@@ -137,7 +142,7 @@ for e in I['leds']:
 for x, y in I['screws']:
     add = add.union(cyl(x, y, BOSS_D, Z_PT, PLATE_B + 0.01))
 for x, y in I['posts']:
-    add = add.union(box(x, y, 1.2, 1.2, Z_PT, PLATE_B + 0.01))
+    add = add.union(box(x, y, 1.4, 1.4, Z_PT, PLATE_B + 0.01))
 top = top.union(add)
 for x, y in I['screws']:
     top = top.cut(cyl(x, y, PILOT_D, Z_PT - 0.1, PLATE_T - 0.8))
