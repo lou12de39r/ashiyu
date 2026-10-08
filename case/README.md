@@ -61,6 +61,9 @@ Measured only, not copied: the ACC keycaps (`Salicylic-acid3/ACC_Keycaps`) and t
 
 ## Keycap files (`keycaps.py`, CI → `case-results:keycaps/`)
 - **One file per size** (STEP + STL): 1u, 1u home (F / J), 1.25u, 1u × 0.5u, and 0.5u × 0.5u (our flange cap).
+- **Thumb caps** `keycap_1u_thumb` / `keycap_1.25u_thumb`: the ACC cap with the dish (about 0.45 mm deep) filled and a gentle ellipsoid dome on top.
+  - The peak stays at the old rim height, so the case is no thicker. The middle of each top edge is 0.4 mm lower and the corners about 0.75 mm lower.
+  - Walls, hooks, nub and edge rounding are unchanged ACC. No ACC part exists for these, so they are always printed.
   - The first four are Salicylic-acid3's ACC models, re-centred and converted, under **CC BY-NC 4.0** (see `LICENSE.txt` there).
   - **Non-commercial use only.**
 - **Print sprues**: the caps mk2 needs, joined by 1 mm bars at the middle of each side, clear of the corner hooks.
@@ -68,9 +71,9 @@ Measured only, not copied: the ACC keycaps (`Salicylic-acid3/ACC_Keycaps`) and t
 | Sprue | Contents |
 |---|---|
 | `print_sprue_1u_x57` | 51 needed + 10 % spares |
-| `print_sprue_1.25u_x7` | 6 + 1 spare |
+| `print_sprue_thumb_1.25u_x3_1u_x6` | thumb caps: 1.25u 2 + 1 spare, 1u 4 + 2 spares (**always printed**) |
 | `print_sprue_1u_x_0.5u_x5` | 4 + 1 spare |
 | `print_sprue_1u_home_x3` | 2 + 1 spare |
-| 0.5u × 0.5u | 6 on the case sprue |
+| 0.5u × 0.5u | 6 on the case sprue, with the 2 reset plungers |
 
 - **Printing caution:** the ClickBoard author found that about 1 in 10 caps from a JLC 3D-print trial failed on small burrs. The released ACC caps are injection-moulded PBT. Printed hooks in brittle resin may also snap.
