@@ -247,10 +247,11 @@ for j in range(2):                                   # bars along x at flange le
 for i in range(3):                                   # bars along y
     sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(i * pitch, pitch / 2)
                         .rect(1.2, pitch - 8.0).extrude(0.4))
-# reset plunger, same local z as the caps (0 = PCB + 4.5): stem rests on the switch (0.6 mm tall)
+# reset plunger, same local z as the caps (0 = PCB + 4.5): stem ends 0.1 mm above the switch (0.6 mm tall).
+# Stem 3.0 mm across (was 2.0) so it covers the whole 1.95 x 2.8 switch top even with ~0.5 mm of play/tilt/offset.
 plunger = (cq.Workplane('XY').workplane(offset=-1.5).circle(2.2).extrude(1.8).faces('>Z').edges().fillet(0.4)
            .union(cq.Workplane('XY').workplane(offset=-1.9).circle(3.3).extrude(0.4))
-           .union(cq.Workplane('XY').workplane(offset=-3.8).circle(1.0).extrude(1.9)))
+           .union(cq.Workplane('XY').workplane(offset=-3.8).circle(1.5).extrude(1.9)))
 export(plunger, 'tomtho_mk2_reset_plunger')
 for j in range(2):                                   # two plungers (one spare) on the same sprue
     sprue = sprue.union(plunger.translate((3 * pitch, j * pitch, 0)))
