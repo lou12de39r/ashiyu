@@ -225,6 +225,20 @@ def export(shape, name):
 export(top, 'tomtho_mk2_top_frame')
 export(bot, 'tomtho_mk2_bottom_plate')
 export(cap, 'tomtho_mk2_keycap_0.5u_x_0.5u')
+# the same cap x 6 on a sprue (one 3D-print part: a single 8.6 mm cap is under JLC3DP's minimum part size)
+pitch = 13.0
+sprue = None
+for i in range(3):
+    for j in range(2):
+        c = cap.translate((i * pitch, j * pitch, 0))
+        sprue = c if sprue is None else sprue.union(c)
+for j in range(2):                                   # bars along x at flange level, between caps
+    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(pitch, j * pitch)
+                        .rect(2 * pitch - 8.0, 1.2).extrude(0.4))
+for i in range(3):                                   # bars along y
+    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(i * pitch, pitch / 2)
+                        .rect(1.2, pitch - 8.0).extrude(0.4))
+export(sprue, 'tomtho_mk2_keycap_0.5u_x_0.5u_x6_sprue')
 json.dump({'Z_PB': Z_PB, 'Z_PT': Z_PT, 'PLATE_B': PLATE_B, 'PLATE_T': PLATE_T, 'KEYCAP_TOP': Z_PT + 6.0,
            'outline': [case_out[2] - case_out[0], case_out[3] - case_out[1]]},
           open(os.path.join(OUT, 'stack.json'), 'w'), indent=1)
