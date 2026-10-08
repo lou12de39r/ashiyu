@@ -28,7 +28,14 @@ def main():
         for (x, y, z, r) in m.get('place', [[0, 0, 0, 0]]):
             a = np.radians(r)
             R = np.array([[np.cos(a), -np.sin(a), 0], [np.sin(a), np.cos(a), 0], [0, 0, 1]])
-            tris.append(t0 @ R.T + np.array([x, y, z]))
+            tt = t0 @ R.T + np.array([x, y, z])
+            if 'tilt' in m:                       # rotate about the X axis through (Y = y0, z = 0), then lift
+                ang, y0, z0 = m['tilt']
+                c, s_ = np.cos(np.radians(ang)), np.sin(np.radians(ang))
+                Y, Zc = tt[..., 1] - y0, tt[..., 2].copy()
+                tt[..., 1] = y0 + Y * c - Zc * s_
+                tt[..., 2] = z0 + Y * s_ + Zc * c
+            tris.append(tt)
             cols.append(np.tile(mc.to_rgb(m['color']), (len(t0), 1)))
             gloss.append(np.full(len(t0), m.get('gloss', 0.2)))
     T = np.concatenate(tris)
