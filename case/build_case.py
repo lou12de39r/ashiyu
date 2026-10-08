@@ -185,6 +185,11 @@ for i, (xa, ya) in enumerate(sc):
         if d < 21.0:
             ang = math.degrees(math.atan2(yb - ya, xb - xa))      # layout frame, y down = clockwise-positive
             add_isl(box((xa + xb) / 2, (ya + yb) / 2, d, 1.5, FLOOR - 0.01, Z_PB, ang))
+# cross ribs under the trackpad area (no switches there to carry islands)
+tx0, ty0 = tp['x'] - 0.5, tp['y'] - 0.5
+for f in (0.33, 0.67):
+    add_isl(box(tx0 + f * (tp['w'] + 1), tpc[1], 1.5, tp['h'] + 1, FLOOR - 0.01, Z_PB))
+    add_isl(box(tpc[0], ty0 + f * (tp['h'] + 1), tp['w'] + 1, 1.5, FLOOR - 0.01, Z_PB))
 # solid under the USB-C / MCU / power switch area (plug and switch forces)
 add_isl(box(j1['x'], 8.0, 16.0, 14.0, FLOOR - 0.01, Z_PB))
 add_isl(box(sw['x'], 6.0, 10.0, 10.0, FLOOR - 0.01, Z_PB))
