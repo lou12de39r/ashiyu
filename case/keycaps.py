@@ -56,17 +56,17 @@ def sprue(items, cols, px, py, name):
         x, y = i * px, -j * py
         pos.append((x, y, key))
         c = caps[key].translate(cq.Vector(x, y, 0))
-        body = c if body is None else body.union(c)
+        body = c if body is None else body.fuse(c)
     bb = {k: caps[k].BoundingBox() for k in set(items)}
     for x, y, key in pos:
         for x2, y2, key2 in pos:
             if (abs(x2 - x - px) < 1e-6 and abs(y2 - y) < 1e-6):          # right neighbour
                 a, b = x + bb[key].xmax - 0.6, x2 + bb[key2].xmin + 0.6
-                body = body.union(cq.Workplane('XY').workplane(offset=-1.4).center((a + b) / 2, y).rect(b - a, 1.0).extrude(0.8))
+                body = body.fuse(cq.Workplane('XY').workplane(offset=-1.4).center((a + b) / 2, y).rect(b - a, 1.0).extrude(0.8).val())
             if (abs(y2 - y + py) < 1e-6 and abs(x2 - x) < 1e-6):          # lower neighbour
                 a, b = y + bb[key].ymin + 0.6, y2 + bb[key2].ymax - 0.6
-                body = body.union(cq.Workplane('XY').workplane(offset=-1.4).center(x, (a + b) / 2).rect(1.0, a - b).extrude(0.8))
-    export(body, name)
+                body = body.fuse(cq.Workplane('XY').workplane(offset=-1.4).center(x, (a + b) / 2).rect(1.0, a - b).extrude(0.8).val())
+    export(body.clean(), name)
 
 
 SP = 1.1   # ~10 % spares: the ClickBoard author saw about 1 in 10 printed caps fail on burrs
