@@ -31,7 +31,7 @@ Z_PT = Z_PB + PCB_T                     # PCB top
 PLATE_B = Z_PT + 3.0
 PLATE_T = Z_PT + 5.0
 TP_SKIN = 1.0                           # plate over the trackpad (TPS43 is optimised for a 1 mm overlay)
-HOLE_R = 0.8                            # keycap hole corner radius
+HOLE_R = float(os.environ.get('HOLE_R', '0.8'))   # keycap hole corner radius (largest that clears the ACC corner hooks: hole_radius_test.py)
 KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
 BOSS_D, PILOT_D = 5.2, 1.7              # M2 self-tapping into resin (brittle: thicker boss, slightly larger pilot)
@@ -73,11 +73,15 @@ def cyl(cx, cy, d, z0, z1):
     return cq.Workplane('XY').workplane(offset=z0).center(cx, Y(cy)).circle(d / 2).extrude(z1 - z0)
 
 
+def rr_wire(w, h, r, z):
+    f = cq.Sketch().rect(w, h).vertices().fillet(r)._faces.Faces()[0]
+    return f.outerWire().translate(cq.Vector(0, 0, z))
+
+
 def tapered_hole(cx, cy, w, h, rot, z0, depth, grow):
-    """Lead-in: w x h at z0 growing by `grow` per side at z0 + depth."""
-    wp = cq.Workplane('XY').workplane(offset=z0)
-    s0 = wp.rect(w, h).workplane(offset=depth).rect(w + 2 * grow, h + 2 * grow).loft()
-    return s0.rotate((0, 0, 0), (0, 0, 1), -rot).translate((cx, Y(cy), 0))
+    """Lead-in with rounded corners: w x h (corner HOLE_R) at z0, growing by `grow` per side at z0 + depth."""
+    s = cq.Solid.makeLoft([rr_wire(w, h, HOLE_R, z0), rr_wire(w + 2 * grow, h + 2 * grow, HOLE_R + grow, z0 + depth)], True)
+    return cq.Workplane('XY').add(s).rotate((0, 0, 0), (0, 0, 1), -rot).translate((cx, Y(cy), 0))
 
 
 case_out = (-WALL - PCB_CLR + bx0, -WALL - PCB_CLR + by0, bx1 + PCB_CLR + WALL, by1 + PCB_CLR + WALL)
