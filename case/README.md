@@ -23,7 +23,7 @@ z = 0 is the case bottom.
 | PCB bottom (seam between the two parts) | 4.3 | |
 | PCB top | 5.5 | |
 | Plate | 8.5 – 10.5 | 2.0 mm thick. Starts 3.0 mm above the PCB; ACC hooks catch under it, as in the ClickBoard Tenkey case. |
-| Keycap top | 11.5 | |
+| Keycap top | 11.5 | thumb caps 11.8 (domed, raised 0.3) |
 
 Outline: 280.0 × 110.5 mm.
 
@@ -62,7 +62,7 @@ Measured only, not copied: the ACC keycaps (`Salicylic-acid3/ACC_Keycaps`) and t
 ## Keycap files (`keycaps.py`, CI → `case-results:keycaps/`)
 - **One file per size** (STEP + STL): 1u, 1u home (F / J), 1.25u, 1u × 0.5u, and 0.5u × 0.5u (our flange cap).
 - **Thumb caps** `keycap_1u_thumb` / `keycap_1.25u_thumb`: the ACC cap with the dish (about 0.45 mm deep) filled and a gentle ellipsoid dome on top.
-  - The peak stays at the old rim height, so the case is no thicker. The middle of each top edge is 0.4 mm lower and the corners about 0.75 mm lower.
+  - The top is raised 0.3 mm, so the dome's edges sit near the other caps' rim height. The peak is 0.3 mm above the other keys (11.8 mm total at the thumb row); the middle of each top edge is 0.4 mm below the peak and the corners about 0.75 mm below.
   - Walls, hooks, nub and edge rounding are unchanged ACC. No ACC part exists for these, so they are always printed.
   - The first four are Salicylic-acid3's ACC models, re-centred and converted, under **CC BY-NC 4.0** (see `LICENSE.txt` there).
   - **Non-commercial use only.**

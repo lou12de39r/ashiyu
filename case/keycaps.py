@@ -28,14 +28,18 @@ for key, (fn, (cx, cy)) in TYPES.items():
     caps[key] = s
 caps['0.5u_x_0.5u'] = cq.importers.importStep(os.path.join(CASE, 'tomtho_mk2_keycap_0.5u_x_0.5u.step')).val()
 
-# Thumb caps: the ACC cap with its dish (~0.45 mm deep) filled and the top made a gentle dome.  Everything below the
-# top (walls, hooks, nub, edge rounding) stays ACC.  The dome peaks at the old rim height (no extra thickness) and is
-# SAG lower at the middle of each top edge (ellipsoid: same sag in x and y), so corners end about 2*SAG lower.
+# Thumb caps: the ACC cap with its dish (~0.45 mm deep) filled and the top made a gentle dome.  Walls, hooks, nub and
+# edge rounding stay ACC; the part above local z = 0 is raised by LIFT so the dome's edges sit near the other caps' rims.
+# The dome peaks LIFT above the old rim height and is SAG lower at the middle of each top edge (ellipsoid: same sag in
+# x and y), so corners end about 2*SAG lower.
 SAG = 0.4
-TOPZ = 1.49
+LIFT = 0.3
+TOPZ = 1.49 + LIFT
 
 
 def domed(acc):
+    up = acc.intersect(cq.Solid.makeBox(60, 40, 3, pnt=cq.Vector(-30, -20, 0))).translate(cq.Vector(0, 0, LIFT))
+    acc = acc.fuse(up).clean()
     sec = cq.Workplane('XY').add(acc).section(TOPZ).faces().vals()
     outer = max((f.outerWire() for f in sec), key=lambda w: cq.Face.makeFromWires(w).Area())
     fill = cq.Solid.extrudeLinear(cq.Face.makeFromWires(outer), cq.Vector(0, 0, -0.7))
@@ -51,7 +55,7 @@ def domed(acc):
         out = out.fillet(0.3, top.Edges())
     except Exception as e:
         print('thumb fillet skipped:', e)
-    print(f'domed: top {2*a:.2f} x {2*b:.2f}, R {R:.1f}, sag {SAG}')
+    print(f'domed: top {2*a:.2f} x {2*b:.2f}, R {R:.1f}, sag {SAG}, lift {LIFT}, peak z {TOPZ:.2f}')
     return out
 
 
