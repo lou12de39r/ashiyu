@@ -257,7 +257,7 @@ for j in range(2):                                   # two plungers (one spare) 
     sprue = sprue.union(plunger.translate((3 * pitch, j * pitch, 0)))
     sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(2 * pitch + (4.3 + pitch - 2.2) / 2, j * pitch)
                         .rect(pitch - 4.3 - 2.2 + 1.0, 1.2).extrude(0.4))
-export(sprue, 'tomtho_mk2_keycap_0.5u_x_0.5u_x6_sprue')
+export(sprue, 'tomtho_mk2_keycap_0.5u_x6_reset_x2_sprue')   # 0.5u x 0.5u caps x6 + reset plungers x2
 json.dump({'Z_PB': Z_PB, 'Z_PT': Z_PT, 'PLATE_B': PLATE_B, 'PLATE_T': PLATE_T, 'KEYCAP_TOP': Z_PT + 6.0,
            'outline': [case_out[2] - case_out[0], case_out[3] - case_out[1]]},
           open(os.path.join(OUT, 'stack.json'), 'w'), indent=1)
