@@ -119,10 +119,41 @@ def two_pages(keys, title, fn):
         page(pdf, keys, title + '（2/2 右）', max(xs) + 8 - 297, 0, '赤い点線で左ページと重ねて貼る。実際のサイズ／100% で印刷')
 
 
+def ortho(keys):
+    """Ortholinear variant: column stagger removed (every column snapped to the most common row grid),
+    thumb keys put on a straight row (no fan, no tilt)."""
+    out = copy.deepcopy(keys)
+    grid = [k for k in out if k['kind'] in ('k', 'new', 'mod', 'half') and k['rot_deg'] == 0]
+    cols = {}
+    for k in grid:
+        cols.setdefault(round(k['cx'], 1), []).append(k)
+    tops = {c: min(k['cy'] - k['h_u'] * PY / 2 for k in ks) for c, ks in cols.items()}
+    ref = sorted(tops.values())[len(tops) // 2]
+    for c, ks in cols.items():
+        d = ref - tops[c]
+        for k in ks:
+            k['cy'] += d
+    by = {k['label']: k for k in out}
+    if '↑' in by and '↓' in by:                        # keep the arrow cluster on one line
+        mid = (by['↑']['cy'] + by['↓']['cy']) / 2
+        for lab in ('←', '→'):
+            if lab in by:
+                by[lab]['cy'] = mid
+    th = [k for k in out if k['kind'] in ('thumb', 'addth')]
+    if th:
+        y = max(k['cy'] for k in th if abs(k['rot_deg']) < 1e-6)
+        for k in th:
+            k['rot_deg'] = 0.0
+            k['cy'] = y
+    return out
+
+
 cur = L['keys']
 spl = splay(L['keys'], ANG)
 two_pages(cur, '現行 v20（水平・開きなし）', 'layout_v20_print_A4x2.pdf')
 two_pages(spl, f'左右を {ANG:g}° 開いた版', f'layout_splay{ANG:g}_print_A4x2.pdf')
+orth = ortho(L['keys'])
+two_pages(orth, 'オーソリニア版（ずらし無し・親指も一直線）', 'layout_ortho_print_A4x2.pdf')
 
 # A3 single sheet
 fig = plt.figure(figsize=(420 / 25.4, 297 / 25.4))
@@ -137,16 +168,16 @@ fig.savefig(f'layout_splay{ANG:g}_print_A3.pdf')
 plt.close(fig)
 
 # comparison picture
-fig, axs = plt.subplots(1, 2, figsize=(16, 4.6))
-for ax, ks, t in ((axs[0], cur, '現行 v20'), (axs[1], spl, f'左右を {ANG:g}° 開いた版')):
+fig, axs = plt.subplots(3, 1, figsize=(10, 12))
+for ax, ks, t in ((axs[0], cur, '現行 v20（カラムスタッガード）'), (axs[1], orth, 'オーソリニア'), (axs[2], spl, f'左右を {ANG:g}° 開いた版')):
     b = draw(ax, ks, t)
     ax.set_xlim(-20, W + 20)
     ax.set_ylim(H + 25, -10)
     ax.set_aspect('equal')
     ax.axis('off')
     ax.set_title(f'{t}　外形の目安 {b[1] - b[0]:.0f} × {b[3] - b[2]:.0f} mm', fontsize=11)
-fig.savefig(f'docs/layout_splay{ANG:g}_compare.png', dpi=110, bbox_inches='tight')
-for ks, t in ((cur, 'current'), (spl, 'splay')):
+fig.savefig('docs/layout_compare3.png', dpi=110, bbox_inches='tight')
+for ks, t in ((cur, 'current'), (orth, 'ortho'), (spl, 'splay')):
     xs = [p[0] for k in ks for p in corners(k, 3.0)]
     ys = [p[1] for k in ks for p in corners(k, 3.0)]
     print(t, 'bbox %.1f x %.1f mm' % (max(xs) - min(xs), max(ys) - min(ys)))
