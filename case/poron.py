@@ -96,8 +96,14 @@ ax.set_xlim(-8.5, W_MM - 8.5)
 ax.set_ylim(-H_MM + 40, 40)
 ax.set_aspect('equal')
 ax.axis('off')
+from matplotlib.path import Path
+from matplotlib.patches import PathPatch
+verts, codes = [], []
 for p in polys:
-    ax.fill(p[:, 0], -p[:, 1], fc='#f2e6c9', ec='k', lw=0.4)
+    q = np.column_stack([p[:, 0], -p[:, 1]])
+    verts += list(q) + [q[0]]
+    codes += [Path.MOVETO] + [Path.LINETO] * (len(q) - 1) + [Path.CLOSEPOLY]
+ax.add_patch(PathPatch(Path(verts, codes), fc='#f2e6c9', ec='k', lw=0.4))
 ax.plot([bx0, bx1, bx1, bx0, bx0], [-by0, -by0, -by1, -by1, -by0], color='#999', lw=0.4, ls='--')
 ax.plot([0, 100], [25, 25], 'k-', lw=1.2)
 ax.text(50, 27, '100 mm  (print at 100 % / actual size and check with a ruler)', ha='center', fontsize=7)
