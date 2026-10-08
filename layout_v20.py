@@ -9,9 +9,10 @@ TPH = 40.0
 G = (49.0 + 2.0) / PX                 # centre gap kept from v20 (2.76u); keys do not move
 R1 = 6 + G                            # right block start
 keys = []
-# column stagger = roBa offsets x0.5, measured from the pinky column (negative = towards the rear)
+# column stagger = roBa offsets x0.75 (v21; was x0.5), measured from the pinky column (negative = towards the rear)
 SL = [0.0, 0.0, -0.185, -0.308, -0.242, -0.176]      # outer, Q, W, E, R, T
 SR = [-0.176, -0.242, -0.308, -0.185, 0.0, 0.0]  # Y, U, I, O, P, outer
+SL = [v * 1.5 for v in SL]; SR = [v * 1.5 for v in SR]   # x0.5 -> x0.75 (v21)
 SH = SL[3] - SL[5]          # shift every non-thumb key down so the 3/8 tops meet the trackpad top (+0.132u)
 SL = [v - SH for v in SL]; SR = [v - SH for v in SR]
 ROT = {}
@@ -28,28 +29,33 @@ for r in range(3):
         k(c, r + 1 + SL[c], Lr[r][c], 'new' if c == 0 else 'k')
         k(R1 + c, r + 1 + SR[c], Rr[r][c], 'new' if c == 5 else 'k')
 for c, t in zip(range(3), ('Fn', 'Ctrl', 'Win')): k(c, 4 + SL[c], t, 'mod')   # Alt removed
-TW = 1.25
+TW = 1.0
+TWS = [1.0, 1.25, 1.0]   # outer, middle (Space / Enter), inner
 # roBa thumb fan x0.5: rotation 0 / 4.5 / 10 deg, drop 0 / 0.046 / 0.192 u (outer -> inner), 0.06u gaps
-TR = [0.0, 4.5, 10.0]; TD = [0.0, 0.046, 0.192]; TG = 0.04
+TR = [0.0, 4.5, 10.0]; TD = [0.0, 0.046, 0.192]; TG = 0.10
 import math
 def lowest(yc_u, w, r):   # lowest corner (mm) of a key whose centre is at yc_u
     a = math.radians(abs(r)); return WEDGE + yc_u * PY + (w * PX - 1.2) / 2 * math.sin(a) + (PY - 1) / 2 * math.cos(a)
 T0 = 4 + DROP
-while max(lowest(T0 + TD[i] + 0.5, TW, TR[i]) for i in range(3)) > WEDGE + (4 + DROP + 1) * PY - 0.5: T0 -= 0.01
+while max(lowest(T0 + TD[i] + 0.5, TWS[i], TR[i]) for i in range(3)) > WEDGE + (4 + DROP + 1) * PY - 0.5: T0 -= 0.01
 # inner edge pushed in as far as a 2 mm gap between the tilted inner keys' top corners allows,
 # so the outer thumb key covers about half of the C / comma key
 CEN = (7 + R1 - 1) / 2
 _sh = 9 * math.sin(math.radians(TR[2])) - (TW * PX - 1.2) / 2 * (1 - math.cos(math.radians(TR[2])))
 XI = CEN - (1.0 + _sh) / PX
-lx = [XI - TW * (3 - i) - TG * (2 - i) for i in range(3)]
-for i, t in enumerate(('変換\nL6', 'Space\nL2', '無変換\nL3')): k(lx[i], T0 + TD[i], t, 'thumb', TW, 1.0, TR[i])
+lx = [0, 0, 0]
+lx[2] = XI - TWS[2]; lx[1] = lx[2] - TG - TWS[1]; lx[0] = lx[1] - TG - TWS[0]
+for i, t in enumerate(('変換\nL6', 'Space\nL2', '無変換\nL3')): k(lx[i], T0 + TD[i], t, 'thumb', TWS[i], 1.0, TR[i])
 right_th = R1 - 1
 for i, (t, kind) in enumerate(zip(('BS', 'Enter\nL1', 'Del'), ('thumb', 'thumb', 'addth'))):
     j = 2 - i   # mirror: BS is the innermost
-    k(2 * CEN - XI + (TW + TG) * i, T0 + TD[j], t, kind, TW, 1.0, -TR[j])
+    rx = 2 * CEN - XI + sum(TWS[2 - m] + TG for m in range(i))
+    k(rx, T0 + TD[j], t, kind, TWS[j], 1.0, -TR[j])
 for c, t in ((R1 + 3, '←'), (R1 + 5, '→')): k(c, 4 - SH, t, 'mod')   # arrow cluster kept flat
 k(R1 + 4, 4 - SH, '↑', 'half', 1.0, 0.5); k(R1 + 4, 4.5 - SH, '↓', 'half', 1.0, 0.5)
-BY = 3.5 + SL[5]                                      # L/R bottom flush with the B/N row bottom (4.0u)
+TPH_ = 40.0
+_tb = WEDGE + (1 + SL[5]) * PY + 0.5 + TPH_            # trackpad bottom (mm)
+BY = (_tb + 6.0 - WEDGE) / PY - 0.25                  # v21: L / M / R holes 2.5 mm below the trackpad window
 bx = 6 + (G - 2.5) / 2
 k(bx, BY, 'L', 'mouse', 1.0, 0.5); k(bx + 1.5, BY, 'R', 'mouse', 1.0, 0.5)
 k(bx + 1.0, BY, 'M', 'mouse', 0.5, 0.5)       # 0.5u x 0.5u, flush with L/R

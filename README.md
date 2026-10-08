@@ -17,11 +17,11 @@ This folder holds the frozen layout and the board plan for the second keyboard: 
 - **Keys:** 65 total.
   - Left block: 6 columns × number row + 3 rows, plus Fn / Ctrl→**Alt** (firmware) / Win.
   - Right block: 6 columns × number row + 3 rows, plus arrows (← ↑↓ →; ↑ and ↓ are stacked 0.5u keys).
-  - Thumbs: 1.25u × 3 per side. Fan is half of roBa's: tilt 0 / 4.5 / 10°, drop 0 / 0.8 / 3.5 mm.
-  - Centre: mouse L / R (1u × 0.5u) and M (0.5u × 0.5u).
+  - Thumbs (v21): 3 per side — outer 1u, **middle (Space / Enter) 1.25u**, inner 1u — at 1.1u spacing. Fan is half of roBa's: tilt 0 / 4.5 / 10°, drop 0 / 0.8 / 3.5 mm.
+  - Centre: mouse L / R (1u × 0.5u) and M (0.5u × 0.5u), 2.5 mm below the trackpad window (v21).
   - Rear strip, top-left: BT key (0.5u × 0.5u; tap = next profile, 1 s hold = clear and re-pair).
 - **Pitch:** 18.5 × 18.0 mm.
-- **Column stagger:** half of roBa's offsets. Relative to the pinky column: ring 3.3, middle 5.5, index 4.4, inner 3.2 mm towards the rear. The trackpad top lines up with the tops of T / Y; the MCU module, USB-C and charger sit in the free area above it (nothing is stacked under the trackpad).
+- **Column stagger (v21):** 0.75 × roBa's offsets (was 0.5). Relative to the pinky column: ring 5.0, middle 8.3, index 6.6, inner 4.8 mm towards the rear. The trackpad top lines up with the tops of T / Y; the MCU module, USB-C and charger sit in the free area above it (nothing is stacked under the trackpad).
 - **Outline:** 277.0 × 107.5 mm.
 - **Trackpad:** Azoteq **TPS43-201A-S** module, 43 × 40 mm (window centred in the 51 mm centre gap, top aligned with T / Y). The keys did not move when the pad shrank from 49 × 42.
 - **LEDs:**
