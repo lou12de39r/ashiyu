@@ -15,7 +15,7 @@
 | 外形 | 約 275.8 × 106.3 mm（アップロードすると自動で読み取られる） |
 | **基板厚** | **1.2 mm**（初期値の1.6のままにしないこと） |
 | 表面処理 | HASL（鉛フリー）またはENIG |
-| 実装（PCBA） | **Economic**、表面のみ（Economicの条件：基板厚0.8〜1.6 mm、基板サイズ470×500 mm以内。今回の基板は条件内） |
+| 実装（PCBA） | **Standard**、表面のみ（MDBT50Q がX線検査必須の「Standard Only」部品のため Economic は不可） |
 | 部品表（BOM） | `jlc/tomtho_mk2_BOM.csv` |
 | 部品配置（CPL） | `jlc/tomtho_mk2_CPL.csv`（座標と向きの補正は済んでいる） |
 
