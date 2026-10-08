@@ -221,7 +221,11 @@ bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 
 CW, CH = 7.25 - 0.28, 7.0 - 0.28
 cap = cq.Workplane('XY').workplane(offset=-0.3).rect(CW, CH).extrude(1.8).edges('|Z').fillet(1.7).edges('>Z').chamfer(0.5)
 # flange: corners rounded r2.5 = hole corner r1.8 + 0.7 overlap, so it overlaps the plate evenly all round (like ACC)
-cap = cap.union(cq.Workplane('XY').workplane(offset=-0.7).rect(8.6, 8.4).extrude(0.4).edges('|Z').fillet(2.5))
+# (built from a rounded 2D outline: the earlier box + edge fillet came out with square corners)
+flange = cq.Workplane('XY').workplane(offset=-0.7).sketch().rect(8.6, 8.4).vertices().fillet(2.5).finalize().extrude(0.4)
+cap = cap.union(flange)
+assert not cap.val().isInside(cq.Vector(4.1, 4.0, -0.5)), 'flange corners not rounded'
+assert cap.val().isInside(cq.Vector(4.0, 0.0, -0.5)), 'flange missing'
 cap = cap.union(cq.Workplane('XY').workplane(offset=-1.0).circle(1.25).extrude(0.31))       # nub on the switch
 
 # ================================================================== export
