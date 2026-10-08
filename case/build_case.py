@@ -175,6 +175,16 @@ for x, y, rot in I['switch_centres']:
     add_isl(box(x, y, 7.0, 7.0, FLOOR - 0.01, Z_PB, -rot))
 for x, y in I['screws']:
     add_isl(cyl(x, y, 6.5, FLOOR - 0.01, Z_PB))
+# ribs between neighbouring switch islands: turn the 1.0 mm floor into small panels (JLC3DP asks for 2 mm walls at
+# 200 mm scale; a ribbed 1.0 mm floor is far stiffer than a plain one)
+sc = [(x, y) for x, y, rot in I['switch_centres']
+      if not (bat_box[0] - 4 < x < bat_box[2] + 4 and bat_box[1] - 4 < y < bat_box[3] + 4)]
+for i, (xa, ya) in enumerate(sc):
+    for xb, yb in sc[i + 1:]:
+        d = math.hypot(xb - xa, yb - ya)
+        if d < 21.0:
+            ang = math.degrees(math.atan2(yb - ya, xb - xa))      # layout frame, y down = clockwise-positive
+            add_isl(box((xa + xb) / 2, (ya + yb) / 2, d, 1.5, FLOOR - 0.01, Z_PB, ang))
 # solid under the USB-C / MCU / power switch area (plug and switch forces)
 add_isl(box(j1['x'], 8.0, 16.0, 14.0, FLOOR - 0.01, Z_PB))
 add_isl(box(sw['x'], 6.0, 10.0, 10.0, FLOOR - 0.01, Z_PB))
