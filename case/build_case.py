@@ -125,8 +125,13 @@ add_cut(box(tpc[0], tpc[1], tp['w'] + 0.6, tp['h'] + 0.6, PLATE_B - 0.2, PLATE_T
 add_cut(box(tpc[0], tpc[1], tp['w'] + 1.6, tp['h'] + 1.6, PLATE_T - 0.4, PLATE_T + 0.2, r=2.0)
         .cut(box(tpc[0], tpc[1], tp['w'], tp['h'], PLATE_T - 0.5, PLATE_T + 0.3, r=1.6)))
 
-# reset pin hole over SW66
-add_cut(cyl(I['SW66']['x'], I['SW66']['y'], 1.6, PLATE_B - 0.2, PLATE_T + 0.2))
+# reset button over SW66: a printed plunger (dropped in from below, flange under the plate) pressed by a fingertip.
+# SW66 = XKB TS-1928-B, 0.6 mm tall, 160 gf, so an accidental brush does not reset it.  Plunger top 0.2 below the
+# plate surface, in a 4.8 mm hole with a 0.4 mm lead-in.
+RST = (I['SW66']['x'], I['SW66']['y'])
+add_cut(cyl(RST[0], RST[1], 4.8, PLATE_B - 0.2, PLATE_T + 0.2))
+add_cut(cq.Workplane('XY').workplane(offset=PLATE_T - 0.4).center(RST[0], Y(RST[1])).circle(2.4)
+        .workplane(offset=0.41).circle(2.81).loft())
 
 # pockets in the underside of the plate over tall parts
 for p in I['parts']:
@@ -242,6 +247,15 @@ for j in range(2):                                   # bars along x at flange le
 for i in range(3):                                   # bars along y
     sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(i * pitch, pitch / 2)
                         .rect(1.2, pitch - 8.0).extrude(0.4))
+# reset plunger, same local z as the caps (0 = PCB + 4.5): stem rests on the switch (0.6 mm tall)
+plunger = (cq.Workplane('XY').workplane(offset=-1.5).circle(2.2).extrude(1.8).faces('>Z').edges().fillet(0.4)
+           .union(cq.Workplane('XY').workplane(offset=-1.9).circle(3.3).extrude(0.4))
+           .union(cq.Workplane('XY').workplane(offset=-3.8).circle(1.0).extrude(1.9)))
+export(plunger, 'tomtho_mk2_reset_plunger')
+for j in range(2):                                   # two plungers (one spare) on the same sprue
+    sprue = sprue.union(plunger.translate((3 * pitch, j * pitch, 0)))
+    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(2 * pitch + (4.3 + pitch - 2.2) / 2, j * pitch)
+                        .rect(pitch - 4.3 - 2.2 + 1.0, 1.2).extrude(0.4))
 export(sprue, 'tomtho_mk2_keycap_0.5u_x_0.5u_x6_sprue')
 json.dump({'Z_PB': Z_PB, 'Z_PT': Z_PT, 'PLATE_B': PLATE_B, 'PLATE_T': PLATE_T, 'KEYCAP_TOP': Z_PT + 6.0,
            'outline': [case_out[2] - case_out[0], case_out[3] - case_out[1]]},

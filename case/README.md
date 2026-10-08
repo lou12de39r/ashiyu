@@ -47,7 +47,7 @@ Outline: 280.0 × 110.5 mm.
 
 - **TPS43 trackpad:** 1.0 mm skin over a 43.6 × 40.6 pocket. Stick the module to the pocket ceiling with its own adhesive. A 0.4 mm groove round the touch area marks its edge.
 - **LEDs:** 1.8 mm windows, with light shrouds that stop 1.0 mm above the PCB.
-- **Reset:** 1.6 mm pin hole over the reset switch.
+- **Reset:** a printed plunger in a 4.8 mm hole over the reset switch (no pin needed). It goes in from below like the 0.5u caps; two plungers are on the 0.5u keycap sprue.
 - **Rear wall:**
   - USB-C notch (open at the top: a 6 mm plug overmold leaves no wall above it).
   - Power-switch slot.
