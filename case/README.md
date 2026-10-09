@@ -70,7 +70,7 @@ Measured only, not copied: the ACC keycaps (`Salicylic-acid3/ACC_Keycaps`) and t
 
 | Sprue | Contents |
 |---|---|
-| `print_sprue_1u_x57` | 51 needed + 10 % spares |
+| `print_sprue_1u_x29_a`, `print_sprue_1u_x28_b` | 51 needed + 10 % spares (57, split in two so each STL stays under 30 MB) |
 | `print_sprue_thumb_1.25u_x3_1u_x6` | thumb caps: 1.25u 2 + 1 spare, 1u 4 + 2 spares (**always printed**) |
 | `print_sprue_1u_x_0.5u_x5` | 4 + 1 spare |
 | `print_sprue_1u_home_x3` | 2 + 1 spare |

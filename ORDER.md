@@ -52,7 +52,7 @@
 - **キーキャップ：** 全部 JLC3DP で印刷する場合は、下の連結品を追加で発注する（ACC のデータは CC BY-NC：個人利用のみ）。
   | 連結品 | 使う数＋予備 |
   |---|---|
-  | `keycaps/print_sprue_1u_x57.stl`（約49 MB、JLC3DP の上限は100 MB） | 51＋6 |
+  | `keycaps/print_sprue_1u_x29_a.stl` と `keycaps/print_sprue_1u_x28_b.stl`（2部品に分割） | 51＋6 |
   | `keycaps/print_sprue_1u_home_x3.stl`（F・J） | 2＋1 |
   | `keycaps/print_sprue_1u_x_0.5u_x5.stl`（L・R・↑・↓） | 4＋1 |
   - 公式の ACC（PBT）を買う場合は 1u×51、1u Home×2、0.5u（1u×0.5u）×4。親指の6キーはふっくら型を印刷するので、どちらの場合も買わなくてよい。

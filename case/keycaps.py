@@ -108,7 +108,10 @@ def sprue(items, cols, px, py, name):
 
 SP = 1.1   # ~10 % spares: the ClickBoard author saw about 1 in 10 printed caps fail on burrs
 n1 = int(need['1u'] * SP + 0.999)
-sprue(['1u'] * n1, 8, 19.0, 18.5, f'print_sprue_1u_x{n1}')
+# split in two: one 57-cap sprue is a ~45 MB STL, over the 30 MB file limit of the chat it is handed over in
+na = (n1 + 1) // 2
+sprue(['1u'] * na, 8, 19.0, 18.5, f'print_sprue_1u_x{na}_a')
+sprue(['1u'] * (n1 - na), 8, 19.0, 18.5, f'print_sprue_1u_x{n1 - na}_b')
 if need['1.25u']:
     sprue(['1.25u'] * (need['1.25u'] + 1), 4, 23.5, 18.5, f"print_sprue_1.25u_x{need['1.25u'] + 1}")
 # thumb caps are always printed (no ACC part): 1.25u + 1 spare, 1u + 2 spares
