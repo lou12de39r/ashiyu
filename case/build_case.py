@@ -30,7 +30,8 @@ Z_PB = FLOOR + BAT_T + BAT_CLR          # PCB bottom = seam between the two part
 Z_PT = Z_PB + PCB_T                     # PCB top
 PLATE_B = Z_PT + 3.0
 PLATE_T = Z_PT + 5.0
-TP_SKIN = 1.0                           # plate over the trackpad (TPS43 is optimised for a 1 mm overlay)
+TP_PLATE = (45.0, 42.0, 1.0, 1.5)       # trackpad cover plate (1 mm acrylic, laser cut; resin spare printed): w, h, t, corner r
+TP_PLATE_CLR = 0.15                     # recess clearance per side
 HOLE_R = float(os.environ.get('HOLE_R', '1.8'))   # keycap hole corner radius (largest that clears the ACC corner hooks: hole_radius_test.py)
 KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
@@ -119,11 +120,12 @@ for e in I['leds']:
 # trackpad pocket from below: TPS43 (43 x 40 x 1.0 PCB) stuck to a 1.0 mm skin
 tp = I['trackpad']
 tpc = (tp['x'] + tp['w'] / 2, tp['y'] + tp['h'] / 2)
-add_cut(box(tpc[0], tpc[1], tp['w'] + 0.6, tp['h'] + 0.6, PLATE_B - 0.2, PLATE_T - TP_SKIN, r=1.0))
-
-# shallow groove round the touch area so a finger can feel its edge (skin stays 1.0 mm over the pad itself)
-add_cut(box(tpc[0], tpc[1], tp['w'] + 1.6, tp['h'] + 1.6, PLATE_T - 0.4, PLATE_T + 0.2, r=2.0)
-        .cut(box(tpc[0], tpc[1], tp['w'], tp['h'], PLATE_T - 0.5, PLATE_T + 0.3, r=1.6)))
+# trackpad: open window for the module (43.6 x 40.6, through the plate) + a 1.0 mm deep recess on top for the cover
+# plate (45.0 x 42.0 x 1.0, r1.5) which rests on the 0.85 mm ledge left round the window, flush with the top.
+# The TPS43 is stuck to the underside of the cover plate (its own adhesive).
+add_cut(box(tpc[0], tpc[1], tp['w'] + 0.6, tp['h'] + 0.6, PLATE_B - 0.2, PLATE_T + 0.2, r=1.0))
+_pw, _ph, _pt, _pr = TP_PLATE
+add_cut(box(tpc[0], tpc[1], _pw + 2 * TP_PLATE_CLR, _ph + 2 * TP_PLATE_CLR, PLATE_T - _pt, PLATE_T + 0.2, r=_pr + TP_PLATE_CLR))
 
 # reset button over SW66: a printed plunger (dropped in from below, flange under the plate) pressed by a fingertip.
 # SW66 = XKB TS-1928-B, 0.6 mm tall, 160 gf, so an accidental brush does not reset it.  Plunger top 0.2 below the
@@ -252,6 +254,18 @@ def export(shape, name):
 export(top, 'tomtho_mk2_top_frame')
 export(bot, 'tomtho_mk2_bottom_plate')
 export(cap, 'tomtho_mk2_keycap_0.5u_x_0.5u')
+# trackpad cover plate: resin spare (same size as the acrylic one) + laser-cut outline for the acrylic (4 plates)
+tp_plate = cq.Workplane('XY').sketch().rect(_pw, _ph).vertices().fillet(_pr).finalize().extrude(_pt)
+export(tp_plate, 'tomtho_mk2_trackpad_plate_resin')
+def _rr_path(x0, y0, w, h, r):
+    return (f'M {x0 + r} {y0} H {x0 + w - r} A {r} {r} 0 0 1 {x0 + w} {y0 + r} V {y0 + h - r} '
+            f'A {r} {r} 0 0 1 {x0 + w - r} {y0 + h} H {x0 + r} A {r} {r} 0 0 1 {x0} {y0 + h - r} V {y0 + r} '
+            f'A {r} {r} 0 0 1 {x0 + r} {y0} Z')
+_paths = ''.join(f'<path d="{_rr_path(5 + i * (_pw + 5), 5, _pw, _ph, _pr)}" fill="none" stroke="#ff0000" stroke-width="0.001"/>'
+                 for i in range(4))
+_W, _H = 4 * (_pw + 5) + 5, _ph + 10
+open(os.path.join(OUT, 'trackpad_plate_acrylic_1mm_x4.svg'), 'w').write(
+    f'<svg xmlns="http://www.w3.org/2000/svg" width="{_W}mm" height="{_H}mm" viewBox="0 0 {_W} {_H}">{_paths}</svg>')
 # the same cap x 6 on a sprue (one 3D-print part: a single 8.6 mm cap is under JLC3DP's minimum part size)
 pitch = 13.0
 sprue = None
