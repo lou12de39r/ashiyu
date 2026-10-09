@@ -208,6 +208,15 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
         mirror = ' (justify mirror)' if layer.startswith('B.') else ''
         o.append(f'\t(gr_text {q(t)} (at {f(x)} {f(y)}) (layer {q(layer)}) (uuid {q(U("txt", i))}) '
                  f'{_font(sz)[:-1]}{mirror}))\n')
+    lg = getattr(D, 'LOGO', None)
+    if lg:
+        src = open(os.path.join(REPO, lg['file'])).read()
+        mir = -1 if lg['layer'].startswith('B.') else 1
+        for i, blk in enumerate(re.findall(r'\(fp_poly\s*\(pts(.*?)\)\s*\(stroke', src, re.S)):
+            pts = [(lg['x'] + mir * lg['scale'] * float(a), lg['y'] + lg['scale'] * float(b))
+                   for a, b in re.findall(r'\(xy (-?[\d.]+) (-?[\d.]+)\)', blk)]
+            o.append('\t(gr_poly (pts ' + ' '.join(f'(xy {f(x)} {f(y)})' for x, y in pts) + ') '
+                     f'(stroke (width 0) (type solid)) (fill yes) (layer {q(lg["layer"])}) (uuid {q(U("logo", i))}))\n')
     for i, (x1, y1, x2, y2) in enumerate(D.SLOTS):
         r = min(x2 - x1, y2 - y1) / 2
         o.append(f'\t(gr_rect (start {f(x1)} {f(y1)}) (end {f(x2)} {f(y2)}) (stroke (width 0.1) (type default)) '

@@ -219,13 +219,16 @@ SILK_RECTS = [('B.SilkS',) + BATTERY_AREA]
 SILK_TEXTS = [
     ('B.SilkS', 57.0, 54.0, 'LiPo 1S  (<= 3.0 t x 40 x 70)', 1.5),
     ('B.SilkS', 57.0, 57.5, 'lead -> slot -> J2 (pin1 = +)', 1.0),
-    ('B.SilkS', 200.0, 54.0, 'tomtho-slim mk2', 2.5),
-    ('B.SilkS', 200.0, 58.0, 'nRF52840 MDBT50Q / TPS43 / ZMK / 18.5x18', 1.2),
-    ('B.SilkS', 200.0, 61.0, 'JLCJLCJLCJLC', 1.0),
+    ('B.SilkS', 200.0, 77.0, 'tomtho-slim mk2', 2.5),
+    ('B.SilkS', 200.0, 81.0, 'Designed by tommys079', 1.5),
+    ('B.SilkS', 200.0, 84.5, 'nRF52840 MDBT50Q / TPS43 / ZMK / 18.5x18', 1.2),
+    ('B.SilkS', 200.0, 87.5, 'JLCJLCJLCJLC', 1.0),
     ('F.SilkS', U1X - 3.81 + 3.81, 25.9, 'DIO CLK GND VDD', 0.8),
     ('F.SilkS', FX + 41.0, 7.4, 'ON   OFF', 0.8),
     ('F.SilkS', FX + 2.4, 27.6, '+', 1.0),
 ]
+# designer's logo (bitmap2component footprint, F.SilkS polygons) on the back silkscreen, mirrored to read from below
+LOGO = dict(file='lib/tommys079_logo.kicad_mod', x=200.0, y=52.0, scale=0.8, layer='B.SilkS')
 TRACKS, VIAS = [], []
 for _r in ('C2', 'C3', 'C4', 'C5', 'R9', 'R10', 'U2', 'H3', 'H4'):
     PARTS[_r]['ref_fab'] = True                     # crowded spots: reference on F.Fab instead of silk
