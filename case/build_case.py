@@ -86,60 +86,14 @@ def tapered_hole(cx, cy, w, h, rot, z0, depth, grow):
     return cq.Workplane('XY').add(s).rotate((0, 0, 0), (0, 0, 1), -rot).translate((cx, Y(cy), 0))
 
 
-# Snap-fit version: the wall stands SNAP_GAP off the PCB on the front, left and right so that spring tabs rising from
-# the bottom plate fit between PCB and wall (rear wall unchanged: USB-C and the power-switch lever must stay reachable).
-SNAP_GAP = 1.5
-GAP = {'rear': PCB_CLR, 'front': SNAP_GAP, 'left': SNAP_GAP, 'right': SNAP_GAP}
-cavity = (bx0 - GAP['left'], by0 - GAP['rear'], bx1 + GAP['right'], by1 + GAP['front'])
-case_out = (cavity[0] - WALL, cavity[1] - WALL, cavity[2] + WALL, cavity[3] + WALL)
+case_out = (-WALL - PCB_CLR + bx0, -WALL - PCB_CLR + by0, bx1 + PCB_CLR + WALL, by1 + PCB_CLR + WALL)
 case_r = BR + PCB_CLR + WALL
 inner = (bx0 - PCB_CLR, by0 - PCB_CLR, bx1 + PCB_CLR, by1 + PCB_CLR)
 inner_r = BR + PCB_CLR
 
-# ------------------------------------------------------------------ snap-fit tabs (bottom plate) + grooves (top frame)
-# Tab: 8 wide x 0.9 thick, rooted on the bottom-plate floor (z = FLOOR) and freed from the rim by a pocket, rising to
-# TAB_TOP (0.3 under the plate).  A 0.5 mm bump with 45 deg ramps on both sides clicks into a 0.6 deep groove in the
-# wall's inner face (ramps both ways: it can be pulled apart again).  Spring length ~7 mm, 0.5 mm deflection
-# -> bending strain about 1.4 % (1.5 t y / L^2).
-TAB_W, TAB_T, TAB_CLR, BUMP, GROOVE = 8.0, 0.9, 0.15, 0.5, 0.6
-TAB_TOP = PLATE_B - 0.3
-BUMP_Z = (TAB_TOP - 1.5, TAB_TOP - 0.1)
-TABS = [('front', x) for x in (25.0, 95.0, 182.0, 252.0)] + [('left', y) for y in (30.0, 78.0)] + \
-       [('right', y) for y in (30.0, 78.0)]
-RIBS = [('front', x) for x in (60.0, 138.5, 216.0)] + [('left', 54.0), ('right', 54.0)]
-
-
-def side_frame(side, pos):
-    """(CAD point on the wall's inner face, rotation in deg) for a local frame with +Y = outward normal, X along the wall."""
-    if side == 'front':
-        return (pos, Y(cavity[3])), 180.0
-    if side == 'rear':
-        return (pos, Y(cavity[1])), 0.0
-    if side == 'left':
-        return (cavity[0], Y(pos)), 90.0
-    return (cavity[2], Y(pos)), -90.0
-
-
-def local(solid, side, pos):
-    (px, py), rot = side_frame(side, pos)
-    return solid.rotate((0, 0, 0), (0, 0, 1), rot).translate((px, py, 0))
-
-
-def lbox(u0, u1, v0, v1, z0, z1):
-    return cq.Workplane('XY').box(u1 - u0, v1 - v0, z1 - z0, centered=False).translate((u0, v0, z0))
-
-
-def tab_solid():
-    t = lbox(-TAB_W / 2, TAB_W / 2, -TAB_CLR - TAB_T, -TAB_CLR, FLOOR - 0.01, TAB_TOP)
-    z0, z1 = BUMP_Z
-    bump = (cq.Workplane('YZ').polyline([(-TAB_CLR, z0), (-TAB_CLR + BUMP, z0 + BUMP), (-TAB_CLR + BUMP, z1 - BUMP),
-                                         (-TAB_CLR, z1)]).close().extrude(TAB_W).translate((-TAB_W / 2, 0, 0)))
-    return t.union(bump)
-
-
 # ================================================================== top frame
 top = slab(*case_out, case_r, Z_PB, PLATE_T).faces('>Z').edges().chamfer(TOP_CHAMFER)
-top = top.cut(slab(*cavity, inner_r, Z_PB - 0.1, PLATE_B))
+top = top.cut(slab(*inner, inner_r, Z_PB - 0.1, PLATE_B))
 
 cut = None
 
@@ -202,18 +156,9 @@ for x, y in I['screws']:
     add = add.union(cyl(x, y, BOSS_D, Z_PT, PLATE_B + 0.01))
 for x, y in I['posts']:
     add = add.union(box(x, y, 1.4, 1.4, Z_PT, PLATE_B + 0.01))
-# locating ribs on the wider walls: keep the PCB 0.3 off the wall as before
-for side, pos in RIBS:
-    add = add.union(local(lbox(-1.0, 1.0, -(GAP[side] - PCB_CLR), 0.01, Z_PB, PLATE_B + 0.01), side, pos))
 top = top.union(add)
 for x, y in I['screws']:
     top = top.cut(cyl(x, y, PILOT_D, Z_PT - 0.1, PLATE_T - 0.8))
-# snap grooves in the wall's inner face + a 0.4 lead-in chamfer strip at the bottom inner edge of the wall
-for side, pos in TABS:
-    top = top.cut(local(lbox(-TAB_W / 2 - 0.3, TAB_W / 2 + 0.3, -0.01, GROOVE, BUMP_Z[0] - 0.15, BUMP_Z[1] + 0.15), side, pos))
-    lead = (cq.Workplane('YZ').polyline([(-0.01, Z_PB - 0.01), (0.4, Z_PB - 0.01), (-0.01, Z_PB + 0.4)]).close()
-            .extrude(TAB_W + 0.6).translate((-TAB_W / 2 - 0.3, 0, 0)))
-    top = top.cut(local(lead, side, pos))
 
 # rear wall openings: USB-C (notch, open at the top: a 6 mm plug overmold leaves no wall above it) and the
 # power-switch lever slot.  Both only through the wall.
@@ -277,10 +222,6 @@ for lab in FEET:
     k = next(k for k in I['keys'] if k['label'] == lab)
     bot = bot.cut(cyl(k['cx'], k['cy'], FOOT_D, -0.1, FOOT_DEPTH))
     print(f'foot recess under "{lab}" at ({k["cx"]:.1f}, {k["cy"]:.1f})')
-# snap tabs: free a pocket in the rim round each tab root, then add the tab rooted on the floor
-for side, pos in TABS:
-    bot = bot.cut(local(lbox(-TAB_W / 2 - 0.6, TAB_W / 2 + 0.6, -GAP[side] - 0.8, 0.0, FLOOR, Z_PB + 0.1), side, pos))
-    bot = bot.union(local(tab_solid(), side, pos))
 # USB-C notch continues 0.4 into the bottom rim
 bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 0.1))
 
@@ -314,12 +255,6 @@ def export(shape, name):
 
 export(top, 'tomtho_mk2_top_frame')
 export(bot, 'tomtho_mk2_bottom_plate')
-# snap-fit test coupon: a 28 mm slice of the left wall round the tab at y = 30 (frame piece + bottom piece), to try the
-# click and the strength in the same resin before trusting the whole case to it
-_cx0, _cx1 = case_out[0] - 1.0, case_out[0] + 14.0
-_clip = box((_cx0 + _cx1) / 2, 30.0, _cx1 - _cx0, 28.0, -1.0, PLATE_T + 1.0)
-export(top.intersect(_clip), 'snap_test_top_frame_piece')
-export(bot.intersect(_clip), 'snap_test_bottom_piece')
 export(cap, 'tomtho_mk2_keycap_0.5u_x_0.5u')
 # trackpad cover plate: resin spare (same size as the acrylic one) + laser-cut outline for the acrylic (4 plates)
 tp_plate = cq.Workplane('XY').sketch().rect(_pw, _ph).vertices().fillet(_pr).finalize().extrude(_pt)
