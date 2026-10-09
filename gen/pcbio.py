@@ -189,7 +189,7 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
         netcode[n] = len(nets) + 1 + i
     o = ['(kicad_pcb\n\t(version 20240108)\n\t(generator "pcbnew")\n\t(generator_version "8.0")\n',
          '\t(general\n\t\t(thickness 1.2)\n\t\t(legacy_teardrops no)\n\t)\n\t(paper "A3")\n',
-         '\t(title_block\n\t\t(title "tomtho-slim mk2")\n\t\t(date "2026-10-07")\n\t\t(rev "mk2-0.1")\n'
+         '\t(title_block\n\t\t(title "Ashiyu (tomtho-slim mk2)")\n\t\t(date "2026-10-07")\n\t\t(rev "mk2-0.1")\n'
          '\t\t(comment 1 "65 keys / ALPS SKRA / 18.5x18mm / MDBT50Q-1MV2 (nRF52840) / TPS43 trackpad via FPC / ZMK")\n\t)\n',
          PCB_LAYERS,
          '\t(setup\n\t\t(pad_to_mask_clearance 0)\n\t\t(allow_soldermask_bridges_in_footprints no)\n'

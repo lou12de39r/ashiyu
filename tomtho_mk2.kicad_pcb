@@ -8,7 +8,7 @@
 	)
 	(paper "A3")
 	(title_block
-		(title "tomtho-slim mk2")
+		(title "Ashiyu (tomtho-slim mk2)")
 		(date "2026-10-07")
 		(rev "mk2-0.1")
 		(comment 1 "65 keys / ALPS SKRA / 18.5x18mm / MDBT50Q-1MV2 (nRF52840) / TPS43 trackpad via FPC / ZMK")

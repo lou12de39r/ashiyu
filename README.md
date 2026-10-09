@@ -1,4 +1,4 @@
-# tomtho-slim mk2 — layout v20 and board plan
+# Ashiyu（足湯）— tomtho-slim mk2: layout v20 and board plan
 
 **Ashiyu（足湯）** — tomtho-slim mk2 の愛称。Designed by tommys079.
 Inspired by [ClickBoard](https://salicylic-acid3.hatenablog.com/) by Salicylic_acid3（自作キーボード温泉街）. Keycap models are derived from ACC Keycaps (CC BY-NC 4.0).

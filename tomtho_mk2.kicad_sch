@@ -5,7 +5,7 @@
 	(uuid "cb8fbeca-ed00-5759-aba1-2394e5039438")
 	(paper "A2")
 	(title_block
-		(title "tomtho-slim mk2")
+		(title "Ashiyu (tomtho-slim mk2)")
 		(date "2026-10-07")
 		(rev "mk2-0.1")
 		(comment 1 "65 keys / ALPS SKRA / MDBT50Q-1MV2 / TPS43 trackpad (FPC) / ZMK")

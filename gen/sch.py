@@ -361,7 +361,7 @@ def write(path):
     body = build()
     o = ['(kicad_sch\n\t(version 20250114)\n\t(generator "eeschema")\n\t(generator_version "9.0")\n',
          f'\t(uuid {q(ROOT_UUID)})\n\t(paper "A2")\n',
-         '\t(title_block\n\t\t(title "tomtho-slim mk2")\n\t\t(date "2026-10-07")\n\t\t(rev "mk2-0.1")\n'
+         '\t(title_block\n\t\t(title "Ashiyu (tomtho-slim mk2)")\n\t\t(date "2026-10-07")\n\t\t(rev "mk2-0.1")\n'
          '\t\t(comment 1 "65 keys / ALPS SKRA / MDBT50Q-1MV2 / TPS43 trackpad (FPC) / ZMK")\n\t)\n',
          lib_symbols(), body,
          '\t(sheet_instances\n\t\t(path "/" (page "1"))\n\t)\n\t(embedded_fonts no)\n)\n']

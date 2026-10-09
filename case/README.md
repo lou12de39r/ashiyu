@@ -1,4 +1,4 @@
-# mk2 case: top frame + bottom plate
+# Ashiyu (tomtho-slim mk2) case: top frame + bottom plate
 
 The case is generated in CadQuery by CI (`.github/workflows/case.yml`). Results, including STEP/STL files, section views and interference checks, go to the **`case-results`** branch.
 
