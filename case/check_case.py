@@ -90,9 +90,13 @@ for k, c in caps:
         bb = b.BoundingBox()
         if bb.xmax < bbc.xmin or bb.xmin > bbc.xmax or bb.ymax < bbc.ymin or bb.ymin > bbc.ymax:
             continue
-        if ref in sw_body:                   # switches: only the body counts (own switch and neighbours alike)
+        if ref in sw_body:
+            # switches: the cap can only travel until its nub (0.1 above the actuator at rest) has pushed the actuator
+            # flush with the body (actuator top 3.4 -> body top 2.8), i.e. 0.7 mm.  Only the body counts there.
             b = sw_body[ref]
-        v = inter(cp, b)
+            v = inter(c.translate(cq.Vector(0, 0, -0.7)), b)
+        else:
+            v = inter(cp, b)
         if v > 0.01:
             bad += 1
             p(f'PRESSED cap "{k["label"]}" hits {ref}: {v:.3f} mm3')
@@ -108,10 +112,12 @@ for k, c in caps:
     near = c.intersect(cq.Workplane('XY').workplane(offset=Z_PT).center(body.Center().x, body.Center().y)
                        .rect(7.0, 7.0).extrude(6.0).val())
     low = near.BoundingBox().zmin - Z_PT                 # lowest point of the cap over its switch, above the PCB
-    under = c.intersect(cq.Workplane('XY').workplane(offset=Z_PT).center(body.Center().x, body.Center().y)
-                        .rect(5.8, 5.8).extrude(6.0).val()).BoundingBox().zmin - Z_PT
-    p(f'small key "{k["label"]}" ({own}): lowest point over the switch {low:.2f} above PCB, '
-      f'over the actuator {under:.2f} (actuator top 3.40, body top 2.80); pressed 1.0 -> {low - 1.0:.2f}')
+    rest = near.cut(cq.Workplane('XY').workplane(offset=Z_PT).center(body.Center().x, body.Center().y)
+                    .circle(1.8).extrude(6.0).val())
+    other = rest.BoundingBox().zmin - Z_PT if rest.Volume() > 1e-6 else float('nan')
+    p(f'small key "{k["label"]}" ({own}): nub bottom {low:.2f} above PCB (actuator top 3.40, gap {low - 3.40:.2f}); '
+      f'lowest other part over the switch {other:.2f} (body top 2.80, room {other - 2.80:.2f}; '
+      f'the cap travels at most {low - 2.80:.2f} before the actuator bottoms)')
 for ref, b in blocks:
     for nm, other in (('top frame', top), ('bottom', bot)):
         v = inter(b, other)
