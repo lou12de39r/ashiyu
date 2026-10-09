@@ -1,0 +1,212 @@
+== C2906290
+[INFO] Created 3D model for ID: C2906290
+       3D model name: USB-C-SMD_SHOU_TYPE-C-16P-CB1.6
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.step
+-- easyeda2kicad.py v1.0.1 --
+== C965847
+[INFO] Created 3D model for ID: C965847
+       3D model name: LED-SMD_4P-L2.0-W1.3-RD-TL
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/LED-SMD_4P-L2.0-W1.3-RD-TL.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/LED-SMD_4P-L2.0-W1.3-RD-TL.step
+-- easyeda2kicad.py v1.0.1 --
+== C5213729
+[INFO] Created 3D model for ID: C5213729
+       3D model name: FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.step
+-- easyeda2kicad.py v1.0.1 --
+== C202383
+[INFO] Created 3D model for ID: C202383
+       3D model name: SW-SMD_4P-L6.2-W6.2-H3.4-P4.00-LS6.8
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SW-SMD_4P-L6.2-W6.2-H3.4-P4.00-LS6.8.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SW-SMD_4P-L6.2-W6.2-H3.4-P4.00-LS6.8.step
+-- easyeda2kicad.py v1.0.1 --
+== C5271144
+[INFO] Created 3D model for ID: C5271144
+       3D model name: QFN-48_L7.0-W7.0-P0.50-BL-EP5.6
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/QFN-48_L7.0-W7.0-P0.50-BL-EP5.6.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/QFN-48_L7.0-W7.0-P0.50-BL-EP5.6.step
+-- easyeda2kicad.py v1.0.1 --
+== C19666
+[INFO] Created 3D model for ID: C19666
+       3D model name: C0603_L1.6-W0.8-H0.8
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/C0603_L1.6-W0.8-H0.8.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/C0603_L1.6-W0.8-H0.8.step
+-- easyeda2kicad.py v1.0.1 --
+== C19702
+[INFO] Created Kicad symbol for ID : C19702
+       Symbol name : CL10A106KP8NNNC
+       Library path : /tmp/pub/lib/lcsc.kicad_sym
+[ERROR] Footprint for C19702 already exists. Use --overwrite to replace
+-- easyeda2kicad.py v1.0.1 --
+== C14663
+[INFO] Created Kicad symbol for ID : C14663
+       Symbol name : CC0603KRX7R9BB104
+       Library path : /tmp/pub/lib/lcsc.kicad_sym
+[ERROR] Footprint for C14663 already exists. Use --overwrite to replace
+-- easyeda2kicad.py v1.0.1 --
+== C81598
+[INFO] Created 3D model for ID: C81598
+       3D model name: SOD-123F_L2.7-W1.6-LS3.8-RD
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SOD-123F_L2.7-W1.6-LS3.8-RD.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SOD-123F_L2.7-W1.6-LS3.8-RD.step
+-- easyeda2kicad.py v1.0.1 --
+== C8598
+[INFO] Created 3D model for ID: C8598
+       3D model name: SOD-123_L2.7-W1.6-LS3.7-RD-1
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SOD-123_L2.7-W1.6-LS3.7-RD-1.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SOD-123_L2.7-W1.6-LS3.7-RD-1.step
+-- easyeda2kicad.py v1.0.1 --
+== C165948
+[INFO] Created 3D model for ID: C165948
+       3D model name: USB-C_SMD-TYPE-C-31-M-12_1
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/USB-C_SMD-TYPE-C-31-M-12_1.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/USB-C_SMD-TYPE-C-31-M-12_1.step
+-- easyeda2kicad.py v1.0.1 --
+== C160402
+[INFO] Created 3D model for ID: C160402
+       3D model name: CONN-SMD_SR1.00-WS-2P
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/CONN-SMD_SR1.00-WS-2P.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/CONN-SMD_SR1.00-WS-2P.step
+-- easyeda2kicad.py v1.0.1 --
+== C2286
+[INFO] Created 3D model for ID: C2286
+       3D model name: LED0603_L1.6-W0.8-H0.6
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/LED0603_L1.6-W0.8-H0.6.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/LED0603_L1.6-W0.8-H0.6.step
+-- easyeda2kicad.py v1.0.1 --
+== C15127
+[INFO] Created 3D model for ID: C15127
+       3D model name: SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.step
+-- easyeda2kicad.py v1.0.1 --
+== C23186
+[INFO] Created 3D model for ID: C23186
+       3D model name: R0603
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/R0603.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/R0603.step
+-- easyeda2kicad.py v1.0.1 --
+== C25804
+[INFO] Created Kicad symbol for ID : C25804
+       Symbol name : 0603WAF1002T5E
+       Library path : /tmp/pub/lib/lcsc.kicad_sym
+[ERROR] Footprint for C25804 already exists. Use --overwrite to replace
+-- easyeda2kicad.py v1.0.1 --
+== C21190
+[INFO] Created Kicad symbol for ID : C21190
+       Symbol name : 0603WAF1001T5E
+       Library path : /tmp/pub/lib/lcsc.kicad_sym
+[ERROR] Footprint for C21190 already exists. Use --overwrite to replace
+-- easyeda2kicad.py v1.0.1 --
+== C25803
+[INFO] Created Kicad symbol for ID : C25803
+       Symbol name : 0603WAF1003T5E
+       Library path : /tmp/pub/lib/lcsc.kicad_sym
+[ERROR] Footprint for C25803 already exists. Use --overwrite to replace
+-- easyeda2kicad.py v1.0.1 --
+== C23162
+[INFO] Created Kicad symbol for ID : C23162
+       Symbol name : 0603WAF4701T5E
+       Library path : /tmp/pub/lib/lcsc.kicad_sym
+[ERROR] Footprint for C23162 already exists. Use --overwrite to replace
+-- easyeda2kicad.py v1.0.1 --
+== C1121891
+       Footprint name: KEY-SMD_4P-L2.8-W2.0-P1.20-LS3.0-TL
+       Footprint path: /tmp/pub/lib/lcsc.pretty/KEY-SMD_4P-L2.8-W2.0-P1.20-LS3.0-TL.kicad_mod
+[WARNING] No 3D model available for this component
+[WARNING] No 3D model available for ID: C1121891
+-- easyeda2kicad.py v1.0.1 --
+== C221841
+[INFO] Created 3D model for ID: C221841
+       3D model name: SW-SMD_PCM12SMTR
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SW-SMD_PCM12SMTR.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SW-SMD_PCM12SMTR.step
+-- easyeda2kicad.py v1.0.1 --
+== C5118826
+       Footprint name: COMM-SMD_MDBT50Q-1MV2-1
+       Footprint path: /tmp/pub/lib/lcsc.pretty/COMM-SMD_MDBT50Q-1MV2-1.kicad_mod
+[WARNING] No 3D model available for this component
+[WARNING] No 3D model available for ID: C5118826
+-- easyeda2kicad.py v1.0.1 --
+== C7519
+[INFO] Created 3D model for ID: C7519
+       3D model name: SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.step
+-- easyeda2kicad.py v1.0.1 --
+== C6
+[ERROR] Failed to fetch data from EasyEDA API for part C6
+-- easyeda2kicad.py v1.0.1 --
+== C6
+[ERROR] Failed to fetch data from EasyEDA API for part C6
+-- easyeda2kicad.py v1.0.1 --
+== C424093
+[INFO] Created 3D model for ID: C424093
+       3D model name: SOT-23-5_L2.9-W1.6-H1.1-LS2.8-P0.95
+       3D model path (wrl): /tmp/pub/lib/lcsc.3dshapes/SOT-23-5_L2.9-W1.6-H1.1-LS2.8-P0.95.wrl
+       3D model path (step): /tmp/pub/lib/lcsc.3dshapes/SOT-23-5_L2.9-W1.6-H1.1-LS2.8-P0.95.step
+-- easyeda2kicad.py v1.0.1 --
+/tmp/pub:
+lib
+log.txt
+
+/tmp/pub/lib:
+lcsc.3dshapes
+lcsc.kicad_sym
+lcsc.pretty
+
+/tmp/pub/lib/lcsc.3dshapes:
+C0603_L1.6-W0.8-H0.8.step
+C0603_L1.6-W0.8-H0.8.wrl
+CONN-SMD_SR1.00-WS-2P.step
+CONN-SMD_SR1.00-WS-2P.wrl
+FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.step
+FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.wrl
+LED-SMD_4P-L2.0-W1.3-RD-TL.step
+LED-SMD_4P-L2.0-W1.3-RD-TL.wrl
+LED0603_L1.6-W0.8-H0.6.step
+LED0603_L1.6-W0.8-H0.6.wrl
+QFN-48_L7.0-W7.0-P0.50-BL-EP5.6.step
+QFN-48_L7.0-W7.0-P0.50-BL-EP5.6.wrl
+R0603.step
+R0603.wrl
+SOD-123F_L2.7-W1.6-LS3.8-RD.step
+SOD-123F_L2.7-W1.6-LS3.8-RD.wrl
+SOD-123_L2.7-W1.6-LS3.7-RD-1.step
+SOD-123_L2.7-W1.6-LS3.7-RD-1.wrl
+SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.step
+SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.wrl
+SOT-23-5_L2.9-W1.6-H1.1-LS2.8-P0.95.step
+SOT-23-5_L2.9-W1.6-H1.1-LS2.8-P0.95.wrl
+SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.step
+SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.wrl
+SW-SMD_4P-L6.2-W6.2-H3.4-P4.00-LS6.8.step
+SW-SMD_4P-L6.2-W6.2-H3.4-P4.00-LS6.8.wrl
+SW-SMD_PCM12SMTR.step
+SW-SMD_PCM12SMTR.wrl
+USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.step
+USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.wrl
+USB-C_SMD-TYPE-C-31-M-12_1.step
+USB-C_SMD-TYPE-C-31-M-12_1.wrl
+
+/tmp/pub/lib/lcsc.pretty:
+C0603.kicad_mod
+COMM-SMD_MDBT50Q-1MV2-1.kicad_mod
+CONN-SMD_2P-P1.00_SM02B-SRSS-TB-LF-SN.kicad_mod
+FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.kicad_mod
+KEY-SMD_4P-L2.8-W2.0-P1.20-LS3.0-TL.kicad_mod
+LED-SMD_4P-L2.0-W1.3-RD-TL.kicad_mod
+LED-SMD_L1.6-W0.8-R-RD.kicad_mod
+QFN-48_L7.0-W7.0-P0.50-BL-EP5.6.kicad_mod
+R0603.kicad_mod
+SOD-123F_L2.7-W1.6-LS3.8-RD.kicad_mod
+SOD-123_L2.7-W1.6-LS3.7-RD-1.kicad_mod
+SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BL.kicad_mod
+SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL.kicad_mod
+SOT-23_L2.9-W1.3-P1.90-LS2.4-BR.kicad_mod
+SW-SMD_4P-L6.2-W6.2-P4.00-LS6.8.kicad_mod
+SW-SMD_PCM12SMTR.kicad_mod
+USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.kicad_mod
+USB-C_SMD-TYPE-C-31-M-12_1.kicad_mod
