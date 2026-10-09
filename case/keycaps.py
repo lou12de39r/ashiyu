@@ -62,6 +62,25 @@ def domed(acc):
 caps['1u_thumb'] = domed(caps['1u'])
 caps['1.25u_thumb'] = domed(caps['1.25u'])
 
+# "this way up" mark: a filled triangle engraved into the underside of every cap, pointing to the rear of the board
+# (+Y here; layout y is negated when the caps are placed).  Away from the nub, the switch and the corner hooks.
+# 0.5 mm deep (JLC3DP guide: engraved details >= 0.8 mm wide; the filled triangle is 3 mm), top skin kept >= 0.6 mm.
+def up_mark(shape, cx, cy, side=3.0, depth=0.5):
+    h = side * 3 ** 0.5 / 2
+    pts = [(cx - side / 2, cy - h / 3), (cx + side / 2, cy - h / 3), (cx, cy + 2 * h / 3)]
+    col = cq.Workplane('XY').workplane(offset=-4.0).polyline(pts).close().extrude(8.0).val()
+    mat = shape.intersect(col)
+    bb = mat.BoundingBox()
+    d = min(depth, bb.zmax - bb.zmin - 0.6)
+    cut = cq.Workplane('XY').workplane(offset=bb.zmin - 0.2).polyline(pts).close().extrude(0.2 + d).val()
+    print(f'up mark at ({cx}, {cy}): underside z {bb.zmin:.2f}, top z {bb.zmax:.2f}, depth {d:.2f}')
+    return shape.cut(cut).clean()
+
+
+for key in ('1u', '1u_home', '1.25u', '1u_thumb', '1.25u_thumb'):
+    caps[key] = up_mark(caps[key], 0.0, 4.2)
+caps['1u_x_0.5u'] = up_mark(caps['1u_x_0.5u'], 4.5, 0.0)
+
 
 def export(shape, name):
     cq.exporters.export(shape, os.path.join(OUT, name + '.step'))
