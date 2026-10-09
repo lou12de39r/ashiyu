@@ -210,6 +210,14 @@ bot = bot.cut(box((bat_box[0] + bat_box[2]) / 2, (bat_box[1] + bat_box[3]) / 2, 
 # screws: clearance + counterbore from below
 for x, y in I['screws']:
     bot = bot.cut(cyl(x, y, SCREW_CLR_D, -0.1, Z_PB + 0.1)).cut(cyl(x, y, HEAD_D, -0.1, HEAD_DEPTH))
+# rubber-foot recesses (YAHATA Slim Flex mini pad, d6 mm): d6.6 x 0.5 deep, centred under switch islands (solid above).
+# 4 front (1.5 mm hard pads) + 4 rear (3.0 mm hard pads): rear stands 1.5 mm higher -> about 1.2 deg tilt.
+FOOT_D, FOOT_DEPTH = 6.6, 0.5
+FEET = ['Fn', '無変換 L3', 'BS', '→', '`', '5', '6', '-']
+for lab in FEET:
+    k = next(k for k in I['keys'] if k['label'] == lab)
+    bot = bot.cut(cyl(k['cx'], k['cy'], FOOT_D, -0.1, FOOT_DEPTH))
+    print(f'foot recess under "{lab}" at ({k["cx"]:.1f}, {k["cy"]:.1f})')
 # USB-C notch continues 0.4 into the bottom rim
 bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 0.1))
 
