@@ -159,21 +159,27 @@ def write_footprint_lib(dirpath):
             fh.write(fp_body(name, ind=''))
 
 
-def board_outline(r=1.0):
-    x1, y1, x2, y2 = D.BOARD
+def rrect(x1, y1, x2, y2, r, tag):
+    """Rounded rectangle on Edge.Cuts (lines + arcs); zero-length sides are skipped (r = half the width -> slot)."""
     o = []
     segs = [((x1 + r, y1), (x2 - r, y1)), ((x2, y1 + r), (x2, y2 - r)),
             ((x2 - r, y2), (x1 + r, y2)), ((x1, y2 - r), (x1, y1 + r))]
     for i, (a, b) in enumerate(segs):
+        if math.hypot(b[0] - a[0], b[1] - a[1]) < 1e-6:
+            continue
         o.append(f'\t(gr_line (start {f(a[0])} {f(a[1])}) (end {f(b[0])} {f(b[1])}) (stroke (width 0.1) (type default)) '
-                 f'(layer "Edge.Cuts") (uuid {q(U("edge", i))}))\n')
+                 f'(layer "Edge.Cuts") (uuid {q(U(tag + "line", i))}))\n')
     k = r * (1 - math.sqrt(0.5))
     arcs = [((x1, y1 + r), (x1 + k, y1 + k), (x1 + r, y1)), ((x2 - r, y1), (x2 - k, y1 + k), (x2, y1 + r)),
             ((x2, y2 - r), (x2 - k, y2 - k), (x2 - r, y2)), ((x1 + r, y2), (x1 + k, y2 - k), (x1, y2 - r))]
-    for i, (s, m, e) in enumerate(arcs):
-        o.append(f'\t(gr_arc (start {f(s[0])} {f(s[1])}) (mid {f(m[0])} {f(m[1])}) (end {f(e[0])} {f(e[1])}) '
-                 f'(stroke (width 0.1) (type default)) (layer "Edge.Cuts") (uuid {q(U("arc", i))}))\n')
+    for i, (s_, m, e) in enumerate(arcs):
+        o.append(f'\t(gr_arc (start {f(s_[0])} {f(s_[1])}) (mid {f(m[0])} {f(m[1])}) (end {f(e[0])} {f(e[1])}) '
+                 f'(stroke (width 0.1) (type default)) (layer "Edge.Cuts") (uuid {q(U(tag + "arc", i))}))\n')
     return ''.join(o)
+
+
+def board_outline(r=1.0):
+    return rrect(*D.BOARD, r, '')
 
 
 def _poly(x1, y1, x2, y2):
@@ -218,9 +224,9 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
             o.append('\t(gr_poly (pts ' + ' '.join(f'(xy {f(x)} {f(y)})' for x, y in pts) + ') '
                      f'(stroke (width 0) (type solid)) (fill yes) (layer {q(lg["layer"])}) (uuid {q(U("logo", i))}))\n')
     for i, (x1, y1, x2, y2) in enumerate(D.SLOTS):
-        r = min(x2 - x1, y2 - y1) / 2
-        o.append(f'\t(gr_rect (start {f(x1)} {f(y1)}) (end {f(x2)} {f(y2)}) (stroke (width 0.1) (type default)) '
-                 f'(fill no) (layer "Edge.Cuts") (uuid {q(U("slot", i))}))\n')
+        # inner corners rounded: a router bit cannot cut a sharp inside corner; r = 1.0 (or a full round end on narrow slots)
+        r = min(D.SLOT_R, min(x2 - x1, y2 - y1) / 2)
+        o.append(rrect(x1, y1, x2, y2, r, f'slot{i}'))
     for i, (layer, x1, y1, x2, y2, w, net) in enumerate(tracks):
         o.append(f'\t(segment (start {f(x1)} {f(y1)}) (end {f(x2)} {f(y2)}) (width {f(w)}) (layer {q(layer)}) '
                  f'(net {netcode[net]}) (uuid {q(U("seg", i, x1, y1, x2, y2))}))\n')

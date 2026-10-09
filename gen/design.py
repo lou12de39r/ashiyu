@@ -214,6 +214,7 @@ CORNER_R = 4.4
 ANT_KEEPOUT = (U1X - 6.2, BOARD[1], U1X + 6.2, U1Y - 3.95)           # no copper on either layer
 MODULE_FCU_KEEPOUT = (U1X - 2.5, U1Y - 3.5, U1X + 2.5, U1Y + 5.6)     # no F.Cu tracks under the module centre
 BATTERY_AREA = (22.0, 34.0, 92.0, 74.0)                                # LiPo under the PCB (B side), 70 x 40 max
+SLOT_R = 1.0                                                            # inner corner radius of the cut-outs
 SLOTS = [(112.4, 21.6, 113.6, 27.6), TP_CUT]                            # battery lead pass-through, trackpad cut-out
 SILK_RECTS = [('B.SilkS',) + BATTERY_AREA]
 SILK_TEXTS = [
