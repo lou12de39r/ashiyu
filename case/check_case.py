@@ -124,6 +124,11 @@ for ref, b in blocks:
         if v > 0.01:
             bad += 1
             p(f'INTERFERENCE part {ref} x {nm}: {v:.3f} mm3')
+for nm, other in (('top frame', top), ('bottom', bot)):        # the PCB itself (plain slab, no holes)
+    v = inter(pcb, other)
+    if v > 0.01:
+        bad += 1
+        p(f'INTERFERENCE PCB x {nm}: {v:.3f} mm3')
 p('interferences:', bad)
 
 

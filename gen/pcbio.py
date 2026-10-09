@@ -230,6 +230,9 @@ def write_pcb(path, tracks, vias, zones=True, nc_nets=None):
     for i, (layer, x1, y1, x2, y2, w, net) in enumerate(tracks):
         o.append(f'\t(segment (start {f(x1)} {f(y1)}) (end {f(x2)} {f(y2)}) (width {f(w)}) (layer {q(layer)}) '
                  f'(net {netcode[net]}) (uuid {q(U("seg", i, x1, y1, x2, y2))}))\n')
+    # GND stitching vias that would crowd a mounting hole are dropped (the holes moved after routing)
+    vias = [(x, y, net) for (x, y, net) in vias
+            if not (net == 'GND' and any(math.hypot(x - hx, y - hy) < 2.6 for hx, hy in getattr(D, 'SCREWS', [])))]
     for i, (x, y, net) in enumerate(vias):
         o.append(f'\t(via (at {f(x)} {f(y)}) (size {f(D.VIA[0])}) (drill {f(D.VIA[1])}) (layers "F.Cu" "B.Cu") '
                  f'(net {netcode[net]}) (uuid {q(U("via", i, x, y))}))\n')

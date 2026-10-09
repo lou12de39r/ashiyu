@@ -201,10 +201,13 @@ add('R12', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] + 3.9, 90, {'1': 'VDD', '2'
 
 # case screws (M2, from below, into bosses of the top frame): rear strip and front edge, where the ACC keycap holes
 # leave >= 2.9 mm free.  None inside the key field: the plate webs between keycaps are only 2 mm wide.
-SCREWS = [(40.0, 4.5), (80.0, 4.5), (112.0, 4.0), (165.0, 4.0), (200.0, 4.5), (240.0, 4.5),
-          (60.0, 102.5), (100.0, 104.0), (138.5, 100.5), (180.0, 104.0), (215.0, 102.5)]
+# Tadpole Pin D3.0 mounts (GEONWORKS, silicone): the rod (d3.0) goes up through the PCB into a blind hole in the top
+# frame, the bulge sits under the PCB in a cup on the bottom plate.  4 rear, 2 front, 2 centre (either side below the
+# trackpad).  Spots chosen clear of keys (+2.9), parts (+2.0) and tracks (1.95 from the hole centre).
+SCREWS = [(40.0, 5.0), (100.0, 5.0), (165.0, 4.0), (240.0, 4.0),
+          (60.5, 98.0), (215.0, 102.8), (120.5, 82.5), (156.5, 82.5)]
 for i, (x, y) in enumerate(SCREWS):
-    add(f'H{i + 1}', 'MountingHole_2.2mm_M2', 'M2', x, y, 0, {}, 'MountingHole', bom=False)
+    add(f'H{i + 1}', 'Tadpole_D3.0_NPTH', 'Tadpole', x, y, 0, {}, 'MountingHole', bom=False)
 
 POWER_NETS = {'VBUS', 'VSYS', 'VBAT', 'VDDH', 'VDD'}
 
@@ -231,7 +234,7 @@ SILK_TEXTS = [
 # designer's logo (bitmap2component footprint, F.SilkS polygons) on the back silkscreen, mirrored to read from below
 LOGO = dict(file='lib/tommys079_logo.kicad_mod', x=200.0, y=52.0, scale=0.8, layer='B.SilkS')
 TRACKS, VIAS = [], []
-for _r in ('C2', 'C3', 'C4', 'C5', 'R9', 'R10', 'U2', 'H3', 'H4'):
+for _r in ('C2', 'C3', 'C4', 'C5', 'R9', 'R10', 'U2') + tuple(f'H{i + 1}' for i in range(len(SCREWS))):
     PARTS[_r]['ref_fab'] = True                     # crowded spots: reference on F.Fab instead of silk
 
 # inner-row module pads cannot escape between the outer pads (0.4 mm gaps): short F.Cu stub inward to a via

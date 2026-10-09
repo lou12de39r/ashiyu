@@ -165,6 +165,12 @@ FP['MountingHole_2.2mm_M2'] = dict(descr='M2 mounting hole, NPTH 2.2mm', attr='e
     ref_at=(0, -3.0), val_at=(0, 3.0), ref_size=0.8)
 
 
+FP['Tadpole_D3.0_NPTH'] = dict(descr='Tadpole Pin D3.0 mount: NPTH 3.1mm', attr='exclude_from_pos_files exclude_from_bom',
+    pads=[('', 'np', 'circle', 0, 0, 3.1, 3.1, 3.1)],
+    lines=[], circles=[('Cmts.User', 0, 0, 2.4), ('F.CrtYd', 0, 0, 2.6)],
+    ref_at=(0, -3.4), val_at=(0, 3.4), ref_size=0.8)
+
+
 # ------------------------------------------------------------------ mk2 additions: footprints converted from the
 # LCSC/EasyEDA data fetched by CI (.github/workflows/lcsc.yml -> gen/lcsc/*.kicad_mod).  Edge.Cuts lines are dropped
 # here (the USB-C notch is drawn into the board outline by pcbio).

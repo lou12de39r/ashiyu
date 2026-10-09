@@ -36,8 +36,11 @@ TP_LIP_W, TP_LIP_T = 1.2, 0.5           # lip over the plate edge (width, thickn
 HOLE_R = float(os.environ.get('HOLE_R', '1.8'))   # keycap hole corner radius (largest that clears the ACC corner hooks: hole_radius_test.py)
 KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
-BOSS_D, PILOT_D = 5.2, 1.7              # M2 self-tapping into resin (brittle: thicker boss, slightly larger pilot)
-SCREW_CLR_D, HEAD_D, HEAD_DEPTH = 2.4, 4.4, 1.6
+BOSS_D = 5.2                            # boss round each Tadpole rod (sits on the PCB top)
+ROD_D, ROD_TOP = 3.0, None              # Tadpole Pin D3.0: d3.0 (+0.05) blind hole in the top frame (ROD_TOP set below)
+CUP_D, CUP_WALL = 4.8, 1.0              # cup in the bottom tray round the Tadpole bulge (bulge 3.1 tall under the PCB)
+TRAY_CLR = 0.15                         # bottom tray to skirt, per side
+FLOAT = 0.4                             # bottom-tray supports stop this far under the PCB (the PCB floats on the Tadpoles)
 TOP_CHAMFER = 1.0
 
 W, H = I['outline']
@@ -92,8 +95,11 @@ inner = (bx0 - PCB_CLR, by0 - PCB_CLR, bx1 + PCB_CLR, by1 + PCB_CLR)
 inner_r = BR + PCB_CLR
 
 # ================================================================== top frame
-top = slab(*case_out, case_r, Z_PB, PLATE_T).faces('>Z').edges().chamfer(TOP_CHAMFER)
-top = top.cut(slab(*inner, inner_r, Z_PB - 0.1, PLATE_B))
+# Screwless: the frame's outer wall (skirt) runs down to the desk; the bottom tray fits inside it from below and clicks
+# in with 8 hidden spring clips.  From the side the case is one piece; the only seam is on the underside.
+top = slab(*case_out, case_r, 0, PLATE_T).faces('>Z').edges().chamfer(TOP_CHAMFER)
+top = top.faces('<Z').edges().chamfer(0.3)
+top = top.cut(slab(*inner, inner_r, -0.1, PLATE_B))
 
 cut = None
 
@@ -151,14 +157,17 @@ add = None
 for e in I['leds']:
     s = box(e['cx'], e['cy'], 4.0, 4.0, Z_PT + 1.0, PLATE_B + 0.01).cut(box(e['cx'], e['cy'], 2.4, 2.4, Z_PT, PLATE_B + 0.02))
     add = s if add is None else add.union(s)
-# screw bosses (sit on the PCB top) and plate posts
+# Tadpole bosses (sit on the PCB top) and plate posts
 for x, y in I['screws']:
     add = add.union(cyl(x, y, BOSS_D, Z_PT, PLATE_B + 0.01))
 for x, y in I['posts']:
     add = add.union(box(x, y, 1.4, 1.4, Z_PT, PLATE_B + 0.01))
 top = top.union(add)
+# Tadpole rod holes: d3.0 blind, up to 0.8 under the top surface.  The rod stands 5.0 above a 1.5 mm plate in the
+# GEONWORKS drawing, i.e. 5.3 above our 1.2 mm PCB: trim about 1.1 mm off each rod tip (silicone, a cutter does it).
+ROD_TOP = PLATE_T - 0.8
 for x, y in I['screws']:
-    top = top.cut(cyl(x, y, PILOT_D, Z_PT - 0.1, PLATE_T - 0.8))
+    top = top.cut(cyl(x, y, ROD_D, Z_PT - 0.1, ROD_TOP))
 
 # rear wall openings: USB-C (notch, open at the top: a 6 mm plug overmold leaves no wall above it) and the
 # power-switch lever slot.  Both only through the wall.
@@ -167,10 +176,12 @@ wy0, wy1 = case_out[1] - 1.0, inner[1] + 0.5
 top = top.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, PLATE_T + 1.0))
 top = top.cut(box(sw['x'], (wy0 + wy1) / 2, 9.6, wy1 - wy0, Z_PT - 0.1, Z_PT + 2.2))
 
-# ================================================================== bottom plate
-bot = slab(*case_out, case_r, 0, Z_PB)
+# ================================================================== bottom tray (inside the skirt)
+tray = (inner[0] + TRAY_CLR, inner[1] + TRAY_CLR, inner[2] - TRAY_CLR, inner[3] - TRAY_CLR)
+TRAY_TOP = Z_PB - FLOAT
+bot = slab(*tray, inner_r - TRAY_CLR, 0, TRAY_TOP)
 # lightening pocket over the whole inside (floor 1.0), then support islands added back
-pocket = slab(inner[0] + 2.5, inner[1] + 2.5, inner[2] - 2.5, inner[3] - 2.5, max(inner_r - 2.5, 1.0), FLOOR, Z_PB + 0.1)
+pocket = slab(inner[0] + 2.5, inner[1] + 2.5, inner[2] - 2.5, inner[3] - 2.5, max(inner_r - 2.5, 1.0), FLOOR, TRAY_TOP + 0.1)
 bot = bot.cut(pocket)
 isl = None
 
@@ -185,9 +196,9 @@ bat_box = (bat[0] - 0.5, bat[1] - 0.5, bat[2] + 0.5, bat[3] + 0.5)
 for x, y, rot in I['switch_centres']:
     if bat_box[0] - 4 < x < bat_box[2] + 4 and bat_box[1] - 4 < y < bat_box[3] + 4:
         continue                                   # over the LiPo: the cell itself carries the PCB
-    add_isl(box(x, y, 7.0, 7.0, FLOOR - 0.01, Z_PB, -rot))
+    add_isl(box(x, y, 7.0, 7.0, FLOOR - 0.01, TRAY_TOP, -rot))
 for x, y in I['screws']:
-    add_isl(cyl(x, y, 6.5, FLOOR - 0.01, Z_PB))
+    add_isl(cyl(x, y, CUP_D + 2 * CUP_WALL, FLOOR - 0.01, TRAY_TOP))
 # ribs between neighbouring switch islands: turn the 1.0 mm floor into small panels (JLC3DP asks for 2 mm walls at
 # 200 mm scale; a ribbed 1.0 mm floor is far stiffer than a plain one)
 sc = [(x, y) for x, y, rot in I['switch_centres']
@@ -197,23 +208,23 @@ for i, (xa, ya) in enumerate(sc):
         d = math.hypot(xb - xa, yb - ya)
         if d < 21.0:
             ang = math.degrees(math.atan2(yb - ya, xb - xa))      # layout frame, y down = clockwise-positive
-            add_isl(box((xa + xb) / 2, (ya + yb) / 2, d, 1.5, FLOOR - 0.01, Z_PB, ang))
+            add_isl(box((xa + xb) / 2, (ya + yb) / 2, d, 1.5, FLOOR - 0.01, TRAY_TOP, ang))
 # cross ribs under the trackpad area (no switches there to carry islands)
 tx0, ty0 = tp['x'] - 0.5, tp['y'] - 0.5
 for f in (0.33, 0.67):
-    add_isl(box(tx0 + f * (tp['w'] + 1), tpc[1], 1.5, tp['h'] + 1, FLOOR - 0.01, Z_PB))
-    add_isl(box(tpc[0], ty0 + f * (tp['h'] + 1), tp['w'] + 1, 1.5, FLOOR - 0.01, Z_PB))
+    add_isl(box(tx0 + f * (tp['w'] + 1), tpc[1], 1.5, tp['h'] + 1, FLOOR - 0.01, TRAY_TOP))
+    add_isl(box(tpc[0], ty0 + f * (tp['h'] + 1), tp['w'] + 1, 1.5, FLOOR - 0.01, TRAY_TOP))
 # solid under the USB-C / MCU / power switch area (plug and switch forces)
-add_isl(box(j1['x'], 8.0, 16.0, 14.0, FLOOR - 0.01, Z_PB))
-add_isl(box(sw['x'], 6.0, 10.0, 10.0, FLOOR - 0.01, Z_PB))
-add_isl(box(I['SW66']['x'], I['SW66']['y'], 8.0, 6.0, FLOOR - 0.01, Z_PB))
+add_isl(box(j1['x'], 8.0, 16.0, 14.0, FLOOR - 0.01, TRAY_TOP))
+add_isl(box(sw['x'], 6.0, 10.0, 10.0, FLOOR - 0.01, TRAY_TOP))
+add_isl(box(I['SW66']['x'], I['SW66']['y'], 8.0, 6.0, FLOOR - 0.01, TRAY_TOP))
 bot = bot.union(isl)
 # LiPo pocket (the lead runs inside the lightening pocket to the pass-through slot near J2: no islands on the way)
 bot = bot.cut(box((bat_box[0] + bat_box[2]) / 2, (bat_box[1] + bat_box[3]) / 2, bat_box[2] - bat_box[0],
                   bat_box[3] - bat_box[1], FLOOR, Z_PB + 0.1, r=1.0))
-# screws: clearance + counterbore from below
+# Tadpole cups: d4.8 down to the floor (bulge bottom 0.2 above it)
 for x, y in I['screws']:
-    bot = bot.cut(cyl(x, y, SCREW_CLR_D, -0.1, Z_PB + 0.1)).cut(cyl(x, y, HEAD_D, -0.1, HEAD_DEPTH))
+    bot = bot.cut(cyl(x, y, CUP_D, FLOOR, TRAY_TOP + 0.1))
 # rubber-foot recesses (YAHATA Slim Flex mini pad, d6 mm): d6.6 x 0.5 deep, centred under switch islands (solid above).
 # 4 front (1.5 mm hard pads) + 4 rear (3.0 mm hard pads): rear stands 1.5 mm higher -> about 1.2 deg tilt.
 FOOT_D, FOOT_DEPTH = 6.6, 0.5
@@ -222,8 +233,46 @@ for lab in FEET:
     k = next(k for k in I['keys'] if k['label'] == lab)
     bot = bot.cut(cyl(k['cx'], k['cy'], FOOT_D, -0.1, FOOT_DEPTH))
     print(f'foot recess under "{lab}" at ({k["cx"]:.1f}, {k["cy"]:.1f})')
-# USB-C notch continues 0.4 into the bottom rim
-bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 0.1))
+# hidden spring clips: a 10 mm horizontal beam (1.0 thick, 2.0 tall) freed in the tray rim, with a double-ramp bump
+# (0.55 out) that clicks into a groove in the skirt's inner face.  Interference 0.4 -> bending strain ~0.6 %.
+# Pull the tray straight down to open (the ramps work both ways).
+CLIP_L, CLIP_T, CLIP_Z, BUMP_H, BUMP_L = 10.0, 1.0, (1.6, 3.6), 0.55, 3.0
+CLIPS = [('front', x) for x in (30.0, 100.0, 177.0, 247.0)] + [('rear', x) for x in (70.0, 207.0)] + \
+        [('left', 54.0), ('right', 54.0)]
+
+
+def clip_frame(side, pos):
+    """origin on the tray's outer face, local +v = outward normal, +u along the wall, as (point, rotation deg)."""
+    if side == 'front':
+        return (pos, Y(tray[3])), 180.0
+    if side == 'rear':
+        return (pos, Y(tray[1])), 0.0
+    if side == 'left':
+        return (tray[0], Y(pos)), 90.0
+    return (tray[2], Y(pos)), -90.0
+
+
+def place(sol, side, pos):
+    (px, py), rot = clip_frame(side, pos)
+    return sol.rotate((0, 0, 0), (0, 0, 1), rot).translate((px, py, 0))
+
+
+def lbox(u0, u1, v0, v1, z0, z1):
+    return cq.Workplane('XY').box(u1 - u0, v1 - v0, z1 - z0, centered=False).translate((u0, v0, z0))
+
+
+for side, pos in CLIPS:
+    rim = 2.5 - TRAY_CLR + 0.2                                   # rim thickness (to the lightening pocket) + a bit
+    bot = bot.cut(place(lbox(-CLIP_L / 2 - 0.8, CLIP_L / 2 + 0.8, -rim, 0.1, FLOOR, TRAY_TOP + 0.1), side, pos))
+    beam = lbox(-CLIP_L / 2 - 0.81, CLIP_L / 2, -CLIP_T, 0.0, CLIP_Z[0], CLIP_Z[1])
+    root = lbox(-CLIP_L / 2 - 2.0, -CLIP_L / 2 - 0.8, -rim, 0.0, FLOOR - 0.01, TRAY_TOP)   # rebuilt root block
+    z0, z1 = CLIP_Z[0] + 0.3, CLIP_Z[1] - 0.3
+    bump = (cq.Workplane('YZ').polyline([(0.0, z0), (BUMP_H, z0 + BUMP_H), (BUMP_H, z1 - BUMP_H), (0.0, z1)]).close()
+            .extrude(BUMP_L).translate((CLIP_L / 2 - BUMP_L - 0.5, 0, 0)))
+    bot = bot.union(place(beam.union(root).union(bump), side, pos))
+    # groove in the skirt (top frame) opposite the bump
+    top = top.cut(place(lbox(CLIP_L / 2 - BUMP_L - 0.8, CLIP_L / 2 - 0.2, TRAY_CLR - 0.01, TRAY_CLR + BUMP_H + 0.1,
+                             z0 - 0.15, z1 + 0.15), side, pos))
 
 # ================================================================== custom 0.5u x 0.5u keycap (BT, M)
 # No ACC part exists, and hooks do not fit (the SKRA body, 6.2 square up to 2.8 mm, fills the 7 mm hole).
