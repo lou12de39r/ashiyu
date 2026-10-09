@@ -222,8 +222,6 @@ SILK_TEXTS = [
     ('B.SilkS', 200.0, 77.5, 'Ashiyu', 3.0),
     ('B.SilkS', 200.0, 81.5, 'Designed by tommys079', 1.5),
     ('B.SilkS', 200.0, 84.3, 'Inspired by ClickBoard (Salicylic_acid3)', 1.0),
-    ('B.SilkS', 200.0, 86.8, 'nRF52840 MDBT50Q / TPS43 / ZMK / 18.5x18', 1.0),
-    ('B.SilkS', 200.0, 89.3, 'JLCJLCJLCJLC', 1.0),
     ('F.SilkS', U1X - 3.81 + 3.81, 25.9, 'DIO CLK GND VDD', 0.8),
     ('F.SilkS', FX + 41.0, 7.4, 'ON   OFF', 0.8),
     ('F.SilkS', FX + 2.4, 27.6, '+', 1.0),
