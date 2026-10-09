@@ -41,6 +41,7 @@ for k in I['keys']:
 pcb = cq.Workplane('XY').workplane(offset=Z_PB).center((I['board'][0] + I['board'][2]) / 2, -(I['board'][1] + I['board'][3]) / 2) \
     .rect(I['board'][2] - I['board'][0], I['board'][3] - I['board'][1]).extrude(I['pcb_t']).val()
 blocks = []
+sw_body = {}
 for q in I['parts']:
     if q['ref'].startswith('H'):
         continue
@@ -53,6 +54,9 @@ for q in I['parts']:
     else:
         b = cq.Workplane('XY').workplane(offset=Z_PT).center((x0 + x1) / 2, -(y0 + y1) / 2).rect(x1 - x0 - 0.5, y1 - y0 - 0.5).extrude(h)
     blocks.append((q['ref'], b.val()))
+    if q['fp'] == 'SW_ALPS_SKRA_6.2mm':      # switch body without the actuator (the actuator is meant to be pushed)
+        sw_body[q['ref']] = cq.Workplane('XY').workplane(offset=Z_PT).center(q['x'], -q['y']).rect(6.2, 6.2).extrude(2.8) \
+            .rotate((q['x'], -q['y'], 0), (q['x'], -q['y'], 1), q['rot']).val()
 
 # --- interference checks (volumes, mm3)
 def inter(a, b):
@@ -86,10 +90,28 @@ for k, c in caps:
         bb = b.BoundingBox()
         if bb.xmax < bbc.xmin or bb.xmin > bbc.xmax or bb.ymax < bbc.ymin or bb.ymin > bbc.ymax:
             continue
+        if ref in sw_body:                   # switches: only the body counts (own switch and neighbours alike)
+            b = sw_body[ref]
         v = inter(cp, b)
-        if v > 0.01 and not ref.startswith('SW'):
+        if v > 0.01:
             bad += 1
             p(f'PRESSED cap "{k["label"]}" hits {ref}: {v:.3f} mm3')
+# clearances of the small keys (0.5u wide or tall) to their own switch: nub to actuator at rest, cap underside to
+# switch body when pressed 1.0 mm (negative = overlap)
+for k, c in caps:
+    if k['w_u'] >= 1.0 and k['h_u'] >= 1.0:
+        continue
+    bbc = c.BoundingBox()
+    own = min(sw_body, key=lambda r: (sw_body[r].Center().x - (bbc.xmin + bbc.xmax) / 2) ** 2
+              + (sw_body[r].Center().y - (bbc.ymin + bbc.ymax) / 2) ** 2)
+    body = sw_body[own]
+    near = c.intersect(cq.Workplane('XY').workplane(offset=Z_PT).center(body.Center().x, body.Center().y)
+                       .rect(7.0, 7.0).extrude(6.0).val())
+    low = near.BoundingBox().zmin - Z_PT                 # lowest point of the cap over its switch, above the PCB
+    under = c.intersect(cq.Workplane('XY').workplane(offset=Z_PT).center(body.Center().x, body.Center().y)
+                        .rect(5.8, 5.8).extrude(6.0).val()).BoundingBox().zmin - Z_PT
+    p(f'small key "{k["label"]}" ({own}): lowest point over the switch {low:.2f} above PCB, '
+      f'over the actuator {under:.2f} (actuator top 3.40, body top 2.80); pressed 1.0 -> {low - 1.0:.2f}')
 for ref, b in blocks:
     for nm, other in (('top frame', top), ('bottom', bot)):
         v = inter(b, other)
