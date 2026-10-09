@@ -62,19 +62,26 @@ def domed(acc):
 caps['1u_thumb'] = domed(caps['1u'])
 caps['1.25u_thumb'] = domed(caps['1.25u'])
 
-# "this way up" mark: a filled triangle engraved into the underside of every cap, pointing to the rear of the board
-# (+Y here; layout y is negated when the caps are placed).  Away from the nub, the switch and the corner hooks.
-# 0.5 mm deep (JLC3DP guide: engraved details >= 0.8 mm wide; the filled triangle is 3 mm), top skin kept >= 0.6 mm.
-def up_mark(shape, cx, cy, side=3.0, depth=0.5):
+# "this way up" mark: a thin triangle OUTLINE engraved shallowly into the underside of every cap, like a printed mark,
+# pointing to the rear of the board (+Y here; layout y is negated when the caps are placed).  Away from the nub, the
+# switch and the corner hooks.  Line 0.5 mm wide, 0.2 mm deep (finer than the JLC3DP guide's 0.8 mm for engraved
+# detail, so it may come out faint).
+LINE_W, MARK_D = 0.5, 0.2
+
+
+def tri(cx, cy, side):
     h = side * 3 ** 0.5 / 2
-    pts = [(cx - side / 2, cy - h / 3), (cx + side / 2, cy - h / 3), (cx, cy + 2 * h / 3)]
-    col = cq.Workplane('XY').workplane(offset=-4.0).polyline(pts).close().extrude(8.0).val()
-    mat = shape.intersect(col)
-    bb = mat.BoundingBox()
-    d = min(depth, bb.zmax - bb.zmin - 0.6)
-    cut = cq.Workplane('XY').workplane(offset=bb.zmin - 0.2).polyline(pts).close().extrude(0.2 + d).val()
-    print(f'up mark at ({cx}, {cy}): underside z {bb.zmin:.2f}, top z {bb.zmax:.2f}, depth {d:.2f}')
-    return shape.cut(cut).clean()
+    return [(cx - side / 2, cy - h / 3), (cx + side / 2, cy - h / 3), (cx, cy + 2 * h / 3)]
+
+
+def up_mark(shape, cx, cy, side=3.0):
+    col = cq.Workplane('XY').workplane(offset=-4.0).polyline(tri(cx, cy, side)).close().extrude(8.0).val()
+    z0 = shape.intersect(col).BoundingBox().zmin
+    outer = cq.Workplane('XY').workplane(offset=z0 - 0.2).polyline(tri(cx, cy, side)).close().extrude(0.2 + MARK_D)
+    inner = cq.Workplane('XY').workplane(offset=z0 - 0.3).polyline(tri(cx, cy, side - 2 * 3 ** 0.5 * LINE_W)).close() \
+        .extrude(0.4 + MARK_D)
+    print(f'up mark at ({cx}, {cy}) side {side}: underside z {z0:.2f}, line {LINE_W}, depth {MARK_D}')
+    return shape.cut(outer.cut(inner).val()).clean()
 
 
 for key in ('1u', '1u_home', '1.25u', '1u_thumb', '1.25u_thumb'):

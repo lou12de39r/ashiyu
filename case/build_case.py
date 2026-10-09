@@ -228,10 +228,14 @@ cap = cap.union(flange)
 assert not cap.val().isInside(cq.Vector(4.1, 4.0, -0.5)), 'flange corners not rounded'
 assert cap.val().isInside(cq.Vector(4.0, 0.0, -0.5)), 'flange missing'
 cap = cap.union(cq.Workplane('XY').workplane(offset=-1.0).circle(1.25).extrude(0.31))       # nub on the switch
-# "this way up" mark: filled triangle (side 2.0) engraved 0.4 deep into the flange underside, pointing to the rear (+Y)
-_h = 2.0 * 3 ** 0.5 / 2
-cap = cap.cut(cq.Workplane('XY').workplane(offset=-1.0).polyline([(-1.0, 2.1 - _h / 3), (1.0, 2.1 - _h / 3), (0.0, 2.1 + 2 * _h / 3)])
-              .close().extrude(0.5))
+# "this way up" mark: thin triangle outline (side 2.0, line 0.5) engraved 0.2 deep into the flange underside, pointing
+# to the rear (+Y)
+_h = 3 ** 0.5 / 2
+_o = [(-1.0, 2.1 - 2.0 * _h / 3), (1.0, 2.1 - 2.0 * _h / 3), (0.0, 2.1 + 2 * 2.0 * _h / 3)]
+_si = 2.0 - 2 * 3 ** 0.5 * 0.5
+_i = [(-_si / 2, 2.1 - _si * _h / 3), (_si / 2, 2.1 - _si * _h / 3), (0.0, 2.1 + 2 * _si * _h / 3)]
+cap = cap.cut(cq.Workplane('XY').workplane(offset=-1.0).polyline(_o).close().extrude(0.3)
+              .cut(cq.Workplane('XY').workplane(offset=-1.1).polyline(_i).close().extrude(0.5)))
 
 # ================================================================== export
 def export(shape, name):
