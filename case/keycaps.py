@@ -62,6 +62,19 @@ def domed(acc):
 caps['1u_thumb'] = domed(caps['1u'])
 caps['1.25u_thumb'] = domed(caps['1.25u'])
 
+
+def flat_top(acc, rimz=1.49):
+    """ACC cap with the dish filled flush with the rim: flat top, edges / hooks / nub unchanged."""
+    sec = cq.Workplane('XY').add(acc).section(rimz).faces().vals()
+    outer = max((f.outerWire() for f in sec), key=lambda w: cq.Face.makeFromWires(w).Area())
+    fill = cq.Solid.extrudeLinear(cq.Face.makeFromWires(outer).translate(cq.Vector(0, 0, -0.7)), cq.Vector(0, 0, 0.7 + 0.01))
+    out = acc.fuse(fill).clean()
+    print(f'flat top: z max {out.BoundingBox().zmax:.2f}')
+    return out
+
+
+caps['1u_x_0.5u_flat'] = flat_top(caps['1u_x_0.5u'])        # mouse buttons L / R: no dish
+
 # "this way up" mark: a filled triangle engraved into the underside of every cap, pointing to the rear of the board
 # (+Y here; layout y is negated when the caps are placed).  Away from the nub, the switch and the corner hooks.
 # 0.5 mm deep (JLC3DP guide: engraved details >= 0.8 mm wide; the filled triangle is 3 mm), top skin kept >= 0.6 mm.
@@ -79,7 +92,8 @@ def up_mark(shape, cx, cy, side=3.0, depth=0.5):
 
 for key in ('1u', '1u_home', '1.25u', '1u_thumb', '1.25u_thumb'):
     caps[key] = up_mark(caps[key], 0.0, 4.2)
-caps['1u_x_0.5u'] = up_mark(caps['1u_x_0.5u'], 4.2, 0.0, side=2.4)   # inside the recess beside the nub
+for key in ('1u_x_0.5u', '1u_x_0.5u_flat'):
+    caps[key] = up_mark(caps[key], 4.2, 0.0, side=2.4)   # inside the recess beside the nub
 
 
 def export(shape, name):
@@ -93,11 +107,13 @@ for key, s in caps.items():
     export(s, f'keycap_{key}')
 
 # how many of each the mk2 layout needs (F / J get the homing cap)
-need = {'1u': 0, '1u_home': 2, '1.25u': 0, '1u_x_0.5u': 0, '0.5u_x_0.5u': 0, '1u_thumb': 0, '1.25u_thumb': 0}
+need = {'1u': 0, '1u_home': 2, '1.25u': 0, '1u_x_0.5u': 0, '1u_x_0.5u_flat': 0, '0.5u_x_0.5u': 0, '1u_thumb': 0, '1.25u_thumb': 0}
 for k in I['keys']:
     t = {(1.0, 1.0): '1u', (1.25, 1.0): '1.25u', (1.0, 0.5): '1u_x_0.5u', (0.5, 0.5): '0.5u_x_0.5u'}[(k['w_u'], k['h_u'])]
     if k['kind'] in ('thumb', 'addth'):
         t += '_thumb'
+    if k['kind'] == 'mouse' and t == '1u_x_0.5u':
+        t += '_flat'
     need[t] += 1
 need['1u'] -= 2
 print('needed:', need)
@@ -136,7 +152,8 @@ if need['1.25u']:
 # thumb caps are always printed (no ACC part): 1.25u + 1 spare, 1u + 2 spares
 th = ['1.25u_thumb'] * (need['1.25u_thumb'] + 1) + ['1u_thumb'] * (need['1u_thumb'] + 2)
 sprue(th, 3, 23.5, 18.5, f"print_sprue_thumb_1.25u_x{need['1.25u_thumb'] + 1}_1u_x{need['1u_thumb'] + 2}")
-sprue(['1u_x_0.5u'] * (need['1u_x_0.5u'] + 1), 3, 19.0, 10.0, f"print_sprue_1u_x_0.5u_x{need['1u_x_0.5u'] + 1}")
+sprue(['1u_x_0.5u'] * (need['1u_x_0.5u'] + 1) + ['1u_x_0.5u_flat'] * (need['1u_x_0.5u_flat'] + 1), 3, 19.0, 10.0,
+      f"print_sprue_1u_x_0.5u_x{need['1u_x_0.5u'] + 1}_flat_x{need['1u_x_0.5u_flat'] + 1}")
 sprue(['1u_home'] * (need['1u_home'] + 1), 3, 19.0, 18.5, f"print_sprue_1u_home_x{need['1u_home'] + 1}")
 mixed = None
 json.dump({'needed': need, 'sprue_1u': n1, 'spares': '1u +10 %, others +1, thumb 1u +2; 0.5u x 0.5u: see the case sprue (x6)'}, open(os.path.join(OUT, 'keycaps.json'), 'w'), indent=1)
@@ -144,5 +161,5 @@ open(os.path.join(OUT, 'LICENSE.txt'), 'w').write(
     'Keycap models derived from ACC Keycaps by Salicylic_acid3 (https://github.com/Salicylic-acid3/ACC_Keycaps),\n'
     'licensed CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/).\n'
     'Changes: re-centred, converted to STL, combined on print sprues for tomtho-slim mk2; thumb caps have the dish filled\n'
-    'and a domed top; 0.5u x 0.5u flange cap is new.\n'
+    'and a domed top; mouse-button 1u x 0.5u caps have the dish filled flat; 0.5u x 0.5u flange cap is new.\n'
     'Non-commercial use only.\n')

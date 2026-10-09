@@ -62,6 +62,7 @@ Measured only, not copied: the ACC keycaps (`Salicylic-acid3/ACC_Keycaps`) and t
 
 ## Keycap files (`keycaps.py`, CI → `case-results:keycaps/`)
 - **One file per size** (STEP + STL): 1u, 1u home (F / J), 1.25u, 1u × 0.5u, and 0.5u × 0.5u (our flange cap).
+- **Mouse buttons L / R:** 1u x 0.5u ACC caps with the dish filled flat (`keycap_1u_x_0.5u_flat`).
 - **Up mark:** every printed cap has a filled triangle engraved on its underside, pointing to the rear of the board.
 - **Thumb caps** `keycap_1u_thumb` / `keycap_1.25u_thumb`: the ACC cap with the dish (about 0.45 mm deep) filled and a gentle ellipsoid dome on top.
   - The top is raised 0.3 mm, so the dome's edges sit near the other caps' rim height. The peak is 0.3 mm above the other keys (11.8 mm total at the thumb row); the middle of each top edge is 0.4 mm below the peak and the corners about 0.75 mm below.
