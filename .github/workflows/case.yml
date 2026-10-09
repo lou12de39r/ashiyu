@@ -1,0 +1,55 @@
+name: Ashiyu case + keycaps (CadQuery)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/case.yml'
+      - 'case/**'
+      - 'layout_v20.json'
+      - 'gen/design.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  case:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CadQuery
+        run: pip install cadquery matplotlib numpy scipy pillow contourpy
+      - name: Reference data (measured only, not stored in this repo)
+        run: |
+          git clone -q --depth 1 https://github.com/Salicylic-acid3/ACC_Keycaps.git /tmp/ref/ACC_Keycaps
+          git clone -q --depth 1 https://github.com/Salicylic-acid3/Case_Data.git /tmp/ref/Case_Data
+          git fetch -q origin lcsc-parts && mkdir -p /tmp/ref/steps && for f in $(git ls-tree -r --name-only FETCH_HEAD | grep -i '\.step$'); do git show FETCH_HEAD:$f > /tmp/ref/steps/$(basename $f); done
+      - name: Measure reference parts
+        if: hashFiles('case/measure2.py') != ''
+        run: |
+          mkdir -p /tmp/pub/measure
+          ls -la /tmp/ref/steps > /tmp/pub/steps_ls.txt 2>&1 || true
+          echo skip measure2 # /tmp/ref/ACC_Keycaps /tmp/ref/Case_Data /tmp/pub/measure /tmp/ref/steps 2>&1 | tail -400; cp /tmp/pub/measure/measure2.txt /tmp/pub/ || true
+      - name: Build case
+        if: hashFiles('case/build_case.py') != ''
+        run: |
+          python case/hole_radius_test.py /tmp/ref/ACC_Keycaps 2>&1 | tee /tmp/pub/hole_radius.log
+          python case/build_case.py /tmp/pub/case /tmp/ref/ACC_Keycaps 2>&1 | tee /tmp/pub/build_case.log
+          KEY_CLR=0.1 python case/build_case.py /tmp/pub/case_mjf 2>&1 | tail -5 | tee -a /tmp/pub/build_case.log
+          python case/poron.py /tmp/pub/case 2>&1 | tail -20 | tee /tmp/pub/poron.log
+          python case/keycaps.py /tmp/ref/ACC_Keycaps /tmp/pub/keycaps /tmp/pub/case 2>&1 | tee /tmp/pub/keycaps.log
+          python case/check_case.py /tmp/pub/case /tmp/ref/ACC_Keycaps 2>&1 | tail -80 | tee /tmp/pub/check_case.log
+      - name: Publish to case-results branch
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p /tmp/pub && cd /tmp/pub
+          echo "${GITHUB_SHA}" > SOURCE.txt
+          git init -q -b case-results
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -q -m "case results for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" case-results

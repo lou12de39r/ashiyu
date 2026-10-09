@@ -1,0 +1,6 @@
+__pycache__/
+out/
+gen/route_work/
+gen/route_work.log
+gen/routed*.pkl
+gen/drop_vias.txt

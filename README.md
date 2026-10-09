@@ -3,7 +3,7 @@
 **Ashiyu（足湯）** — tomtho-slim mk2 の愛称。Designed by tommys079.
 Inspired by [ClickBoard](https://salicylic-acid3.hatenablog.com/) by Salicylic_acid3（自作キーボード温泉街）. Keycap models are derived from ACC Keycaps (CC BY-NC 4.0).
 
-This folder holds the frozen layout and the board plan for the second keyboard: roBa-style column stagger, centre trackpad, thin case.
+This repository holds the frozen layout and the board plan for the second keyboard: roBa-style column stagger, centre trackpad, thin case.
 
 | File | Contents |
 |---|---|
@@ -81,7 +81,7 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
   2. `gen/post.py` adds about 600 GND stitching vias.
   3. `gen/build_pcb.py` writes the board, fills the zones and runs KiCad DRC.
 - **Check:** DRC with schematic parity gives **0 violations, 0 unconnected, 0 parity** in both local KiCad 10 and CI KiCad 9.
-- **Fab files:** JLC BOM/CPL are in `jlc/`. CI exports the Gerbers and drill files to `ci-results:mk2/gerber`.
+- **Fab files:** JLC BOM/CPL are in `jlc/`. CI exports the Gerbers and drill files to `ci-results:gerber`.
 - **USB-C:** top-mount HRO TYPE-C-31-M-12 (C165948). It sits in the free area, so the mid-mount part is not needed.
 - **Trackpad cut-out:** 44 × 41 mm for the TPS43, J3 and the I²C pull-ups to its left.
 - **ACC keycaps:** their four corner legs come down to 1.5 mm above the PCB (0.5 mm when pressed). The ↑ / ↓ diodes and J3 were moved clear of these leg zones (r 2 mm at the corners minus 1.7 mm).

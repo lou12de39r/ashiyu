@@ -1,0 +1,39 @@
+name: Fetch LCSC footprints
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lcsc.yml'
+      - 'lcsc_parts.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: easyeda2kicad
+        shell: bash
+        run: |
+          pip install easyeda2kicad
+          mkdir -p /tmp/pub/lib
+          for id in $(grep -o 'C[0-9]\+' lcsc_parts.txt); do
+            echo "== $id" | tee -a /tmp/pub/log.txt
+            easyeda2kicad --full --lcsc_id="$id" --output /tmp/pub/lib/lcsc 2>&1 | tail -5 | tee -a /tmp/pub/log.txt || true
+          done
+          ls -R /tmp/pub | tee -a /tmp/pub/log.txt
+      - name: Publish to lcsc-parts branch
+        shell: bash
+        run: |
+          cd /tmp/pub
+          git init -q -b lcsc-parts
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -q -m "LCSC parts for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" lcsc-parts

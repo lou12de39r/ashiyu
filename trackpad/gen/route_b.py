@@ -81,7 +81,7 @@ for attempt in range(4):
                    capture_output=True, text=True, timeout=600)
     if os.path.exists(W + '/b.ses') and os.path.getsize(W + '/b.ses') > 50:
         break
-sys.path.insert(0, '/home/claude/tomtho-slim/mk2/gen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'gen'))
 from pcbio import read_ses
 t, v = read_ses(W + '/b.ses')
 print('routed segments', len(t), 'vias', len(v), {n for *_, n in t})

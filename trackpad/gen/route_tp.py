@@ -44,7 +44,7 @@ for attempt in range(3):
                         '-mt', '1'], capture_output=True, text=True, timeout=500)
     if os.path.exists(W + '/tp.ses') and os.path.getsize(W + '/tp.ses') > 100:
         break
-sys.path.insert(0, '/home/claude/tomtho-slim/mk2/gen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'gen'))
 from pcbio import read_ses
 t, v = read_ses(W + '/tp.ses')
 nets = set(RER) | {f'Net-(U1-Rx{k}A)' for k in (7, 8, 9)}

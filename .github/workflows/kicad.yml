@@ -1,0 +1,53 @@
+name: KiCad check & fab outputs
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  kicad:
+    runs-on: ubuntu-latest
+    container:
+      image: kicad/kicad:9.0
+      options: --user root
+    env:
+      HOME: /tmp/home
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ERC (schematic)
+        run: |
+          mkdir -p "$HOME" out/gerber
+          kicad-cli version
+          kicad-cli sch erc --severity-all --format json -o out/erc.json tomtho_mk2.kicad_sch || true
+          kicad-cli sch erc --severity-all -o out/erc.rpt tomtho_mk2.kicad_sch || true
+          kicad-cli sch export pdf -o out/schematic.pdf tomtho_mk2.kicad_sch || true
+
+      - name: Fill zones + DRC + fab outputs
+        shell: bash
+        run: |
+          mkdir -p out/board
+          cp tomtho_mk2.kicad_pcb tomtho_mk2.kicad_pro tomtho_mk2.kicad_sch tomtho_mk2.kicad_dru fp-lib-table sym-lib-table out/board/
+          cp -r lib out/board/
+          python3 -c "import pcbnew; b=pcbnew.LoadBoard('out/board/tomtho_mk2.kicad_pcb'); pcbnew.ZONE_FILLER(b).Fill(b.Zones()); pcbnew.SaveBoard('out/board/tomtho_mk2.kicad_pcb', b)" || true
+          kicad-cli pcb drc --schematic-parity --severity-all --format json -o out/drc.json out/board/tomtho_mk2.kicad_pcb || true
+          kicad-cli pcb export gerbers --layers F.Cu,B.Cu,F.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts --subtract-soldermask -o out/gerber/ out/board/tomtho_mk2.kicad_pcb || true
+          kicad-cli pcb export drill --format excellon --excellon-separate-th -o out/gerber/ out/board/tomtho_mk2.kicad_pcb || true
+          cp jlc/*.csv out/ || true
+          rm -rf out/board
+
+      - name: Publish to ci-results branch
+        if: always()
+        shell: bash
+        run: |
+          git config --global --add safe.directory '*'
+          cd out
+          echo "source: ${GITHUB_SHA}" > SOURCE.txt
+          git init -q -b ci-results
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -q -m "CI results for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" ci-results
