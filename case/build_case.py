@@ -142,10 +142,10 @@ for p in I['parts']:
 
 top = top.cut(cut)
 
-# light shrouds around the LEDs (stop 1.0 above the PCB, clear of the 0603 resistors)
+# light shrouds around the LEDs (stop 1.0 above the PCB, clear of the 0603 resistors); walls 0.8 for printing
 add = None
 for e in I['leds']:
-    s = box(e['cx'], e['cy'], 3.4, 3.4, Z_PT + 1.0, PLATE_B + 0.01).cut(box(e['cx'], e['cy'], 2.4, 2.4, Z_PT, PLATE_B + 0.02))
+    s = box(e['cx'], e['cy'], 4.0, 4.0, Z_PT + 1.0, PLATE_B + 0.01).cut(box(e['cx'], e['cy'], 2.4, 2.4, Z_PT, PLATE_B + 0.02))
     add = s if add is None else add.union(s)
 # screw bosses (sit on the PCB top) and plate posts
 for x, y in I['screws']:
@@ -216,13 +216,14 @@ bot = bot.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, Z_PB + 
 # ================================================================== custom 0.5u x 0.5u keycap (BT, M)
 # No ACC part exists, and hooks do not fit (the SKRA body, 6.2 square up to 2.8 mm, fills the 7 mm hole).
 # Flange type instead: the plate is thinned to 0.8 mm around these two keys (pocket from below up to PCB+4.2);
-# the cap is dropped in from below before the PCB, its flange (PCB+3.8..4.2) stops under the pocket ceiling.
-# Flange to switch body: 1.0 mm = the switch's full travel.  Local z = 0 at PCB+4.5 (same as the ACC caps).
+# the cap is dropped in from below before the PCB, its flange (PCB+3.6..4.2) stops under the pocket ceiling.
+# Flange to switch body: 0.8 mm (the cap can travel at most 0.7 before the actuator bottoms).  Local z = 0 at PCB+4.5 (same as the ACC caps).
 CW, CH = 7.25 - 0.28, 7.0 - 0.28
 cap = cq.Workplane('XY').workplane(offset=-0.3).rect(CW, CH).extrude(1.8).edges('|Z').fillet(1.7).edges('>Z').chamfer(0.5)
 # flange: corners rounded r2.5 = hole corner r1.8 + 0.7 overlap, so it overlaps the plate evenly all round (like ACC)
 # (built from a rounded 2D outline: the earlier box + edge fillet came out with square corners)
-flange = cq.Workplane('XY').workplane(offset=-0.7).sketch().rect(8.6, 8.4).vertices().fillet(2.5).finalize().extrude(0.4)
+# 0.6 thick (was 0.4: under JLC3DP's 0.5 mm minimum wall); grown downwards, still 0.8 above the switch body (travel <= 0.7)
+flange = cq.Workplane('XY').workplane(offset=-0.9).sketch().rect(8.6, 8.4).vertices().fillet(2.5).finalize().extrude(0.6)
 cap = cap.union(flange)
 assert not cap.val().isInside(cq.Vector(4.1, 4.0, -0.5)), 'flange corners not rounded'
 assert cap.val().isInside(cq.Vector(4.0, 0.0, -0.5)), 'flange missing'
@@ -247,21 +248,21 @@ for i in range(3):
         c = cap.translate((i * pitch, j * pitch, 0))
         sprue = c if sprue is None else sprue.union(c)
 for j in range(2):                                   # bars along x at flange level, between caps
-    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(pitch, j * pitch)
-                        .rect(2 * pitch - 8.0, 1.2).extrude(0.4))
+    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.9).center(pitch, j * pitch)
+                        .rect(2 * pitch - 8.0, 1.2).extrude(0.6))
 for i in range(3):                                   # bars along y
-    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(i * pitch, pitch / 2)
-                        .rect(1.2, pitch - 8.0).extrude(0.4))
+    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.9).center(i * pitch, pitch / 2)
+                        .rect(1.2, pitch - 8.0).extrude(0.6))
 # reset plunger, same local z as the caps (0 = PCB + 4.5): stem ends 0.1 mm above the switch (0.6 mm tall).
 # Stem 3.0 mm across (was 2.0) so it covers the whole 1.95 x 2.8 switch top even with ~0.5 mm of play/tilt/offset.
 plunger = (cq.Workplane('XY').workplane(offset=-1.5).circle(2.2).extrude(1.8).faces('>Z').edges().fillet(0.4)
-           .union(cq.Workplane('XY').workplane(offset=-1.9).circle(3.3).extrude(0.4))
+           .union(cq.Workplane('XY').workplane(offset=-2.1).circle(3.3).extrude(0.6))   # flange 0.6 thick
            .union(cq.Workplane('XY').workplane(offset=-3.8).circle(1.5).extrude(1.9)))
 export(plunger, 'tomtho_mk2_reset_plunger')
 for j in range(2):                                   # two plungers (one spare) on the same sprue
     sprue = sprue.union(plunger.translate((3 * pitch, j * pitch, 0)))
-    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.7).center(2 * pitch + (4.3 + pitch - 2.2) / 2, j * pitch)
-                        .rect(pitch - 4.3 - 2.2 + 1.0, 1.2).extrude(0.4))
+    sprue = sprue.union(cq.Workplane('XY').workplane(offset=-0.9).center(2 * pitch + (4.3 + pitch - 2.2) / 2, j * pitch)
+                        .rect(pitch - 4.3 - 2.2 + 1.0, 1.2).extrude(0.6))
 export(sprue, 'tomtho_mk2_keycap_0.5u_x6_reset_x2_sprue')   # 0.5u x 0.5u caps x6 + reset plungers x2
 json.dump({'Z_PB': Z_PB, 'Z_PT': Z_PT, 'PLATE_B': PLATE_B, 'PLATE_T': PLATE_T, 'KEYCAP_TOP': Z_PT + 6.0,
            'outline': [case_out[2] - case_out[0], case_out[3] - case_out[1]]},
