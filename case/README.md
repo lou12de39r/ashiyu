@@ -45,7 +45,7 @@ Outline: 280.0 × 110.5 mm.
 
 ## Other features
 
-- **TPS43 trackpad:** open window (43.6 x 40.6) with a 1.0 mm deep recess on top for a **45.0 x 42.0 x 1.0 mm cover plate (r1.5)**, flush with the top. Laser-cut acrylic (`trackpad_plate_acrylic_1mm_x4.svg`, e.g. Yushakobo laser-cut service, 1 mm matte) or the printed resin spare `tomtho_mk2_trackpad_plate_resin`. Stick the module to the underside of the plate.
+- **TPS43 trackpad:** a **45.0 x 42.0 x 1.0 mm cover plate (r1.5)** goes in **from below** (before the PCB) and is held by a 1.2 mm wide, 0.5 mm thick lip round the top opening (42.6 x 39.6), so it cannot fall out; its surface sits 0.5 mm below the top. Laser-cut acrylic (`trackpad_plate_acrylic_1mm_x4.svg`, e.g. Yushakobo, 1 mm matte) or the printed resin spare `tomtho_mk2_trackpad_plate_resin`. Stick the TPS43 to the underside of the plate; a PORON pad on the bottom plate (thickness to suit the module) keeps the stack pressed up.
 - **LEDs:** 1.8 mm windows, with light shrouds that stop 1.0 mm above the PCB.
 - **Reset:** a printed plunger in a 4.8 mm hole over the reset switch (no pin needed). Its stem is 3.0 mm across, covering the whole switch top, so slight offset or tilt still presses it; the stem ends 0.1 mm above the switch. It goes in from below like the 0.5u caps; two plungers are on the 0.5u keycap sprue.
 - **Rear wall:**

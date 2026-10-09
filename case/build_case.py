@@ -31,7 +31,8 @@ Z_PT = Z_PB + PCB_T                     # PCB top
 PLATE_B = Z_PT + 3.0
 PLATE_T = Z_PT + 5.0
 TP_PLATE = (45.0, 42.0, 1.0, 1.5)       # trackpad cover plate (1 mm acrylic, laser cut; resin spare printed): w, h, t, corner r
-TP_PLATE_CLR = 0.15                     # recess clearance per side
+TP_PLATE_CLR = 0.15                     # pocket clearance per side
+TP_LIP_W, TP_LIP_T = 1.2, 0.5           # lip over the plate edge (width, thickness)
 HOLE_R = float(os.environ.get('HOLE_R', '1.8'))   # keycap hole corner radius (largest that clears the ACC corner hooks: hole_radius_test.py)
 KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
@@ -166,12 +167,13 @@ for e in I['leds']:
 # trackpad pocket from below: TPS43 (43 x 40 x 1.0 PCB) stuck to a 1.0 mm skin
 tp = I['trackpad']
 tpc = (tp['x'] + tp['w'] / 2, tp['y'] + tp['h'] / 2)
-# trackpad: open window for the module (43.6 x 40.6, through the plate) + a 1.0 mm deep recess on top for the cover
-# plate (45.0 x 42.0 x 1.0, r1.5) which rests on the 0.85 mm ledge left round the window, flush with the top.
-# The TPS43 is stuck to the underside of the cover plate (its own adhesive).
-add_cut(box(tpc[0], tpc[1], tp['w'] + 0.6, tp['h'] + 0.6, PLATE_B - 0.2, PLATE_T + 0.2, r=1.0))
+# trackpad: the cover plate (45.0 x 42.0 x 1.0, r1.5) goes in FROM BELOW (before the PCB, like the 0.5u caps) and is held
+# by a 1.2 mm wide, 0.5 mm thick lip left round the top opening, so it cannot fall out.  Plate surface 0.5 below the top.
+# The TPS43 is stuck to the underside of the plate; a PORON pad on the bottom plate pushes the stack up against the lip.
 _pw, _ph, _pt, _pr = TP_PLATE
-add_cut(box(tpc[0], tpc[1], _pw + 2 * TP_PLATE_CLR, _ph + 2 * TP_PLATE_CLR, PLATE_T - _pt, PLATE_T + 0.2, r=_pr + TP_PLATE_CLR))
+add_cut(box(tpc[0], tpc[1], _pw - 2 * TP_LIP_W, _ph - 2 * TP_LIP_W, PLATE_T - TP_LIP_T - 0.1, PLATE_T + 0.2, r=_pr))
+add_cut(box(tpc[0], tpc[1], _pw + 2 * TP_PLATE_CLR, _ph + 2 * TP_PLATE_CLR, PLATE_B - 0.2, PLATE_T - TP_LIP_T,
+            r=_pr + TP_PLATE_CLR))
 
 # reset button over SW66: a printed plunger (dropped in from below, flange under the plate) pressed by a fingertip.
 # SW66 = XKB TS-1928-B, 0.6 mm tall, 160 gf, so an accidental brush does not reset it.  Plunger top 0.2 below the
