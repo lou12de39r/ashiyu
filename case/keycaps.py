@@ -79,7 +79,7 @@ def up_mark(shape, cx, cy, side=3.0, depth=0.5):
 
 for key in ('1u', '1u_home', '1.25u', '1u_thumb', '1.25u_thumb'):
     caps[key] = up_mark(caps[key], 0.0, 4.2)
-caps['1u_x_0.5u'] = up_mark(caps['1u_x_0.5u'], 4.5, 0.0)
+caps['1u_x_0.5u'] = up_mark(caps['1u_x_0.5u'], 4.2, 0.0, side=2.4)   # inside the recess beside the nub
 
 
 def export(shape, name):
