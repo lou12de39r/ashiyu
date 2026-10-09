@@ -219,6 +219,7 @@ SILK_RECTS = [('B.SilkS',) + BATTERY_AREA]
 SILK_TEXTS = [
     ('B.SilkS', 57.0, 54.0, 'LiPo 1S  (<= 3.0 t x 40 x 70)', 1.5),
     ('B.SilkS', 57.0, 57.5, 'lead -> slot -> J2 (pin1 = +)', 1.0),
+    ('B.SilkS', 57.0, 62.0, 'JLCJLCJLCJLC', 1.0),           # JLC order number goes here (hidden under the LiPo)
     ('B.SilkS', 200.0, 77.5, 'Ashiyu', 3.0),
     ('B.SilkS', 200.0, 81.5, 'Designed by tommys079', 1.5),
     ('B.SilkS', 200.0, 84.3, 'Inspired by ClickBoard (Salicylic_acid3)', 1.0),
