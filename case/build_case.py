@@ -41,7 +41,8 @@ ROD_D, ROD_TOP = 3.0, None              # Tadpole Pin D3.0: d3.0 (+0.05) blind h
 CUP_D, CUP_WALL = 4.8, 1.0              # cup in the bottom tray round the Tadpole bulge (bulge 3.1 tall under the PCB)
 TRAY_CLR = 0.15                         # bottom tray to skirt, per side
 FLOAT = 0.4                             # bottom-tray supports stop this far under the PCB (the PCB floats on the Tadpoles)
-TOP_CHAMFER = 1.5                       # 45 deg chamfer round the top edge (ClickBoard style, no ring)
+TOP_CHAMFER = 3.0                       # 45 deg chamfer round the top edge (ClickBoard Tenkey STEP: 3.0, no ring)
+BOT_CHAMFER = 1.5                       # 45 deg chamfer round the bottom edge (Tenkey STEP: 1.5): the case looks lifted off the desk
 
 W, H = I['outline']
 R0 = I['outline_r']
@@ -89,24 +90,71 @@ def tapered_hole(cx, cy, w, h, rot, z0, depth, grow):
     return cq.Workplane('XY').add(s).rotate((0, 0, 0), (0, 0, 1), -rot).translate((cx, Y(cy), 0))
 
 
-CORNER_R = float(os.environ.get('CORNER_R', '10.0'))   # outer plan corner radius: ClickBoard Tenkey case = R10 (its STEP)
-OUTER_GROW = float(os.environ.get('OUTER_GROW', '1.0'))  # wall grown outwards all round so R10 still leaves >= 2 mm over the PCB corner
-_wo = WALL + OUTER_GROW + PCB_CLR                       # PCB edge to case outside
-case_out = (bx0 - _wo, by0 - _wo, bx1 + _wo, by1 + _wo)
-case_r = CORNER_R
-# thinnest wall at a corner (on the diagonal): outer arc centre to PCB arc centre, both radii
-_corner_wall = case_r - math.sqrt(2) * max(case_r - _wo - BR, 0.0) - BR - PCB_CLR
-print(f'outline {case_out[2] - case_out[0]:.1f} x {case_out[3] - case_out[1]:.1f}, corner R{case_r}, '
-      f'corner wall {_corner_wall:.2f} (side wall {WALL + OUTER_GROW:.1f}), top-face corner R{case_r - TOP_CHAMFER:.1f}')
-assert _corner_wall >= 1.7, 'corner wall too thin: raise OUTER_GROW or lower CORNER_R'
+# Plan outline.  Corners like the ClickBoard Tenkey case (R10, measured from its STEP).  Rule: every keycap hole keeps
+# at least the straight-edge margin (hole lead-in to the flat top face, 2.5 mm) also at the corners.  Walls (PCB edge to
+# outside): sides and rear 3.6 (straight margin 2.5 with the 3.0 chamfer), front 4.6 so R10 keeps 2.5 at Ctrl / ->;
+# rear corners R8: the BT key sits in the rear-left corner and R10 there would need a 5.6 mm rear wall (the power
+# switch lever and the USB plug would sit deep in it).
+WO_SIDE, WO_REAR, WO_FRONT = 3.6, 3.6, 4.6
+R_FRONT, R_REAR = 10.0, 8.0
+case_out = (bx0 - WO_SIDE, by0 - WO_REAR, bx1 + WO_SIDE, by1 + WO_FRONT)
+case_r = R_FRONT                                         # (largest radius, for reports)
+
+
+def plan_slab(x0, y0, x1, y1, rr, rf, z0, z1):
+    """Rounded rectangle in layout coords with rear corners rr and front corners rf, extruded z0..z1 (Y flipped)."""
+    yt, yb = Y(y0), Y(y1)
+    c = 1 - math.cos(math.pi / 4)
+    w = (cq.Workplane('XY').workplane(offset=z0).moveTo(x0 + rf, yb).lineTo(x1 - rf, yb)
+         .threePointArc((x1 - rf * c, yb + rf * c), (x1, yb + rf)).lineTo(x1, yt - rr)
+         .threePointArc((x1 - rr * c, yt - rr * c), (x1 - rr, yt)).lineTo(x0 + rr, yt)
+         .threePointArc((x0 + rr * c, yt - rr * c), (x0, yt - rr)).lineTo(x0, yb + rf)
+         .threePointArc((x0 + rf * c, yb + rf * c), (x0 + rf, yb)).close())
+    return w.extrude(z1 - z0)
+
+
+def corner_wall(wx, wy, r):
+    """thinnest wall at a corner: outer arc (r) to the skirt's inner arc (BR + PCB_CLR), walls wx / wy at the sides."""
+    dx, dy = max(r - wx - BR, 0.0), max(r - wy - BR, 0.0)
+    return r - math.hypot(dx, dy) - BR - PCB_CLR
+
+
+_cw = min(corner_wall(WO_SIDE, WO_REAR, R_REAR), corner_wall(WO_SIDE, WO_FRONT, R_FRONT))
+print(f'outline {case_out[2] - case_out[0]:.1f} x {case_out[3] - case_out[1]:.1f}, corners R{R_REAR} rear / R{R_FRONT} front, '
+      f'thinnest corner wall {_cw:.2f}, top chamfer {TOP_CHAMFER}, bottom chamfer {BOT_CHAMFER}')
+assert _cw >= 1.8, 'corner wall too thin'
+
+
+def _top_margin(k):
+    """keycap hole (with its lead-in) to the edge of the flat top face, mm (sampled)."""
+    x0, y0, x1, y1 = (case_out[0] + TOP_CHAMFER, case_out[1] + TOP_CHAMFER, case_out[2] - TOP_CHAMFER, case_out[3] - TOP_CHAMFER)
+    g = HOLE_CHAMFER
+    w, h, r = k['hole'][0] + 2 * g, k['hole'][1] + 2 * g, HOLE_R + g
+    a = math.radians(k['rot_deg'])
+    m = 99.0
+    for sx, sy, a0 in ((1, 1, 0), (-1, 1, 90), (-1, -1, 180), (1, -1, 270)):
+        for i in range(25):
+            t = math.radians(a0 + 90 * i / 24)
+            lx, ly = sx * (w / 2 - r) + r * math.cos(t), sy * (h / 2 - r) + r * math.sin(t)
+            px, py = k['cx'] + lx * math.cos(a) - ly * math.sin(a), k['cy'] + lx * math.sin(a) + ly * math.cos(a)
+            rc = (R_REAR if py < (y0 + y1) / 2 else R_FRONT) - TOP_CHAMFER
+            qx = abs(px - (x0 + x1) / 2) - ((x1 - x0) / 2 - rc)
+            qy = abs(py - (y0 + y1) / 2) - ((y1 - y0) / 2 - rc)
+            m = min(m, rc - math.hypot(max(qx, 0), max(qy, 0)) - min(max(qx, qy), 0))
+    return m
+
+
+_tm = sorted((_top_margin(k), k['label']) for k in I['keys'])
+print('keycap hole to flat top face, smallest:', ', '.join(f'{lab} {m:.2f}' for m, lab in _tm[:6]))
+assert _tm[0][0] >= 2.3, 'a keycap hole is too close to the top chamfer'
 inner = (bx0 - PCB_CLR, by0 - PCB_CLR, bx1 + PCB_CLR, by1 + PCB_CLR)
 inner_r = BR + PCB_CLR
 
 # ================================================================== top frame
 # Screwless: the frame's outer wall (skirt) runs down to the desk; the bottom tray fits inside it from below and clicks
 # in with 8 hidden spring clips.  From the side the case is one piece; the only seam is on the underside.
-top = slab(*case_out, case_r, 0, PLATE_T).faces('>Z').edges().chamfer(TOP_CHAMFER)
-top = top.faces('<Z').edges().chamfer(0.3)
+top = plan_slab(*case_out, R_REAR, R_FRONT, 0, PLATE_T).faces('>Z').edges().chamfer(TOP_CHAMFER)
+top = top.faces('<Z').edges().chamfer(BOT_CHAMFER)
 top = top.cut(slab(*inner, inner_r, -0.1, PLATE_B))
 
 cut = None
@@ -186,6 +234,11 @@ j1, sw = I['J1'], I['SW102']
 wy0, wy1 = case_out[1] - 1.0, inner[1] + 0.5
 top = top.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, PLATE_T + 1.0))
 top = top.cut(box(sw['x'], (wy0 + wy1) / 2, 9.6, wy1 - wy0, Z_PT - 0.1, Z_PT + 2.2))
+# fingernail relief round the power-switch slot: the 3.6 mm rear wall is cut back to 0.5 mm in front of the lever tip
+# (lever tip about 0.8 mm outside the PCB edge), 16 wide, 4 tall, below the top chamfer
+_lever_y = by0 - 0.8
+_ry0, _ry1 = case_out[1] - 1.0, _lever_y - 0.5
+top = top.cut(box(sw['x'], (_ry0 + _ry1) / 2, 16.0, _ry1 - _ry0, Z_PT - 2.0, Z_PT + 2.0, r=1.0))
 
 # ================================================================== bottom tray (inside the skirt)
 tray = (inner[0] + TRAY_CLR, inner[1] + TRAY_CLR, inner[2] - TRAY_CLR, inner[3] - TRAY_CLR)

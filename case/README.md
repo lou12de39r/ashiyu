@@ -25,7 +25,7 @@ z = 0 is the case bottom.
 | Plate | 8.5 – 10.5 | 2.0 mm thick. Starts 3.0 mm above the PCB; ACC hooks catch under it, as in the ClickBoard Tenkey case. |
 | Keycap top | 11.5 | thumb caps 11.8 (domed, raised 0.3) |
 
-Outline: 282.0 × 112.5 mm, plan corners R10 (as the ClickBoard Tenkey case; side wall 2.8, thinnest at the corners 1.76).
+Outline: 283.0 × 114.5 mm. Plan corners R10 front / R8 rear (ClickBoard Tenkey: R10), top chamfer 3.0, bottom chamfer 1.5 (as the Tenkey STEP). Walls from the PCB edge: 3.6 sides and rear, 4.6 front, so every keycap hole keeps ≥ 2.4 mm to the flat top face, corners included. Fingernail relief round the power switch.
 
 ## Keycaps
 
