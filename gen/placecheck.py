@@ -47,7 +47,7 @@ def run(verbose=True):
             if overlap(polys[a], polys[b]):
                 bad.append(('overlap', a, b))
     x1, y1, x2, y2 = D.BOARD
-    edge_ok = {'J1', 'SW67'}          # parts allowed to hang over the rear edge
+    edge_ok = {'J1', 'SW102'}          # parts allowed to hang over the rear edge
     for r, P in polys.items():
         if r in edge_ok:
             continue

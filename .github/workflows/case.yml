@@ -7,16 +7,39 @@ on:
       - 'case/**'
       - 'layout_v20.json'
       - 'gen/design.py'
+      - 'tomtho_mk2.kicad_pcb'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
+  inputs:
+    # case_inputs.json is read from the finished PCB with KiCad's pcbnew
+    runs-on: ubuntu-latest
+    container:
+      image: kicad/kicad:9.0
+      options: --user root
+    env:
+      HOME: /tmp/home
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export case inputs from the PCB
+        run: mkdir -p "$HOME" && python3 case/export_inputs.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: case_inputs
+          path: case/case_inputs.json
+
   case:
+    needs: inputs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: case_inputs
+          path: case
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

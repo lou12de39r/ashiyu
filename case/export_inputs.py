@@ -124,7 +124,7 @@ out = {
     'parts': parts,
     'switch_centres': [[p['x'], p['y'], p['rot']] for p in parts if p['fp'] == 'SW_ALPS_SKRA_6.2mm'],
 }
-for ref in ('J1', 'SW66', 'SW67', 'J2', 'U1', 'J3'):
+for ref in ('J1', 'SW101', 'SW102', 'J2', 'U1', 'J3'):
     out[ref] = next(p for p in parts if p['ref'] == ref)
 json.dump(out, open(os.path.join(HERE, 'case_inputs.json'), 'w'), indent=1, ensure_ascii=False)
 print(len(out['keys']), 'keys', len(posts), 'posts', len(out['screws']), 'screws', len(parts), 'parts')

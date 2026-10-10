@@ -17,7 +17,7 @@ This repository holds the frozen layout and the board plan for the second keyboa
 ## Settled specification
 
 ### Layout
-- **Keys:** 65 total.
+- **Keys:** 66 total (v22: lower-left Ctrl 1u, Fn / Win 0.5u stacked, Alt 1u, mirroring the arrow cluster).
   - Left block: 6 columns × number row + 3 rows, plus Fn / Ctrl→**Alt** (firmware) / Win.
   - Right block: 6 columns × number row + 3 rows, plus arrows (← ↑↓ →; ↑ and ↓ are stacked 0.5u keys).
   - Thumbs (v21): 3 per side — outer 1u, **middle (Space / Enter) 1.25u**, inner 1u — at 1.1u spacing. Fan is half of roBa's: tilt 0 / 4.5 / 10°, drop 0 / 0.8 / 3.5 mm.
@@ -85,7 +85,8 @@ The MDBT50Q has room to spare. Reset, NFC and crystal pins are avoided.
 - **USB-C:** top-mount HRO TYPE-C-31-M-12 (C165948). It sits in the free area, so the mid-mount part is not needed.
 - **Trackpad cut-out:** 44 × 41 mm for the TPS43, J3 and the I²C pull-ups to its left.
 - **ACC keycaps:** their four corner legs come down to 1.5 mm above the PCB (0.5 mm when pressed). The ↑ / ↓ diodes and J3 were moved clear of these leg zones (r 2 mm at the corners minus 1.7 mm).
-- **Case screws:** 11 × M2 holes (H1–H11). Six are in the rear strip and five on the front edge, where the keycap holes leave room for a Ø 4.6 boss; none are in the key field, where the plate webs are only 2 mm wide.
+- **Case mounting (no screws):** 9 × Tadpole Pin D3.0 holes (H1–H9, NPTH Ø 3.1): 4 rear, 2 front, 3 centre (both sides below the trackpad and between the inner thumbs). The case is screwless (hidden spring clips).
+- **References:** reset switch SW101, power switch SW102, Schottky D101 (SW1–SW66 / D1–D66 are the keys).
 - **JLC placement (CPL):**
   - `gen/jlcrot.py` lays each LCSC/EasyEDA footprint (the one JLC places at 0°) over ours and works out the rotation offset and origin shift. `jlc/*_CPL.csv` already includes them, in the Gerber coordinates (+Y up, as `kicad-cli pcb export pos`).
   - Verified: with the CPL as written, every LCSC pad lands on our pad (≤ 0.2 mm) for every part, including the tilted thumb keys.

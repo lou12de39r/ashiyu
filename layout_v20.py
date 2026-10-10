@@ -28,7 +28,9 @@ for r in range(3):
     for c in range(6):
         k(c, r + 1 + SL[c], Lr[r][c], 'new' if c == 0 else 'k')
         k(R1 + c, r + 1 + SR[c], Rr[r][c], 'new' if c == 5 else 'k')
-for c, t in zip(range(3), ('Fn', 'Ctrl', 'Win')): k(c, 4 + SL[c], t, 'mod')   # Alt removed
+# v22: lower-left cluster mirrors the arrow cluster: Ctrl 1u, Fn / Win 0.5u stacked, Alt 1u (flat, as the arrows)
+k(0, 4 - SH, 'Ctrl', 'mod'); k(2, 4 - SH, 'Alt', 'mod')
+k(1, 4 - SH, 'Fn', 'half', 1.0, 0.5); k(1, 4.5 - SH, 'Win', 'half', 1.0, 0.5)
 TW = 1.0
 TWS = [1.0, 1.25, 1.0]   # outer, middle (Space / Enter), inner
 # roBa thumb fan x0.5: rotation 0 / 4.5 / 10 deg, drop 0 / 0.046 / 0.192 u (outer -> inner), 0.06u gaps

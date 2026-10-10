@@ -4,7 +4,7 @@ import design as D
 import pcbio as P
 import stitch as ST
 
-FR = '/opt/kicad/freerouting.jar'
+FR = os.environ.get('FREEROUTING_JAR', '/opt/kicad/freerouting.jar')   # Freerouting 1.9.0 (2.x does not converge here)
 WORK = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'route_work')
 os.makedirs(WORK, exist_ok=True)
 
@@ -30,8 +30,8 @@ if __name__ == '__main__':
     for attempt in range(4):
       if os.path.exists(f'{WORK}/out.ses'):
           os.remove(f'{WORK}/out.ses')
-      r = subprocess.run(['java', '-jar', FR, '-de', f'{WORK}/in.dsn', '-do', f'{WORK}/out.ses', '-mp', str(passes),
-                        '-mt', '1', '--gui.enabled=false'], capture_output=True, text=True, timeout=5400)
+      r = subprocess.run(['xvfb-run', '-a', 'java', '-jar', FR, '-de', f'{WORK}/in.dsn', '-do', f'{WORK}/out.ses', '-mp', str(passes),
+                        '-mt', '1'], capture_output=True, text=True, timeout=5400)
       open(f'{WORK}/fr.log', 'w').write(r.stdout + r.stderr)
       if os.path.exists(f'{WORK}/out.ses') and os.path.getsize(f'{WORK}/out.ses') > 100:
           break

@@ -265,7 +265,7 @@ def build():
         place(ref, 25.4 + i * 10.16, 182.88)
     # ---- reset / SWD
     text('Reset (double-tap = UF2)  /  SWD pads', 80, 168)
-    place('SW66', 91.44, 182.88)
+    place('SW101', 91.44, 182.88)
     for i in range(4):
         place(f'TP{i + 1}', 106.68 + i * 7.62, 182.88)
     # ---- USB
@@ -283,11 +283,11 @@ def build():
     place('R4', 213.36, 96.52)
     place('LED1', 223.52, 96.52)
     # ---- power path
-    text('Load sharing (AN1149)\\nUSB -> D66, battery -> Q1\\nSW67: VSYS -> VDDH', 275, 30)
-    place('D66', 285.75, 55.88)
+    text('Load sharing (AN1149)\\nUSB -> D101, battery -> Q1\\nSW102: VSYS -> VDDH', 275, 30)
+    place('D101', 285.75, 55.88)
     place('Q1', 300.99, 66.04)
     place('R5', 285.75, 78.74)
-    place('SW67', 297.18, 96.52)
+    place('SW102', 297.18, 96.52)
     text('Battery\\n1S LiPo (protected)', 330, 30)
     place('J2', 345.44, 50.8)
     pwr_flag(335.28, 76.2, 'GND', 1)

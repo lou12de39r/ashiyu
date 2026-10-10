@@ -45,13 +45,13 @@ Outline: 280.0 × 110.5 mm.
 
 ## Other features
 
-- **TPS43 trackpad:** a **45.0 x 42.0 x 1.0 mm cover plate (r1.5)** goes in **from below** (before the PCB) and is held by a 1.2 mm wide, 0.5 mm thick lip round the top opening (42.6 x 39.6), so it cannot fall out; its surface sits 0.5 mm below the top. Laser-cut acrylic (`trackpad_plate_acrylic_1mm_x4.svg`, e.g. Yushakobo, 1 mm matte) or the printed resin spare `tomtho_mk2_trackpad_plate_resin`. Stick the TPS43 to the underside of the plate; a PORON pad on the bottom plate (thickness to suit the module) keeps the stack pressed up.
+- **TPS43 trackpad (no cover plate):** the module goes in **from below** (before the PCB) and is touched directly through a 41 x 38 mm window (r2, 0.3 chamfer); a 1.0 mm wide, 0.5 mm thick lip holds its edge, so the sensor face sits 0.5 mm below the top. The module's own 3M 468 tape sticks it to the lip; a PORON block (about 4 mm) on the tray's cross ribs presses it up.
 - **LEDs:** 1.8 mm windows, with light shrouds that stop 1.0 mm above the PCB.
 - **Reset:** a printed plunger in a 4.8 mm hole over the reset switch (no pin needed). Its stem is 3.0 mm across, covering the whole switch top, so slight offset or tilt still presses it; the stem ends 0.1 mm above the switch. It goes in from below like the 0.5u caps; two plungers are on the 0.5u keycap sprue.
 - **Rear wall:**
   - USB-C notch (open at the top: a 6 mm plug overmold leaves no wall above it).
   - Power-switch slot.
-- **Screws:** 11 × M2 from below, through the PCB, into Ø 5.2 bosses with a 1.7 mm pilot (sized for resin).
+- **No screws:** the top frame's skirt runs down to the desk; the bottom tray fits inside it and clicks in with 8 hidden spring clips. The PCB floats on 9 Tadpole Pin D3.0 (50A): Ø 3.0 blind holes in Ø 5.2 bosses of the top frame, Ø 4.8 cups in the tray. Top edge: 1.5 mm 45° chamfer, no ring.
   - Plate posts (1.4 square) in the webs between keys keep the plate height.
 - **Rubber feet:** 8 recesses (d6.6 x 0.5 mm) under switch islands for d6 mm pads: 4 front (1.5 mm), 4 rear (3.0 mm) -> about 1.2 deg tilt.
 - **Bottom plate:** 7 × 7 support islands under every switch (none over the LiPo), solid blocks under USB-C, the power switch and reset, and counterbores for the screw heads.

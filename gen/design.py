@@ -1,4 +1,4 @@
-"""tomtho-slim mk2 : 65 keys, roBa-style half stagger, centre Azoteq TPS43 trackpad module (FPC),
+"""tomtho-slim mk2 : 66 keys, roBa-style half stagger, centre Azoteq TPS43 trackpad module (FPC),
 ALPS SKRA 6.2mm, 18.5x18 pitch, nRF52840 (Raytac MDBT50Q-1MV2) on board, LiPo + USB-C, ZMK.
 
 Single source of truth for parts and nets.  Key positions come from ../layout_v20.json.
@@ -22,8 +22,8 @@ MATRIX = {
     1: ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '['],
     2: ['Ctl', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', "'", ']'],
     3: ['⇧', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Ent'],
-    4: ['Fn', 'Ctrl', 'Win', '変換 L6', 'Space L2', '無変換 L3', 'BS', 'Enter L1', 'Del', '←', '↑', '→'],
-    5: ['BT 切替', None, None, None, None, 'mL', 'mM', 'mR', None, None, '↓', None],
+    4: ['Ctrl', 'Fn', 'Alt', '変換 L6', 'Space L2', '無変換 L3', 'BS', 'Enter L1', 'Del', '←', '↑', '→'],
+    5: ['BT 切替', 'Win', None, None, None, 'mL', 'mM', 'mR', None, None, '↓', None],
 }
 MOUSE = {'L': 'mL', 'M': 'mM', 'R': 'mR'}
 NROWS, NCOLS = 6, 12
@@ -67,14 +67,16 @@ for r in range(NROWS):
         add(f'SW{n}', 'SW_ALPS_SKRA_6.2mm', 'SKRAAWE010', k['cx'], k['cy'], a,
             {'1': f'COL{c}', '2': f'K{r}_{c}'}, 'SW_Push', 'C202383',
             f'key "{name}" - ALPS SKRA 6.2mm tact', 'SKRAAWE010')
-        if name in ('↑', '↓'):                  # stacked 0.5u keys: diode in the gap to the left (towards ←),
+        if name in ('Fn', 'Win'):               # left stacked 0.5u keys: mirror of the arrows, diode towards Alt
+            dx, dy, da = 9.25, 0.0, 0
+        elif name in ('↑', '↓'):                  # stacked 0.5u keys: diode in the gap to the left (towards ←),
             dx, dy, da = -9.25, 0.0, 0          # clear of the ACC keycap legs (corner zones r 2 at +-7.55 / +-2.8)
         else:
             dx, dy = rot(0, 5.0, a)
             da = a + 180
         add(f'D{n}', 'D_SOD-123', '1N4148W', k['cx'] + dx, k['cy'] + dy, da,
             {'1': f'ROW{r}', '2': f'K{r}_{c}'}, 'D', 'C81598', 'Switching diode', '1N4148W')
-assert n == len(L['keys']) == 65, n
+assert n == len(L['keys']) == 66, n
 NKEYS = n
 
 # --- MCU module in the free area between "5" and "6", antenna at the rear edge
@@ -116,7 +118,7 @@ add('C5', 'C_0603', '100nF', U1X + 9.2, 9.0, 90, {'1': 'VDD', '2': 'GND'}, 'C', 
 add('C1', 'C_0603', '4.7uF', U1X + 7.4, 13.0, 90, {'1': 'VBUS', '2': 'GND'}, 'C', 'C19666', '16V X5R', 'CL10A475KO8NNNC')
 
 # reset + SWD pads, below the module
-add('SW66', 'SW_TS-1928-B', 'RESET', U1X, 19.6, 0, {'1': 'RESET', '2': 'GND'}, 'SW_Push', 'C1121891',
+add('SW101', 'SW_TS-1928-B', 'RESET', U1X, 19.6, 0, {'1': 'RESET', '2': 'GND'}, 'SW_Push', 'C1121891',
     'Reset (double-tap = UF2 bootloader)', 'TS-1928-B')
 for i, net in enumerate(['SWDIO', 'SWCLK', 'GND', 'VDD']):
     add(f'TP{i + 1}', 'TestPoint_Pad_D1.0mm', net, U1X - 3.81 + i * 2.54, 24.0, 0, {'1': net}, 'TestPoint', bom=False,
@@ -143,14 +145,14 @@ add('R3', 'R_0603', '4.7k', FX + 6.0, 20.2, 0, {'1': 'PROG', '2': 'GND'}, 'R', '
     '0603WAF4701T5E')
 
 # load-sharing power path (Microchip AN1149 style)
-add('D66', 'D_SOD-123', 'B5819W', FX + 15.5, 12.0, 90, {'1': 'VSYS', '2': 'VBUS'}, 'D_Schottky', 'C8598',
+add('D101', 'D_SOD-123', 'B5819W', FX + 15.5, 12.0, 90, {'1': 'VSYS', '2': 'VBUS'}, 'D_Schottky', 'C8598',
     'VBUS -> VSYS', 'B5819W SL')
 add('Q1', 'SOT-23', 'AO3401A', FX + 15.0, 18.0, 0, {'1': 'VBUS', '2': 'VSYS', '3': 'VBAT'}, 'PMOS', 'C15127',
     'Battery -> VSYS when no USB', 'AO3401A')
 add('R5', 'R_0603', '100k', FX + 15.0, 21.5, 0, {'1': 'VBUS', '2': 'GND'}, 'R', 'C25803', 'Q1 gate pull-down',
     '0603WAF1003T5E')
 # power switch (rear edge, right of the module) + battery connector (LiPo sits under the PCB)
-add('SW67', 'SW_SPDT_PCM12', 'POWER', FX + 41.0, 0.6 + 2.6, 180, {'1': 'VDDH', '2': 'VSYS'},
+add('SW102', 'SW_SPDT_PCM12', 'POWER', FX + 41.0, 0.6 + 2.6, 180, {'1': 'VDDH', '2': 'VSYS'},
     'SW_SPDT', 'C221841', 'Power slide switch (pin3 = OFF, open)', 'PCM12SMTR')
 add('J2', 'JST_SH_SM02B-SRSS-TB', 'BATTERY', FX + 5.0, 24.6, 90, {'1': 'VBAT', '2': 'GND'}, 'Conn_02', 'C160402',
     'LiPo 1S (protected cell), check polarity!', 'SM02B-SRSS-TB(LF)(SN)')
@@ -202,10 +204,11 @@ add('R12', 'R_0603', '4.7k', TP_CUT[0] - 2.6, TPJ[1] + 3.9, 90, {'1': 'VDD', '2'
 # case screws (M2, from below, into bosses of the top frame): rear strip and front edge, where the ACC keycap holes
 # leave >= 2.9 mm free.  None inside the key field: the plate webs between keycaps are only 2 mm wide.
 # Tadpole Pin D3.0 mounts (GEONWORKS, silicone): the rod (d3.0) goes up through the PCB into a blind hole in the top
-# frame, the bulge sits under the PCB in a cup on the bottom plate.  4 rear, 2 front, 2 centre (either side below the
-# trackpad).  Spots chosen clear of keys (+2.9), parts (+2.0) and tracks (1.95 from the hole centre).
+# frame, the bulge sits under the PCB in a cup on the bottom plate.  4 rear, 2 front, 3 centre (either side below the
+# trackpad, and between the inner thumbs).  Spots chosen clear of keys (+2.9), parts (+2.0) and tracks (1.95 from the hole centre).
 SCREWS = [(40.0, 5.0), (100.0, 5.0), (165.0, 4.0), (240.0, 4.0),
-          (60.5, 98.0), (215.0, 102.8), (120.5, 82.5), (156.5, 82.5)]
+          (60.5, 98.0), (215.0, 102.8), (120.5, 82.5), (156.5, 82.5),
+          (138.5, 100.5)]                  # 9th (v22): front centre between the inner thumb keys (1 of the 10 kept spare)
 for i, (x, y) in enumerate(SCREWS):
     add(f'H{i + 1}', 'Tadpole_D3.0_NPTH', 'Tadpole', x, y, 0, {}, 'MountingHole', bom=False)
 

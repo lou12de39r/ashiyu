@@ -30,9 +30,9 @@ Z_PB = FLOOR + BAT_T + BAT_CLR          # PCB bottom = seam between the two part
 Z_PT = Z_PB + PCB_T                     # PCB top
 PLATE_B = Z_PT + 3.0
 PLATE_T = Z_PT + 5.0
-TP_PLATE = (45.0, 42.0, 1.0, 1.5)       # trackpad cover plate (1 mm acrylic, laser cut; resin spare printed): w, h, t, corner r
-TP_PLATE_CLR = 0.15                     # pocket clearance per side
-TP_LIP_W, TP_LIP_T = 1.2, 0.5           # lip over the plate edge (width, thickness)
+TP_MOD = (43.0, 40.0, 1.0, 1.0)         # TPS43 module itself (no cover plate: touched directly): w, h, PCB t, corner r
+TP_CLR = 0.15                           # pocket clearance per side
+TP_LIP_W, TP_LIP_T = 1.0, 0.5           # frame lip over the module edge (width, thickness)
 HOLE_R = float(os.environ.get('HOLE_R', '1.8'))   # keycap hole corner radius (largest that clears the ACC corner hooks: hole_radius_test.py)
 KEY_CLR = float(os.environ.get('KEY_CLR', '0'))   # extra clearance per side on keycap holes (e.g. 0.1 for MJF)
 HOLE_CHAMFER = 0.5                      # 45 deg lead-in at the top of each keycap hole
@@ -41,7 +41,7 @@ ROD_D, ROD_TOP = 3.0, None              # Tadpole Pin D3.0: d3.0 (+0.05) blind h
 CUP_D, CUP_WALL = 4.8, 1.0              # cup in the bottom tray round the Tadpole bulge (bulge 3.1 tall under the PCB)
 TRAY_CLR = 0.15                         # bottom tray to skirt, per side
 FLOAT = 0.4                             # bottom-tray supports stop this far under the PCB (the PCB floats on the Tadpoles)
-TOP_CHAMFER = 1.0
+TOP_CHAMFER = 1.5                       # 45 deg chamfer round the top edge (ClickBoard style, no ring)
 
 W, H = I['outline']
 R0 = I['outline_r']
@@ -127,18 +127,21 @@ for e in I['leds']:
 # trackpad pocket from below: TPS43 (43 x 40 x 1.0 PCB) stuck to a 1.0 mm skin
 tp = I['trackpad']
 tpc = (tp['x'] + tp['w'] / 2, tp['y'] + tp['h'] / 2)
-# trackpad: the cover plate (45.0 x 42.0 x 1.0, r1.5) goes in FROM BELOW (before the PCB, like the 0.5u caps) and is held
-# by a 1.2 mm wide, 0.5 mm thick lip left round the top opening, so it cannot fall out.  Plate surface 0.5 below the top.
-# The TPS43 is stuck to the underside of the plate; a PORON pad on the bottom plate pushes the stack up against the lip.
-_pw, _ph, _pt, _pr = TP_PLATE
-add_cut(box(tpc[0], tpc[1], _pw - 2 * TP_LIP_W, _ph - 2 * TP_LIP_W, PLATE_T - TP_LIP_T - 0.1, PLATE_T + 0.2, r=_pr))
-add_cut(box(tpc[0], tpc[1], _pw + 2 * TP_PLATE_CLR, _ph + 2 * TP_PLATE_CLR, PLATE_B - 0.2, PLATE_T - TP_LIP_T,
-            r=_pr + TP_PLATE_CLR))
+# trackpad (no cover plate): the TPS43 module goes in FROM BELOW (before the PCB) and its top face is touched directly
+# through a window 1.0 mm smaller per side; the 1.0 x 0.5 mm lip holds it, so it cannot fall out.  Sensor face 0.5 mm
+# below the top (a frame you can feel).  The module's own 3M 468 tape sticks it to the lip; a PORON block (about 4 mm: 5.1 mm
+# from the rib tops to the module PCB, minus its underside parts) on the tray's cross ribs presses it up from below.  Window edge rounded by a 0.3 mm chamfer.
+_pw, _ph, _pt, _pr = TP_MOD
+add_cut(box(tpc[0], tpc[1], _pw - 2 * TP_LIP_W, _ph - 2 * TP_LIP_W, PLATE_T - TP_LIP_T - 0.1, PLATE_T + 0.2, r=_pr + 1.0))
+add_cut(cq.Workplane('XY').add(cq.Solid.makeLoft([rr_wire(_pw - 2 * TP_LIP_W, _ph - 2 * TP_LIP_W, _pr + 1.0, PLATE_T - 0.3),
+        rr_wire(_pw - 2 * TP_LIP_W + 0.62, _ph - 2 * TP_LIP_W + 0.62, _pr + 1.31, PLATE_T + 0.01)], True))
+        .translate((tpc[0], Y(tpc[1]), 0)))
+add_cut(box(tpc[0], tpc[1], _pw + 2 * TP_CLR, _ph + 2 * TP_CLR, PLATE_B - 0.2, PLATE_T - TP_LIP_T, r=_pr + TP_CLR))
 
-# reset button over SW66: a printed plunger (dropped in from below, flange under the plate) pressed by a fingertip.
-# SW66 = XKB TS-1928-B, 0.6 mm tall, 160 gf, so an accidental brush does not reset it.  Plunger top 0.2 below the
+# reset button over SW101: a printed plunger (dropped in from below, flange under the plate) pressed by a fingertip.
+# SW101 = XKB TS-1928-B, 0.6 mm tall, 160 gf, so an accidental brush does not reset it.  Plunger top 0.2 below the
 # plate surface, in a 4.8 mm hole with a 0.4 mm lead-in.
-RST = (I['SW66']['x'], I['SW66']['y'])
+RST = (I['SW101']['x'], I['SW101']['y'])
 add_cut(cyl(RST[0], RST[1], 4.8, PLATE_B - 0.2, PLATE_T + 0.2))
 add_cut(cq.Workplane('XY').workplane(offset=PLATE_T - 0.4).center(RST[0], Y(RST[1])).circle(2.4)
         .workplane(offset=0.41).circle(2.81).loft())
@@ -171,7 +174,7 @@ for x, y in I['screws']:
 
 # rear wall openings: USB-C (notch, open at the top: a 6 mm plug overmold leaves no wall above it) and the
 # power-switch lever slot.  Both only through the wall.
-j1, sw = I['J1'], I['SW67']
+j1, sw = I['J1'], I['SW102']
 wy0, wy1 = case_out[1] - 1.0, inner[1] + 0.5
 top = top.cut(box(j1['x'], (wy0 + wy1) / 2, 12.4, wy1 - wy0, Z_PT - 1.6, PLATE_T + 1.0))
 top = top.cut(box(sw['x'], (wy0 + wy1) / 2, 9.6, wy1 - wy0, Z_PT - 0.1, Z_PT + 2.2))
@@ -217,7 +220,7 @@ for f in (0.33, 0.67):
 # solid under the USB-C / MCU / power switch area (plug and switch forces)
 add_isl(box(j1['x'], 8.0, 16.0, 14.0, FLOOR - 0.01, TRAY_TOP))
 add_isl(box(sw['x'], 6.0, 10.0, 10.0, FLOOR - 0.01, TRAY_TOP))
-add_isl(box(I['SW66']['x'], I['SW66']['y'], 8.0, 6.0, FLOOR - 0.01, TRAY_TOP))
+add_isl(box(I['SW101']['x'], I['SW101']['y'], 8.0, 6.0, FLOOR - 0.01, TRAY_TOP))
 bot = bot.union(isl)
 # LiPo pocket (the lead runs inside the lightening pocket to the pass-through slot near J2: no islands on the way)
 bot = bot.cut(box((bat_box[0] + bat_box[2]) / 2, (bat_box[1] + bat_box[3]) / 2, bat_box[2] - bat_box[0],
@@ -228,7 +231,7 @@ for x, y in I['screws']:
 # rubber-foot recesses (YAHATA Slim Flex mini pad, d6 mm): d6.6 x 0.5 deep, centred under switch islands (solid above).
 # 4 front (1.5 mm hard pads) + 4 rear (3.0 mm hard pads): rear stands 1.5 mm higher -> about 1.2 deg tilt.
 FOOT_D, FOOT_DEPTH = 6.6, 0.5
-FEET = ['Fn', '無変換 L3', 'BS', '→', '`', '5', '6', '-']
+FEET = ['Ctrl', '無変換 L3', 'BS', '→', '`', '5', '6', '-']
 for lab in FEET:
     k = next(k for k in I['keys'] if k['label'] == lab)
     bot = bot.cut(cyl(k['cx'], k['cy'], FOOT_D, -0.1, FOOT_DEPTH))
@@ -305,18 +308,6 @@ def export(shape, name):
 export(top, 'tomtho_mk2_top_frame')
 export(bot, 'tomtho_mk2_bottom_plate')
 export(cap, 'tomtho_mk2_keycap_0.5u_x_0.5u')
-# trackpad cover plate: resin spare (same size as the acrylic one) + laser-cut outline for the acrylic (4 plates)
-tp_plate = cq.Workplane('XY').sketch().rect(_pw, _ph).vertices().fillet(_pr).finalize().extrude(_pt)
-export(tp_plate, 'tomtho_mk2_trackpad_plate_resin')
-def _rr_path(x0, y0, w, h, r):
-    return (f'M {x0 + r} {y0} H {x0 + w - r} A {r} {r} 0 0 1 {x0 + w} {y0 + r} V {y0 + h - r} '
-            f'A {r} {r} 0 0 1 {x0 + w - r} {y0 + h} H {x0 + r} A {r} {r} 0 0 1 {x0} {y0 + h - r} V {y0 + r} '
-            f'A {r} {r} 0 0 1 {x0 + r} {y0} Z')
-_paths = ''.join(f'<path d="{_rr_path(5 + i * (_pw + 5), 5, _pw, _ph, _pr)}" fill="none" stroke="#ff0000" stroke-width="0.001"/>'
-                 for i in range(4))
-_W, _H = 4 * (_pw + 5) + 5, _ph + 10
-open(os.path.join(OUT, 'trackpad_plate_acrylic_1mm_x4.svg'), 'w').write(
-    f'<svg xmlns="http://www.w3.org/2000/svg" width="{_W}mm" height="{_H}mm" viewBox="0 0 {_W} {_H}">{_paths}</svg>')
 # the same cap x 6 on a sprue (one 3D-print part: a single 8.6 mm cap is under JLC3DP's minimum part size)
 pitch = 13.0
 sprue = None
