@@ -39,7 +39,8 @@ for k in I['keys']:
     sh = sh.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), -k['rot_deg']).translate(cq.Vector(k['cx'], -k['cy'], Z_PT + 4.5))
     caps.append((k, sh))
 pcb = cq.Workplane('XY').workplane(offset=Z_PB).center((I['board'][0] + I['board'][2]) / 2, -(I['board'][1] + I['board'][3]) / 2) \
-    .rect(I['board'][2] - I['board'][0], I['board'][3] - I['board'][1]).extrude(I['pcb_t']).val()
+    .sketch().rect(I['board'][2] - I['board'][0], I['board'][3] - I['board'][1]).vertices().fillet(I['board_r']).finalize() \
+    .extrude(I['pcb_t']).val()                       # rounded corners as the real board (a square slab hits the skirt)
 blocks = []
 sw_body = {}
 for q in I['parts']:
