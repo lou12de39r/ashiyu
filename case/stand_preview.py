@@ -5,9 +5,9 @@ import numpy as np
 OUT, ANG, SCENE = sys.argv[1], float(sys.argv[2]), sys.argv[3]
 I = json.load(open('case_inputs.json'))
 bx0, by0, bx1, by1 = I['board']
-CL, WALL = 0.3, 1.8
+CL, WALL = 0.3, 2.8   # = build_case WALL + OUTER_GROW
 X0, Y0, X1, Y1 = bx0 - CL - WALL, by0 - CL - WALL, bx1 + CL + WALL, by1 + CL + WALL   # keyboard outline (layout)
-R = I['board_r'] + CL + WALL
+R = 10.0                                   # = build_case CORNER_R
 t = math.tan(math.radians(ANG))
 H_FRONT, LIP, RIM_W, GAP = 2.0, 1.6, 2.2, 0.4
 

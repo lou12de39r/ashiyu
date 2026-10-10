@@ -89,8 +89,16 @@ def tapered_hole(cx, cy, w, h, rot, z0, depth, grow):
     return cq.Workplane('XY').add(s).rotate((0, 0, 0), (0, 0, 1), -rot).translate((cx, Y(cy), 0))
 
 
-case_out = (-WALL - PCB_CLR + bx0, -WALL - PCB_CLR + by0, bx1 + PCB_CLR + WALL, by1 + PCB_CLR + WALL)
-case_r = BR + PCB_CLR + WALL
+CORNER_R = float(os.environ.get('CORNER_R', '10.0'))   # outer plan corner radius: ClickBoard Tenkey case = R10 (its STEP)
+OUTER_GROW = float(os.environ.get('OUTER_GROW', '1.0'))  # wall grown outwards all round so R10 still leaves >= 2 mm over the PCB corner
+_wo = WALL + OUTER_GROW + PCB_CLR                       # PCB edge to case outside
+case_out = (bx0 - _wo, by0 - _wo, bx1 + _wo, by1 + _wo)
+case_r = CORNER_R
+# thinnest wall at a corner (on the diagonal): outer arc centre to PCB arc centre, both radii
+_corner_wall = case_r - math.sqrt(2) * max(case_r - _wo - BR, 0.0) - BR - PCB_CLR
+print(f'outline {case_out[2] - case_out[0]:.1f} x {case_out[3] - case_out[1]:.1f}, corner R{case_r}, '
+      f'corner wall {_corner_wall:.2f} (side wall {WALL + OUTER_GROW:.1f}), top-face corner R{case_r - TOP_CHAMFER:.1f}')
+assert _corner_wall >= 1.7, 'corner wall too thin: raise OUTER_GROW or lower CORNER_R'
 inner = (bx0 - PCB_CLR, by0 - PCB_CLR, bx1 + PCB_CLR, by1 + PCB_CLR)
 inner_r = BR + PCB_CLR
 
