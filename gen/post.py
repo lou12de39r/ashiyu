@@ -15,6 +15,14 @@ drop = set()
 import os
 if os.path.exists('drop_vias.txt'):
     drop = {tuple(map(float, l.split())) for l in open('drop_vias.txt') if l.strip()}
+# escape vias the router did not use (nothing on B.Cu reaches them): drop the via and the F.Cu stubs ending on it
+def _at(seg, x, y):
+    return any(abs(seg[i] - x) < 0.02 and abs(seg[i + 1] - y) < 0.02 for i in (1, 3))
+_dead = [x for x in v if x[2] != 'GND' and not any(s[0] == 'B.Cu' and s[6] == x[2] and _at(s, x[0], x[1]) for s in t)]
+for x in _dead:
+    t = [s for s in t if not (s[6] == x[2] and _at(s, x[0], x[1]))]
+v = [x for x in v if x not in _dead]
+print('unused escape vias dropped', len(_dead), _dead)
 t, v, n = ST.stitch_grid(t, v, (x1 + 1.5, y1 + 1.5, x2 - 1.5, y2 - 1.5), pitch=pitch, min_sep=pitch * 0.6)
 v = [x for x in v if not (x[2] == 'GND' and (round(x[0], 2), round(x[1], 2)) in drop)]
 print('stitching vias added', n, 'dropped', len(drop))
