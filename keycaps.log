@@ -1,0 +1,24 @@
+domed: top 13.76 x 13.26, R 55.1, sag 0.4, lift 0.3, peak z 1.79
+domed: top 18.26 x 13.26, R 55.1, sag 0.4, lift 0.3, peak z 1.79
+flat top: z max 1.50
+up mark at (0.0, 4.2): underside z -0.32, top z 1.49, depth 0.50
+up mark at (0.0, 4.2): underside z -0.32, top z 1.49, depth 0.50
+up mark at (0.0, 4.2): underside z -0.32, top z 1.49, depth 0.50
+up mark at (0.0, 4.2): underside z -0.32, top z 1.69, depth 0.50
+up mark at (0.0, 4.2): underside z -0.32, top z 1.69, depth 0.50
+up mark at (4.2, 0.0): underside z -0.01, top z 1.50, depth 0.50
+up mark at (4.2, 0.0): underside z -0.01, top z 1.50, depth 0.50
+keycap_1u: 17.29 x 16.79 x 4.54 mm, volume 475 mm3
+keycap_1u_home: 17.29 x 16.79 x 4.66 mm, volume 476 mm3
+keycap_1.25u: 21.79 x 16.79 x 4.53 mm, volume 589 mm3
+keycap_1u_x_0.5u: 17.29 x 7.79 x 4.57 mm, volume 215 mm3
+keycap_0.5u_x_0.5u: 8.60 x 8.40 x 2.51 mm, volume 117 mm3
+keycap_1u_thumb: 17.29 x 16.79 x 4.90 mm, volume 513 mm3
+keycap_1.25u_thumb: 21.79 x 16.79 x 4.96 mm, volume 646 mm3
+keycap_1u_x_0.5u_flat: 17.29 x 7.79 x 4.56 mm, volume 215 mm3
+needed: {'1u': 50, '1u_home': 2, '1.25u': 0, '1u_x_0.5u': 4, '1u_x_0.5u_flat': 2, '0.5u_x_0.5u': 2, '1u_thumb': 4, '1.25u_thumb': 2}
+print_sprue_1u_x28_a: 150.29 x 72.29 x 4.54 mm, volume 13397 mm3
+print_sprue_1u_x27_b: 150.29 x 72.29 x 4.54 mm, volume 12917 mm3
+print_sprue_thumb_1.25u_x3_1u_x6: 68.79 x 53.79 x 4.95 mm, volume 5056 mm3
+print_sprue_1u_x_0.5u_x5_flat_x3: 55.29 x 27.79 x 4.64 mm, volume 1742 mm3
+print_sprue_1u_home_x3: 55.29 x 16.79 x 4.66 mm, volume 1432 mm3

@@ -1,0 +1,5 @@
+Keycap models derived from ACC Keycaps by Salicylic_acid3 (https://github.com/Salicylic-acid3/ACC_Keycaps),
+licensed CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/).
+Changes: re-centred, converted to STL, combined on print sprues for tomtho-slim mk2; thumb caps have the dish filled
+and a domed top; mouse-button 1u x 0.5u caps have the dish filled flat; 0.5u x 0.5u flange cap is new.
+Non-commercial use only.

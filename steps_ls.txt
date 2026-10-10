@@ -1,0 +1,19 @@
+total 30204
+drwxr-xr-x 2 runner runner    4096 Oct 10 21:54 .
+drwxr-xr-x 5 runner runner    4096 Oct 10 21:54 ..
+-rw-r--r-- 1 runner runner 1468144 Oct 10 21:54 C0603_L1.6-W0.8-H0.8.step
+-rw-r--r-- 1 runner runner 1645125 Oct 10 21:54 CONN-SMD_SR1.00-WS-2P.step
+-rw-r--r-- 1 runner runner 2291908 Oct 10 21:54 FPC-SMD_6P-P0.50_HCTL_HC-FPC-05-10-6RLTAG.step
+-rw-r--r-- 1 runner runner 1212308 Oct 10 21:54 LED-SMD_4P-L2.0-W1.3-RD-TL.step
+-rw-r--r-- 1 runner runner 1306320 Oct 10 21:54 LED0603_L1.6-W0.8-H0.6.step
+-rw-r--r-- 1 runner runner 2426948 Oct 10 21:54 QFN-48_L7.0-W7.0-P0.50-BL-EP5.6.step
+-rw-r--r-- 1 runner runner 1046656 Oct 10 21:54 R0603.step
+-rw-r--r-- 1 runner runner 1042803 Oct 10 21:54 SOD-123F_L2.7-W1.6-LS3.8-RD.step
+-rw-r--r-- 1 runner runner 1130922 Oct 10 21:54 SOD-123_L2.7-W1.6-LS3.7-RD-1.step
+-rw-r--r-- 1 runner runner 2773949 Oct 10 21:54 SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.step
+-rw-r--r-- 1 runner runner 2944507 Oct 10 21:54 SOT-23-5_L2.9-W1.6-H1.1-LS2.8-P0.95.step
+-rw-r--r-- 1 runner runner 3277159 Oct 10 21:54 SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.step
+-rw-r--r-- 1 runner runner 1551971 Oct 10 21:54 SW-SMD_4P-L6.2-W6.2-H3.4-P4.00-LS6.8.step
+-rw-r--r-- 1 runner runner 1670105 Oct 10 21:54 SW-SMD_PCM12SMTR.step
+-rw-r--r-- 1 runner runner 2056798 Oct 10 21:54 USB-C-SMD_SHOU_TYPE-C-16P-CB1.6.step
+-rw-r--r-- 1 runner runner 3046649 Oct 10 21:54 USB-C_SMD-TYPE-C-31-M-12_1.step

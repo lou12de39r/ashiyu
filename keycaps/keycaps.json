@@ -1,0 +1,14 @@
+{
+ "needed": {
+  "1u": 50,
+  "1u_home": 2,
+  "1.25u": 0,
+  "1u_x_0.5u": 4,
+  "1u_x_0.5u_flat": 2,
+  "0.5u_x_0.5u": 2,
+  "1u_thumb": 4,
+  "1.25u_thumb": 2
+ },
+ "sprue_1u": 55,
+ "spares": "1u +10 %, others +1, thumb 1u +2; 0.5u x 0.5u: see the case sprue (x6)"
+}

@@ -1,0 +1,21 @@
+outline 283.0 x 114.5, corners R8.0 rear / R10.0 front, thinnest corner wall 3.06, top chamfer 3.0, bottom chamfer 1.5
+keycap hole to flat top face, smallest: BT 切替 2.42, Ctrl 2.48, → 2.48, - 2.50, Ctl 2.50, Ent 2.50
+foot recess under "Ctrl" at (11.2, 95.6)
+foot recess under "無変換 L3" at (126.8, 95.1)
+foot recess under "BS" at (150.2, 95.1)
+foot recess under "→" at (265.8, 95.6)
+foot recess under "`" at (11.2, 23.6)
+foot recess under "5" at (103.8, 18.8)
+foot recess under "6" at (173.2, 18.8)
+foot recess under "-" at (265.8, 23.6)
+tomtho_mk2_top_frame: 283.1 x 114.6 x 10.58 mm, volume 48.0 cm3
+tomtho_mk2_bottom_plate: 277.2 x 107.7 x 3.90 mm, volume 47.1 cm3
+tomtho_mk2_keycap_0.5u_x_0.5u: 8.6 x 8.4 x 2.51 mm, volume 0.1 cm3
+tomtho_mk2_reset_plunger: 6.6 x 6.6 x 4.10 mm, volume 0.1 cm3
+tomtho_mk2_keycap_0.5u_x6_reset_x2_sprue: 46.6 x 21.4 x 5.31 mm, volume 0.9 cm3
+stack 4.3 5.5 8.5 10.5 keycap top 11.5
+tomtho_mk2_bottom_plate: 277.2 x 107.7 x 3.90 mm, volume 47.1 cm3
+tomtho_mk2_keycap_0.5u_x_0.5u: 8.6 x 8.4 x 2.51 mm, volume 0.1 cm3
+tomtho_mk2_reset_plunger: 6.6 x 6.6 x 4.10 mm, volume 0.1 cm3
+tomtho_mk2_keycap_0.5u_x6_reset_x2_sprue: 46.6 x 21.4 x 5.31 mm, volume 0.9 cm3
+stack 4.3 5.5 8.5 10.5 keycap top 11.5

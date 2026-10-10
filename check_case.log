@@ -1,0 +1,9 @@
+small key "BT 切替" (SW61): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 3.60 (body top 2.80, room 0.80; the cap travels at most 0.70 before the actuator bottoms)
+small key "Fn" (SW50): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 4.00 (body top 2.80, room 1.20; the cap travels at most 0.70 before the actuator bottoms)
+small key "Win" (SW62): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 4.00 (body top 2.80, room 1.20; the cap travels at most 0.70 before the actuator bottoms)
+small key "↑" (SW59): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 4.00 (body top 2.80, room 1.20; the cap travels at most 0.70 before the actuator bottoms)
+small key "↓" (SW66): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 4.00 (body top 2.80, room 1.20; the cap travels at most 0.70 before the actuator bottoms)
+small key "L" (SW63): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 4.00 (body top 2.80, room 1.20; the cap travels at most 0.70 before the actuator bottoms)
+small key "R" (SW65): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 4.00 (body top 2.80, room 1.20; the cap travels at most 0.70 before the actuator bottoms)
+small key "M" (SW64): nub bottom 3.50 above PCB (actuator top 3.40, gap 0.10); lowest other part over the switch 3.60 (body top 2.80, room 0.80; the cap travels at most 0.70 before the actuator bottoms)
+interferences: 0
